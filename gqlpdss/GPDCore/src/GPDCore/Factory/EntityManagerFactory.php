@@ -4,13 +4,14 @@ declare(strict_types = 1);
 
 namespace GPDCore\Factory;
 
-use GPDCore\Library\DoctrineSQLLogger;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\Setup;
+use Doctrine\ORM\EntityManager;
+use GPDCore\Library\DoctrineSQLLogger;
+use Symfony\Component\Cache\Adapter\PhpFilesAdapter;
 
 class EntityManagerFactory
 {
-    public static function createInstance(array $options, string $proxyDir, bool $isDevMode = false, bool $writeLog = false): EntityManager {
+    public static function createInstance(array $options, string $proxyDir, bool $isDevMode = false, string $cacheDir = '', bool $writeLog = false): EntityManager {
 
         $paths = $options["entities"];
         $driver = $options["driver"];
@@ -24,6 +25,14 @@ class EntityManagerFactory
         if($isDevMode && $writeLog) {
             $logger = new DoctrineSQLLogger();
             $config->setSQLLogger($logger);
+        }
+        if(!$isDevMode && !empty($cacheDir)) {
+            $cacheQueryDir = $cacheDir.'/Query';
+            $cacheMetadataDir = $cacheDir.'/Metadata';
+            $cacheQueryDriver = new PhpFilesAdapter("doctrine_query_cache", 0, $cacheQueryDir, true);
+            $cacheMetadataDriver = new PhpFilesAdapter("doctrine_metadata_cache", 0, $cacheMetadataDir, true);
+            $config->setQueryCache($cacheQueryDriver);
+            $config->setMetadataCache($cacheMetadataDriver);
         }
         $entityManager = EntityManager::create($driver, $config);
         return $entityManager;
