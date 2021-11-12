@@ -101,8 +101,34 @@ Agregar al archivo composer.json el siguiente código
     }
 
 
-Ejecutar ./composer.phar dump-auto-load -o
+Ejecutar ./composer.phar dump-autoload -o
+
+
 Crear un archivo public/index.php con el siguiente contenido
+
+    <?php
+
+    use AppModule\Services\AppRouter;
+    use GPDCore\Library\GPDApp;
+    use GPDCore\Services\ContextService;
+    use Laminas\ServiceManager\ServiceManager;
+    
+    require_once __DIR__."/../vendor/autoload.php";
+    $router = new AppRouter();
+    $app = GPDApp::getInstance();
+    $serviceManager = new ServiceManager();
+    $context = new ContextService($serviceManager);
+    $production = false;
+    $app->setModules([])
+    ->setRouter($router)
+    ->setContext($context)
+    ->setProductionMode($production)
+    ->run();
+
+
+Iniciar con el comándo
+
+    php -S localhost:8000 public/index.php
 
 
 
