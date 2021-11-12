@@ -6,10 +6,10 @@ namespace GPDCore\Library;
 
 use Exception;
 use GraphQL\GraphQL;
-use GraphQL\Error\Debug;
 use GraphQL\Type\Schema;
 use GPDCore\Library\GPDApp;
 use GraphQL\Doctrine\Types;
+use GraphQL\Error\DebugFlag;
 use GraphQL\Error\FormattedError;
 use GPDCore\Library\AbstractModule;
 use GPDCore\Graphql\ResolverManager;
@@ -150,7 +150,8 @@ abstract class AbstractGQLServer
         $queryString = $this->getQuery($content);
         $operationName = $this->getOperationName($content);
         $variableValues = $this->getVariables($content);
-        $debug =   $productionMode ?  null : Debug::RETHROW_INTERNAL_EXCEPTIONS; // Debug::INCLUDE_DEBUG_MESSAGE;
+        $debug =   $productionMode ?  DebugFlag::NONE :  DebugFlag::RETHROW_UNSAFE_EXCEPTIONS;
+
         if($productionMode) {
             DocumentValidator::addRule(new DisableIntrospection());
         }
@@ -168,11 +169,7 @@ abstract class AbstractGQLServer
                 $validationRules = null
             )
                 ->seterrorFormatter(GQLFormattedError::createFromException());
-            if ($productionMode) {
-                $response = $result->toArray();
-            } else {
-                $response = $result->toArray($debug); // cambiar para mostrar errores (debug)
-            }
+            $response = $result->toArray($debug); // cambiar para mostrar errores (debug)
             $status = 200;
         } catch (Exception $e) {
             if ($productionMode) {
@@ -184,8 +181,6 @@ abstract class AbstractGQLServer
                 throw $e;
             }
         }
-
-        $memoryUsage = memory_get_usage() / (1024 * 1024);
         header("Content-Type: application/json; charset=UTF-8", true, $status);
         echo json_encode($response);
     }
