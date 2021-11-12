@@ -1,12 +1,71 @@
-Instrucciones
+Intalar
 -------
 
 
-Agregar un archivo doctrine.local.php en el siguiente directorio ../../config tomando en considación la ruta del directorio donde se encuentra este archivo
+Se puede utilizar la APP Skeleton en el repositorio git
 
-## Clases
+    git clone https://github.com/jesus-abarca-g/gql-pdss.git
 
 
+## Usar Composer
+
+Repositorio GIT privado se requiere permisos y claves ssh
+
+Ejecutar
+
+    ./composer.phar init
+
+Agregar al archivo composer.json las referencias a la libreria
+
+    {
+    "name": "name/project",
+    "type": "project",
+    "require": {
+        "codewebapp/gqlpdss": "dev-master"
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "git@github.com:jesus-abarca-g/gql-pdss-lib.git"
+        }
+     ]
+    }
+
+Ejecutar
+
+    ./composer.phar require
+
+
+
+Crear estructura de directorios
+
+    config
+    data
+    modules
+    public
+
+Crear módulo principal AppModule en la carpeta modules
+
+Crear la siguiente estructura de directorios
+
+    modules
+        AppModule
+            config
+            src
+                AppModule
+                    Controllers
+                    Graphql
+                    Services
+
+
+
+
+
+
+
+
+
+# API
 
 ### ConnectionTypeFactory 
 

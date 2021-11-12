@@ -8,39 +8,22 @@ use GPDCore\Library\DoctrineSQLLogger;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\Setup;
 
-// use Doctrine\ORM\Tools\Setup;
-// use Doctrine\ORM\EntityManager;
-
 class EntityManagerFactory
 {
-
-    private static  $instance = null;
-
-    public static function getInstance(): EntityManager
-    {
-
-        if (static::$instance === null) {
-            static::$instance = self::createInstance();
-        }
-
-        return static::$instance;
-       
-    }
-
-    private static function createInstance(): EntityManager {
-        $env = getenv('APP_ENV');
-        $options = require __DIR__.'/../../../../../config/doctrine.local.php';
+    public static function createInstance(array $options, string $proxyDir, bool $production = false, bool $writeLog = false): EntityManager {
         $paths = $options["entities"];
         $isDevMode = true;
-        $proxyDir = null;
         $cache = null;
         $useSimpleAnnotationReader = false;
         $dbParams = $options["driver"];
         $config = Setup::createAnnotationMetadataConfiguration($paths, $isDevMode, $proxyDir, $cache, $useSimpleAnnotationReader);
-        // if($env !== 'production') {
-        //     $logger = new DoctrineSQLLogger();
-        //     $config->setSQLLogger($logger);
-        // }
+        if ($production) {
+            $config->setAutoGenerateProxyClasses(false);
+        }
+        if(!$production && $writeLog) {
+            $logger = new DoctrineSQLLogger();
+            $config->setSQLLogger($logger);
+        }
         $entityManager = EntityManager::create($dbParams, $config);
         return $entityManager;
     }
