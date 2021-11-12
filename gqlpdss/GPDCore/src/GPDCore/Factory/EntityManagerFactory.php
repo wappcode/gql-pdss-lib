@@ -19,15 +19,16 @@ class EntityManagerFactory
         $isDevMode = $isDevMode;
         $useSimpleAnnotationReader = false;
         $cache = null;
-        $defaultCacheDir = __DIR__."/../../../../../data/DoctrineORMModule";
+        $defaultCacheDir = __DIR__."/../../../../../../../../data/DoctrineORMModule/";
        
         if (empty($cacheDir)) {
             $cacheDir = $defaultCacheDir;
         }
-        $cacheDir = realpath($cacheDir);
+        
         if(!$isDevMode && !file_exists($cacheDir)) {
             throw new Exception("The directory ".$cacheDir." does not exist");
         }
+        
         $proxyDir = $cacheDir."/Proxy";
         if ($isDevMode) {
             $proxyDir = null;
