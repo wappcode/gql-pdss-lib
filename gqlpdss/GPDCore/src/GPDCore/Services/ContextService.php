@@ -78,9 +78,8 @@ class ContextService implements IContextService
     {
 
         $options = require __DIR__ . "/../../../../../../../../config/doctrine.local.php";
-        $cacheDir =  __DIR__ . "/../../../../../../../../data/DoctrineORMModule";
         $isDevMode = !$this->isProductionMode;
-        $this->entityManager = EntityManagerFactory::createInstance($options, $cacheDir, $isDevMode);
+        $this->entityManager = EntityManagerFactory::createInstance($options, '', $isDevMode);
     }
     protected function setTypes()
     {
