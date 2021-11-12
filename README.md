@@ -126,6 +126,21 @@ Crear un archivo public/index.php con el siguiente contenido
     ->run();
 
 
+Agregar archivo config/doctrine.local.php con el siguiente contenido
+
+    return [
+        "driver"=> [
+            'user'     =>   '',
+            'password' =>   '',
+            'dbname'   =>   '',
+            'driver'   =>   'pdo_mysql',
+            'host'   =>     '127.0.0.1',
+            'charset' =>    'utf8mb4'
+        ],
+        "entities"=> []
+    ];
+
+
 Iniciar con el comándo
 
     php -S localhost:8000 public/index.php

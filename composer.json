@@ -3,6 +3,10 @@
     "description": "Utilidades para crear una api GraphQL",
     "type": "library",
     "require": {
+        "doctrine/orm": "^2.10.2",
+        "doctrine/dbal": "^3.1.1",
+        "symfony/yaml": "2.*",
+        "symfony/cache": "^5.3",
         "webonyx/graphql-php": "^14.11",
         "laminas/laminas-servicemanager": "^3.7",
         "ecodev/graphql-doctrine": "^7.1",

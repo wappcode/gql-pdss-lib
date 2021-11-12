@@ -10,21 +10,22 @@ use Doctrine\ORM\Tools\Setup;
 
 class EntityManagerFactory
 {
-    public static function createInstance(array $options, string $proxyDir, bool $production = false, bool $writeLog = false): EntityManager {
+    public static function createInstance(array $options, string $proxyDir, bool $isDevMode = false, bool $writeLog = false): EntityManager {
+
         $paths = $options["entities"];
-        $isDevMode = true;
-        $cache = null;
+        $driver = $options["driver"];
+        $isDevMode = $isDevMode;
         $useSimpleAnnotationReader = false;
-        $dbParams = $options["driver"];
-        $config = Setup::createAnnotationMetadataConfiguration($paths, $isDevMode, $proxyDir, $cache, $useSimpleAnnotationReader);
-        if ($production) {
-            $config->setAutoGenerateProxyClasses(false);
+        if ($isDevMode) {
+            $proxyDir = null;
+            $cache = null;
         }
-        if(!$production && $writeLog) {
+        $config = Setup::createAnnotationMetadataConfiguration($paths, $isDevMode, $proxyDir, $cache, $useSimpleAnnotationReader);
+        if($isDevMode && $writeLog) {
             $logger = new DoctrineSQLLogger();
             $config->setSQLLogger($logger);
         }
-        $entityManager = EntityManager::create($dbParams, $config);
+        $entityManager = EntityManager::create($driver, $config);
         return $entityManager;
     }
 
