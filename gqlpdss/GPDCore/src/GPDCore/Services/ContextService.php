@@ -2,6 +2,7 @@
 
 namespace GPDCore\Services;
 
+use DateTime;
 use GraphQL\Doctrine\Types;
 use Doctrine\ORM\EntityManager;
 use GPDCore\Library\IContextService;
@@ -11,7 +12,11 @@ use GPDCore\Factory\EntityManagerFactory;
 use GPDCore\Graphql\ConnectionTypeFactory;
 use GPDCore\Graphql\Types\QueryFilterType;
 use Laminas\ServiceManager\ServiceManager;
+use GPDCore\Graphql\Types\QueryFilterLogic;
+use GPDCore\Graphql\Types\QueryJoinTypeValue;
+use GPDCore\Graphql\Types\QuerySortDirection;
 use GPDCore\Graphql\Types\QueryFilterConditionType;
+use GPDCore\Graphql\Types\QueryFilterConditionTypeValue;
 
 class ContextService implements IContextService
 {
@@ -49,6 +54,7 @@ class ContextService implements IContextService
         $this->isProductionMode = $isProductionMode;
         $this->setEntityManager();
         $this->setTypes();
+        $this->addTypes();
     }
 
     public function getEntityManager(): EntityManager
@@ -91,8 +97,6 @@ class ContextService implements IContextService
     protected function addInvokablesToServiceManager()
     {
         $this->serviceManager->setInvokableClass(DateTime::class,  DateTimeType::class);
-        $this->serviceManager->setInvokableClass(PermissionValue::class,  PermissionValue::class);
-        $this->serviceManager->setInvokableClass(PermissionType::class,  PermissionType::class);
         $this->serviceManager->setInvokableClass(QueryFilterLogic::class,  QueryFilterLogic::class);
         $this->serviceManager->setInvokableClass(QueryFilterConditionTypeValue::class,  QueryFilterConditionTypeValue::class);
         $this->serviceManager->setInvokableClass(QuerySortDirection::class,  QuerySortDirection::class);
