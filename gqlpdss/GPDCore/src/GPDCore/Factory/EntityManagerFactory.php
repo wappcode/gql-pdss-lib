@@ -6,18 +6,29 @@ namespace GPDCore\Factory;
 
 use Doctrine\ORM\Tools\Setup;
 use Doctrine\ORM\EntityManager;
+use Exception;
 use GPDCore\Library\DoctrineSQLLogger;
 use Symfony\Component\Cache\Adapter\PhpFilesAdapter;
 
 class EntityManagerFactory
 {
-    public static function createInstance(array $options, string $proxyDir, bool $isDevMode = false, string $cacheDir = '', bool $writeLog = false): EntityManager {
+    public static function createInstance(array $options, string $cacheDir = '', bool $isDevMode = false,  bool $writeLog = false): EntityManager {
 
         $paths = $options["entities"];
         $driver = $options["driver"];
         $isDevMode = $isDevMode;
         $useSimpleAnnotationReader = false;
         $cache = null;
+        $defaultCacheDir = __DIR__."/../../../../../data/DoctrineORMModule";
+       
+        if (empty($cacheDir)) {
+            $cacheDir = $defaultCacheDir;
+        }
+        $cacheDir = realpath($cacheDir);
+        if(!$isDevMode && !file_exists($cacheDir)) {
+            throw new Exception("The directory ".$cacheDir." does not exist");
+        }
+        $proxyDir = $cacheDir."/Proxy";
         if ($isDevMode) {
             $proxyDir = null;
         }
