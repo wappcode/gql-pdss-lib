@@ -59,7 +59,50 @@ Crear la siguiente estructura de directorios
 
 
 
+Crear archivo modules/AppModule/src/AppModule/Services/AppRouter.php con el siguiente contenido
 
+
+    <?php
+
+    namespace AppModule\Services;
+
+    use GPDCore\Library\RouteModel;
+    use GPDCore\Library\AbstractRouter;
+    use GPDApp\Controller\IndexController;
+    use GPDApp\Controller\GraphqlController;
+
+    class AppRouter extends AbstractRouter
+    {
+
+        protected function addRoutes()
+        {
+            $GraphqlMethod = ['POST'];
+      
+            // Agrega las entradas para consultas graphql 
+            $this->addRoute(new RouteModel($GraphqlMethod, '/api', GraphqlController::class));
+
+            // Las demás rutas deben ir abajo para poder utilizar la configuración de los módulos y sus servicios
+
+            // entrada dominio principal
+            $this->addRoute(new RouteModel('GET', '/', IndexController::class));
+        
+            // ... otras rutas
+        }
+
+    }
+
+
+Agregar al archivo composer.json el siguiente código
+
+     "autoload": {
+        "psr-0": {
+            "AppModule\\": "modules/AppModule/src/"
+        }
+    }
+
+
+Ejecutar ./composer.phar dump-auto-load -o
+Crear un archivo public/index.php con el siguiente contenido
 
 
 

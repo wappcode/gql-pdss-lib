@@ -13,7 +13,7 @@ use GPDCore\Graphql\Types\QueryFilterType;
 use Laminas\ServiceManager\ServiceManager;
 use GPDCore\Graphql\Types\QueryFilterConditionType;
 
-class GPDAppContext implements IContextService
+class ContextService implements IContextService
 {
 
 
