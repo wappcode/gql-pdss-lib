@@ -16,9 +16,9 @@ class EntityManagerFactory
         $driver = $options["driver"];
         $isDevMode = $isDevMode;
         $useSimpleAnnotationReader = false;
+        $cache = null;
         if ($isDevMode) {
             $proxyDir = null;
-            $cache = null;
         }
         $config = Setup::createAnnotationMetadataConfiguration($paths, $isDevMode, $proxyDir, $cache, $useSimpleAnnotationReader);
         if($isDevMode && $writeLog) {

@@ -53,7 +53,6 @@ Crear la siguiente estructura de directorios
             config
             src
                 AppModule
-                    Controllers
                     Graphql
                     Services
 
@@ -68,28 +67,27 @@ Crear archivo modules/AppModule/src/AppModule/Services/AppRouter.php con el sigu
 
     use GPDCore\Library\RouteModel;
     use GPDCore\Library\AbstractRouter;
-    use GPDApp\Controller\IndexController;
-    use GPDApp\Controller\GraphqlController;
+    use GPDCore\Controllers\GraphqlController;
 
-    class AppRouter extends AbstractRouter
-    {
-
-        protected function addRoutes()
+        class AppRouter extends AbstractRouter
         {
-            $GraphqlMethod = ['POST'];
-      
-            // Agrega las entradas para consultas graphql 
-            $this->addRoute(new RouteModel($GraphqlMethod, '/api', GraphqlController::class));
 
-            // Las demás rutas deben ir abajo para poder utilizar la configuración de los módulos y sus servicios
 
-            // entrada dominio principal
-            $this->addRoute(new RouteModel('GET', '/', IndexController::class));
-        
-            // ... otras rutas
+            protected function addRoutes()
+            {
+                $GraphqlMethod = $this->isProductionMode ? 'POST' : ['POST','GET'];
+
+                // Agrega las entradas para consultas graphql 
+                $this->addRoute(new RouteModel($GraphqlMethod, '/api', GraphqlController::class));
+
+                // Las demás rutas deben ir abajo para poder utilizar la configuración de los módulos y sus servicios
+
+                // entrada dominio principal
+
+                // ... otras rutas
+            }
+
         }
-
-    }
 
 
 Agregar al archivo composer.json el siguiente código
@@ -112,18 +110,19 @@ Crear un archivo public/index.php con el siguiente contenido
     use GPDCore\Library\GPDApp;
     use GPDCore\Services\ContextService;
     use Laminas\ServiceManager\ServiceManager;
-    
+
     require_once __DIR__."/../vendor/autoload.php";
-    $router = new AppRouter();
-    $app = GPDApp::getInstance();
-    $serviceManager = new ServiceManager();
-    $context = new ContextService($serviceManager);
     $production = false;
+    $app = GPDApp::getInstance();
+    $router = new AppRouter($production);
+    $serviceManager = new ServiceManager();
+    $context = new ContextService($serviceManager, $production);
     $app->setModules([])
     ->setRouter($router)
     ->setContext($context)
     ->setProductionMode($production)
     ->run();
+
 
 
 Agregar archivo config/doctrine.local.php con el siguiente contenido
@@ -144,9 +143,6 @@ Agregar archivo config/doctrine.local.php con el siguiente contenido
 Iniciar con el comándo
 
     php -S localhost:8000 public/index.php
-
-
-
 
 
 # API
