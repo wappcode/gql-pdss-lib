@@ -67,8 +67,8 @@ class ContextService implements IContextService
     protected function setEntityManager()
     {
 
-        $options = require __DIR__ . "../../../../../../../../config/doctrine.local.php";
-        $proxyDir =  __DIR__ . "../../../../../../../../data/DoctrineORMModule/Proxy";
+        $options = require __DIR__ . "/../../../../../../../../config/doctrine.local.php";
+        $proxyDir =  __DIR__ . "/../../../../../../../../data/DoctrineORMModule/Proxy";
         $this->entityManager = EntityManagerFactory::createInstance($options, $proxyDir);
     }
     protected function setTypes()
