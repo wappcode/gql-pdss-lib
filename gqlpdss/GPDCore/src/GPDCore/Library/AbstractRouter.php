@@ -13,6 +13,12 @@ abstract class AbstractRouter
 
     
     protected $routes = [];
+    protected $isProductionMode;
+
+    public function __construct(bool $isProductionMode)
+    {
+        $this->isProductionMode = $isProductionMode;
+    }   
 
     protected abstract function addRoutes();
 
