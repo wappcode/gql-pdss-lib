@@ -30,9 +30,6 @@ class EntityManagerFactory
         }
         
         $proxyDir = $cacheDir."/Proxy";
-        if ($isDevMode) {
-            $proxyDir = null;
-        }
         $config = Setup::createAnnotationMetadataConfiguration($paths, $isDevMode, $proxyDir, $cache, $useSimpleAnnotationReader);
         if($isDevMode && $writeLog) {
             $logger = new DoctrineSQLLogger();
