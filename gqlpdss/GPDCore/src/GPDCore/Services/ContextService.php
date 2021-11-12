@@ -6,6 +6,7 @@ use DateTime;
 use GraphQL\Doctrine\Types;
 use Doctrine\ORM\EntityManager;
 use GPDCore\Library\IContextService;
+use Doctrine\DBAL\Types\DateTimeType;
 use GPDCore\Graphql\Types\QueryJoinType;
 use GPDCore\Graphql\Types\QuerySortType;
 use GPDCore\Factory\EntityManagerFactory;
