@@ -1,8 +1,6 @@
 <?php
 
-namespace GPDCore\Graphql;
-
-
+namespace GPDCore\Functions;
 
 function encodeCursor($cursor): string {
     return base64_encode($cursor);

@@ -5,13 +5,13 @@ namespace GPDCore\Graphql;
 
 use Exception;
 use Doctrine\ORM\Query;
-use GraphQL\Doctrine\Types;
 use Doctrine\ORM\QueryBuilder;
 use GPDCore\Library\IContextService;
-use GPDCore\Services\ConfigService;
 use GraphQL\Type\Definition\ResolveInfo;
-use GPDCore\Library\GeneralDoctrineUtilities;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+
+use function GPDCore\Functions\decodeCursor;
+use function GPDCore\Functions\encodeCursor;
 
 class ConnectionQueryResponse {
 
