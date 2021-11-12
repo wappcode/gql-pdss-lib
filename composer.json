@@ -17,7 +17,7 @@
             "gqlpdss/GPDCore/src/GPDCore/Functions/FileFunctions.php"
         ],
         "psr-0": {
-            "GPDCore\\": "modules/GPDCore/src/"
+            "GPDCore\\": "gqlpdss/GPDCore/src/"
         }
     }
 }
