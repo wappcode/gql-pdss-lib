@@ -6,6 +6,7 @@ use Exception;
 use FastRoute;
 use GPDCore\Library\Request;
 use GPDCore\Library\RouteModel;
+use GPDCore\Library\IContextService;
 use function FastRoute\simpleDispatcher;
 
 abstract class AbstractRouter
@@ -14,10 +15,15 @@ abstract class AbstractRouter
     
     protected $routes = [];
     protected $isProductionMode;
+    /**
+     * @var IContextService
+     */
+    protected $context;
 
-    public function __construct(bool $isProductionMode)
+    public function __construct(IContextService $context, bool $isProductionMode)
     {
         $this->isProductionMode = $isProductionMode;
+        $this->context = $context;
     }   
 
     protected abstract function addRoutes();
