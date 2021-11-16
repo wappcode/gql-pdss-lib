@@ -123,7 +123,7 @@ class QueryFilter
             $qb->setParameter($parameter, $values);
         }
         elseif($condition["type"] !== static::CONDITION_IS_NULL) {
-            if (empty($value) || !is_array($value) || count($value) !== 2) {
+            if (empty($value)) {
                 throw new Exception($errorMsg);
             }
             $parameter = static::getParameterKey($alias, $condition);
