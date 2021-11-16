@@ -181,9 +181,9 @@ Crear un archivo public/index.php con el siguiente contenido
     require_once __DIR__."/../vendor/autoload.php";
     $production = false;
     $app = GPDApp::getInstance();
-    $router = new AppRouter($production);
     $serviceManager = new ServiceManager();
     $context = new ContextService($serviceManager, $production);
+    $router = new GPDAppRouter($context, $production);
     $app->setModules([])
     ->setRouter($router)
     ->setContext($context)
