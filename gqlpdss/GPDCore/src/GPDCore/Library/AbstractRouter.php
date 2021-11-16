@@ -61,7 +61,7 @@ abstract class AbstractRouter
                     $handler = $routeInfo[1];
                     $vars = $routeInfo[2];
                     $request = $this->getRequest($vars);
-                    $controler = new $handler($request);
+                    $controler = new $handler($request, $this->context);
                     $controler->dispatch();
                 }catch(Exception $e) {
                     $code = $e->getCode() ?? 500;
