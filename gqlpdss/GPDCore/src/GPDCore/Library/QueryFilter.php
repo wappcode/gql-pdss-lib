@@ -105,24 +105,29 @@ class QueryFilter
 
     protected static function addConditionParameter(QueryBuilder $qb, $alias, $condition)
     {
-        
-        $value = $condition["value"];
-        if (empty($value) || !is_array($value)) {
-            throw new Exception('La condición no tiene un valor adecuado');
-        }
+        $errorMsg = 'La condición no tiene un valor adecuado';
+        $values = $condition["values"] ?? null;
+        $value = $condition["value"] ?? null;
         if($condition["type"] === static::CONDITION_BETWEEN) {
+            if (empty($values) || !is_array($values) || count($values) !== 2) {
+                throw new Exception($errorMsg);
+            }
             $parameters = static::getParameterKeyBetween($alias, $condition);
-            $values = $condition["value"];
             $qb->setParameter($parameters[0], $values[0]);
             $qb->setParameter($parameters[1], $values[1]);
         } elseif($condition["type"] === static::CONDITION_IN) {
+            if (empty($values) || !is_array($values) || count($values) !== 2) {
+                throw new Exception($errorMsg);
+            }
             $parameter = static::getParameterKey($alias, $condition);
-            $values = $condition["value"];
             $qb->setParameter($parameter, $values);
         }
         elseif($condition["type"] !== static::CONDITION_IS_NULL) {
+            if (empty($value) || !is_array($value) || count($value) !== 2) {
+                throw new Exception($errorMsg);
+            }
             $parameter = static::getParameterKey($alias, $condition);
-            $qb->setParameter($parameter, $value[0]);
+            $qb->setParameter($parameter, $value);
 
         }
     }

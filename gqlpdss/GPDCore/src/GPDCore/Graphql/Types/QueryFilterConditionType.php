@@ -20,6 +20,9 @@ class QueryFilterConditionType extends InputObjectType{
                     'type' => Type::nonNull($serviceManager->get(QueryFilterConditionTypeValue::class)),
                 ],
                 'value' => [
+                    'type' => Type::nonNull(Type::string()),
+                ],
+                'values' => [
                     'type' => Type::nonNull(Type::listOf(Type::string())),
                 ],
                 'property' => [
