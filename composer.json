@@ -17,11 +17,11 @@
     },
     "autoload": {
         "files": [
-            "gqlpdss/GPDCore/src/GPDCore/Functions/PaginationUtilities.php",
-            "gqlpdss/GPDCore/src/GPDCore/Functions/StringFunctions.php",
-            "gqlpdss/GPDCore/src/GPDCore/Functions/FileFunctions.php"
+            "gqlpdss/GPDCore/src/Functions/PaginationUtilities.php",
+            "gqlpdss/GPDCore/src/Functions/StringFunctions.php",
+            "gqlpdss/GPDCore/src/Functions/FileFunctions.php"
         ],
-        "psr-0": {
+        "psr-4": {
             "GPDCore\\": "gqlpdss/GPDCore/src/"
         }
     }
