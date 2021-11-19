@@ -17,12 +17,12 @@
     },
     "autoload": {
         "files": [
-            "gqlpdss/GPDCore/src/Functions/PaginationUtilities.php",
-            "gqlpdss/GPDCore/src/Functions/StringFunctions.php",
-            "gqlpdss/GPDCore/src/Functions/FileFunctions.php"
+            "GPDCore/src/Functions/PaginationUtilities.php",
+            "GPDCore/src/Functions/StringFunctions.php",
+            "GPDCore/src/Functions/FileFunctions.php"
         ],
         "psr-4": {
-            "GPDCore\\": "gqlpdss/GPDCore/src/"
+            "GPDCore\\": "GPDCore/src/"
         }
     }
 }

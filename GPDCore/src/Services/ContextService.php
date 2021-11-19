@@ -77,7 +77,12 @@ class ContextService implements IContextService
     protected function setEntityManager()
     {
 
-        $options = require __DIR__ . "/../../../../../../../../config/doctrine.local.php";
+        $configFile = __DIR__ . "/../../../../../../config/doctrine.local.php";
+        if(file_exists($configFile)) {
+            $options = require $configFile;
+        } else {
+            return [];
+        }
         $isDevMode = !$this->isProductionMode;
         $this->entityManager = EntityManagerFactory::createInstance($options, '', $isDevMode);
     }
