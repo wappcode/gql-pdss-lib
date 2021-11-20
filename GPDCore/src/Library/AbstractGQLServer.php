@@ -43,7 +43,7 @@ abstract class AbstractGQLServer
     protected $app;
 
 
-    protected function __construct(GPDApp $app){
+    public function __construct(GPDApp $app){
         // Agrega el contexto (acceso a servicios y configuración compartidos a traves de toda la app)
         $this->app = $app;
         $this->context = $app->getContext();
