@@ -31,17 +31,22 @@ abstract class AbstractGQLServer
      * @var IContextService
      */
     protected $context;
-    protected $entityManager;
     /**
      * @var ServiceManager
      */
     protected $serviceManager;
 
-    protected function init(): void
-    {
+    /**
+     *
+     * @var GPDApp
+     */
+    protected $app;
+
+
+    protected function __construct(GPDApp $app){
         // Agrega el contexto (acceso a servicios y configuración compartidos a traves de toda la app)
-        $this->context = GPDApp::getInstance()->getContext();
-        $this->entityManager = $this->context->getEntityManager();
+        $this->app = $app;
+        $this->context = $app->getContext();
         $this->serviceManager = $this->context->getServiceManager();
         $this->addModules();
         $this->registerTypes();
@@ -53,12 +58,9 @@ abstract class AbstractGQLServer
      */
     protected function addModules()
     {
-        $app = GPDApp::getInstance();
-        $modules = $app->getModules();
-        foreach ($modules as $moduleClass) {
-            /** @var AbstractModule */
-            $module = new $moduleClass();
-            $module->setContext($this->context);
+        $modules = $this->app->getModules();
+        /** @var AbstractModule */
+        foreach ($modules as $module) {
             $this->addModule($module);
         }
     }
@@ -72,9 +74,6 @@ abstract class AbstractGQLServer
      */
     protected function addModule(AbstractModule $module, $omitResolvers = false, $omitQueryFields = false, $omitMutationFields = false): AbstractGQLServer
     {
-
-        $types = $module->getServicesAndGQLTypes();
-        $this->addServicesAndGQLTypes($types);
 
         if (!$omitResolvers) {
             $resolvers = $module->getResolvers();
@@ -168,9 +167,7 @@ abstract class AbstractGQLServer
      */
     public function start(array $content)
     {
-        $memoryUsage = memory_get_usage() / (1024 * 1024);
-        $productionMode = GPDApp::getInstance()->getProductionMode();
-        $this->init();
+        $productionMode = $this->app->getProductionMode();
         $types = $this->context->getTypes();
         $schema = $this->getSchema($types);
         $queryString = $this->getQuery($content);
@@ -183,7 +180,6 @@ abstract class AbstractGQLServer
         }
         // @TODO agregar Query Complexity Analysis y Limiting Query Depth
         try {
-            $memoryUsage = memory_get_usage() / (1024 * 1024);
             $result = GraphQL::executeQuery(
                 $schema,
                 $queryString,

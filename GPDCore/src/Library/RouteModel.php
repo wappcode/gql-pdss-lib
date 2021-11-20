@@ -14,9 +14,9 @@ class RouteModel {
      *
      * @param mixed string | string[] (Ejemplo: 'GET' o ['GET', 'POST', ...])
      * @param string $route
-     * @param string $contoller
+     * @param mixed $contoller string || callable
      */
-    public function __construct($method, string $route, string $contoller)
+    public function __construct($method, string $route,  $contoller)
     {
         $this->method = $method;
         $this->route = $route;

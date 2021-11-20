@@ -9,7 +9,7 @@ class GraphqlController extends AbstractAppController {
 
     public function dispatch() {
         $content = $this->request->getContent() ?? [];
-        $server = new GQLServer();
+        $server = new GQLServer($this->app);
         $server->start($content);
     }
 }

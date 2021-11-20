@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GPDCore\Library;
 
+use GPDCore\Library\GPDApp;
 use GraphQL\Doctrine\Types;
 
 
@@ -14,9 +15,22 @@ abstract class AbstractModule {
      * @var IContextService
      */
     protected $context;
+
+    /**
+     *
+     * @var bool
+     */
+    protected $productionMode;
+
+    /**
+     * @var GPDApp
+     */
+    protected $app;
     
-    public function setContext(IContextService $context) {
-        $this->context = $context;
+    public function __construct(GPDApp $app) {
+        $this->app = $app;
+        $this->context = $this->app->getContext();
+        $this->productionMode = $this->app->getProductionMode();
     }
     /**
      * Array con la configuración del módulo

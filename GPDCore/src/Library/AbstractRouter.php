@@ -20,10 +20,20 @@ abstract class AbstractRouter
      */
     protected $context;
 
-    public function __construct(IContextService $context, bool $isProductionMode)
+    /**
+     *
+     * @var GPDApp
+     */
+    protected $app;
+
+    public function setApp(GPDApp $app)
     {
-        $this->isProductionMode = $isProductionMode;
-        $this->context = $context;
+        if ($this->app instanceof GPDApp) {
+            throw new Exception("Solo se puede establecer el valor de app una vez");
+        }
+        $this->app = $app;
+        $this->isProductionMode = $this->app->getProductionMode();
+        $this->context = $this->app->getContext();
     }   
 
     protected abstract function addRoutes();
@@ -61,7 +71,11 @@ abstract class AbstractRouter
                     $handler = $routeInfo[1];
                     $vars = $routeInfo[2];
                     $request = $this->getRequest($vars);
-                    $controler = new $handler($request, $this->context);
+                    if (is_callable($handler)) {
+                        $controler = $handler();
+                    } else {
+                        $controler = new $handler($request, $this->app);
+                    }
                     $controler->dispatch();
                 }catch(Exception $e) {
                     $code = $e->getCode() ?? 500;
