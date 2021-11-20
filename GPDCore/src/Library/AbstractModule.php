@@ -26,12 +26,12 @@ abstract class AbstractModule {
     abstract function getConfig(): array;
     
     /**
-     * Array con los tipos graphql que se necesitan para el módulo
+     * Array con los servicios y tipos graphql que se necesitan para el módulo
      * El indice se utiliza como nombre del tipo
      *
-     * @return array array(string $key => $type)
+     * @return array [invokables => [key: service], factories => [key: service], aliases => [key: service]]
      */
-    abstract function getGQLTypes(): array;
+    abstract function getServicesAndGQLTypes(): array;
     
     /**
      * Array con los resolvers del módulo

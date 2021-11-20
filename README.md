@@ -113,7 +113,7 @@ Agregar el archivo modules/AppModule/src/AppModule.php
         function getConfig(): array {
             return require(__DIR__.'/../config/module.config.php');
         }
-        function getGQLTypes(): array
+        function getServicesAndGQLTypes(): array
         {
             return [];
         }
