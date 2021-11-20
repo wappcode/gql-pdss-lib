@@ -52,13 +52,12 @@ Crear la siguiente estructura de directorios
         AppModule
             config
             src
-                AppModule
-                    Graphql
-                    Services
+                Graphql
+                Services
 
 
 
-Crear archivo modules/AppModule/src/AppModule/Services/AppRouter.php con el siguiente contenido
+Crear archivo modules/AppModule/src/Services/AppRouter.php con el siguiente contenido
 
 
     <?php
@@ -95,7 +94,7 @@ Agregar el archivo modules/AppModule/config/module.config.php
 
     return [];
 
-Agregar el archivo modules/AppModule/src/AppModule/AppModule.php
+Agregar el archivo modules/AppModule/src/AppModule.php
 
     <?php
 
@@ -112,7 +111,7 @@ Agregar el archivo modules/AppModule/src/AppModule/AppModule.php
         * @return array
         */
         function getConfig(): array {
-            return require(__DIR__.'/../../config/module.config.php');
+            return require(__DIR__.'/../config/module.config.php');
         }
         function getGQLTypes(): array
         {
@@ -160,7 +159,7 @@ Agregar el archivo modules/AppModule/src/AppModule/AppModule.php
 Agregar al archivo composer.json el siguiente código
 
      "autoload": {
-        "psr-0": {
+        "psr-4": {
             "AppModule\\": "modules/AppModule/src/"
         }
     }
@@ -226,7 +225,7 @@ Crear archivo cli-config.php con el siguiente código
 ## Crear entities en AppModule
 
 
-Crear archivo modules/AppModule/src/AppModule/Entities/Post.php
+Crear archivo modules/AppModule/src/Entities/Post.php
 
     <?php
 
@@ -372,7 +371,7 @@ Crear archivo modules/AppModule/src/AppModule/Entities/Post.php
 Agregar al archivo config/doctrine.local.php la ubicación de las entidades
 
     "entities"=> [
-            "AppModule\Entities" => __DIR__."/../modules/AppModule/src/AppModule/Entities",
+            "AppModule\Entities" => __DIR__."/../modules/AppModule/src/Entities",
     ]
 
 
