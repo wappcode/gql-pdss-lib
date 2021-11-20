@@ -38,13 +38,13 @@ class GPDApp
         if ($this->started) {
             throw new Exception('Solo se puede asignar los módulos antes de que la aplicación inicie');
         }
-        $modules = [];
-        foreach ($this->modules as $moduleClass) {
+        $modulesList = [];
+        foreach ($modules as $moduleClass) {
             /**@var AbstractModule */
             $module = new $moduleClass($this);
-            array_push($modules, $module);
+            array_push($modulesList, $module);
         }
-        $this->modules = $modules;
+        $this->modules = $modulesList;
         $this->addConfig();
         $this->addServices();
 
