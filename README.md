@@ -115,7 +115,11 @@ Agregar el archivo modules/AppModule/src/AppModule.php
         }
         function getServicesAndGQLTypes(): array
         {
-            return [];
+            return [
+                'invokables' => [],
+                'factories'=> [],
+                'aliases' => []
+            ];
         }
         /**
         * Array con los resolvers del módulo
