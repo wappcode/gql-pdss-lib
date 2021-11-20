@@ -22,6 +22,7 @@ abstract class AbstractAppController {
     public function __construct(Request $request, GPDApp $app)
     {
         $this->request = $request;
+        $this->app = $app;
         $this->context = $app->getContext();
     }
 
