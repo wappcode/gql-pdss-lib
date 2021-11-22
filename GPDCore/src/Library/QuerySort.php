@@ -21,7 +21,7 @@ class QuerySort
      *  [
      *      "direction": 'asc|desc'
      *      "property": 'xxxx',
-     *      "joinProperty" => 'xxxx' // los joins se deben agregar previamente
+     *      "joinedAlias" => 'xxxx' // los joins se deben agregar previamente
      *  ]
      * ]
      *
@@ -80,7 +80,7 @@ class QuerySort
     }
 
     protected static function calculateAlias(string $rootAlias, array $item): string {
-        $alias = (isset($item["joinProperty"]) && !empty($item["joinProperty"])) ?  $item["joinProperty"] :$rootAlias ;
+        $alias = (isset($item["joinedAlias"]) && !empty($item["joinedAlias"])) ?  $item["joinedAlias"] :$rootAlias ;
         return $alias;
     }
 }

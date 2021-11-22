@@ -22,7 +22,7 @@ class QuerySortType extends InputObjectType{
                 'direction' => [
                     'type' => $serviceManager->get(QuerySortDirection::class),
                 ],
-                'joinProperty' => [
+                'joinedAlias' => [
                     'type' => Type::boolean(),
                     // 'description' => 'nombre de la propiedad que es una referencia de otro objeto y de la cual se va a realizar el filtro. es necesario agregar manualmente los joins'
                 ],

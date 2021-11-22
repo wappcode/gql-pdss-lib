@@ -30,9 +30,10 @@ class QueryFilter
      *               [
      *                   "type" => 'like',
      *                   "value" => 'xxx',
+     *                   "values" => ['xxx',"yyy"],
      *                   "property" => 'xxxx',
      *                   "not" => true, // solo algunos tipos
-     *                   "propertyAlias" => 'xxxx' // los joins se deben agregar previamente
+     *                   "joinedAlias" => 'xxxx' // los joins se deben agregar previamente
      *               ]
      *           ]
      *       ]
@@ -221,7 +222,7 @@ class QueryFilter
     }
 
     protected static function calculateAlias(string $rootAlias, array $condition): string {
-        $alias = (isset($condition["propertyAlias"]) && !empty($condition["propertyAlias"])) ?  $condition["propertyAlias"] :$rootAlias ;
+        $alias = (isset($condition["joinedAlias"]) && !empty($condition["joinedAlias"])) ?  $condition["joinedAlias"] :$rootAlias ;
         return $alias;
     }
     protected static function getParameterKeyBetween(string $rootAlias, array $condition): array

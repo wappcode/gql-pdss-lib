@@ -21,8 +21,8 @@ class QueryJoins
      *  [
      *      "type": 'LEFT_JOIN|INNER_JOIN|RIGHT_JOIN'
      *      "alias": 'xxxx',
-     *      "joinProperty": 'xxxx',
-     *      "joinedProperty" => 'xxxx' // los joins se deben agregar previamente
+     *      "joinProperty": 'xxxx', 
+     *      "joinedAlias" => 'xxxx' // los joins se deben agregar previamente (alias de un join agregado previamente)
      *  ]
      * ]
      *
@@ -55,7 +55,7 @@ class QueryJoins
         }
     }
     protected static function calculateAlias(string $rootAlias, array $item): string {
-        $alias = (isset($item["joinedProperty"]) && !empty($item["joinedProperty"])) ?  $item["joinedProperty"] :$rootAlias ;
+        $alias = (isset($item["joinedAlias"]) && !empty($item["joinedAlias"])) ?  $item["joinedAlias"] :$rootAlias ;
         return $alias;
     }
 

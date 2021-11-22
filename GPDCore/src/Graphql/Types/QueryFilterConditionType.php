@@ -31,7 +31,7 @@ class QueryFilterConditionType extends InputObjectType{
                 'not' => [
                     'type' => Type::boolean(),
                 ],
-                'joinProperty' => [
+                'joinedAlias' => [
                     'type' => Type::string(),
                     // 'description' => 'nombre de la propiedad que es una referencia de otro objeto y de la cual se va a realizar el filtro. es necesario agregar manualmente los joins'
                 ],
