@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 namespace GPDCore\Entities;
 
-use DateTime;
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use GraphQL\Doctrine\Annotation as API;
 
@@ -26,21 +26,21 @@ abstract class AbstractEntityModel
     protected $id;
 
     /**
-     * @var DateTime
-     * @ORM\Column(type="datetime")
+     * @var DateTimeImmutable
+     * @ORM\Column(type="datetimetz_immutable")
      */
     protected $created;
 
     /**
-     * @var DateTime
-     * @ORM\Column(type="datetime")
+     * @var DateTimeImmutable
+     * @ORM\Column(type="datetimetz_immutable")
      */
     protected $updated;
 
     public function __construct()
     {
-        $this->created = new DateTime();
-        $this->updated = new DateTime();
+        $this->created = new DateTimeImmutable();
+        $this->updated = new DateTimeImmutable();
     }
   
     public function getId(): ?int
@@ -50,9 +50,9 @@ abstract class AbstractEntityModel
     /**
      * Get the value of created
      *
-     * @return  DateTime
+     * @return  DateTimeImmutable
      */ 
-    public function getCreated(): DateTime
+    public function getCreated(): DateTimeImmutable
     {
         return $this->created;
     }
@@ -60,9 +60,9 @@ abstract class AbstractEntityModel
     /**
      * Get the value of updated
      *
-     * @return  DateTime
+     * @return  DateTimeImmutable
      */ 
-    public function getUpdated(): DateTime
+    public function getUpdated(): DateTimeImmutable
     {
         return $this->updated;
     }
@@ -77,7 +77,7 @@ abstract class AbstractEntityModel
      */ 
     public function setUpdated()
     {
-        $this->updated = new DateTime();
+        $this->updated = new DateTimeImmutable();
 
         return $this;
     }
