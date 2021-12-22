@@ -10,18 +10,17 @@ use Doctrine\ORM\Mapping as ORM;
 use GraphQL\Doctrine\Annotation as API;
 
 /**
- * Base class for all objects stored in database. ID type integer
+ * Base class for all objects stored in database. ID type string.
  *
  * @ORM\MappedSuperclass
  */
-abstract class AbstractEntityModel
+abstract class AbstractEntityModelGUID
 {
-     /**
-     * @var int
+    /**
+     * @var string
+     * @ORM\Column(type="guid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @ORM\Column(type="integer")
-     * 
+     * @ORM\GeneratedValue(strategy="UUID")
      */
     protected $id;
 
@@ -42,8 +41,8 @@ abstract class AbstractEntityModel
         $this->created = new DateTime();
         $this->updated = new DateTime();
     }
-  
-    public function getId(): ?int
+
+    public function getId(): ?string
     {
         return $this->id;
     }
@@ -51,7 +50,7 @@ abstract class AbstractEntityModel
      * Get the value of created
      *
      * @return  DateTime
-     */ 
+     */
     public function getCreated(): DateTime
     {
         return $this->created;
@@ -61,7 +60,7 @@ abstract class AbstractEntityModel
      * Get the value of updated
      *
      * @return  DateTime
-     */ 
+     */
     public function getUpdated(): DateTime
     {
         return $this->updated;
@@ -74,7 +73,7 @@ abstract class AbstractEntityModel
      * 
      *
      * @return  self
-     */ 
+     */
     public function setUpdated()
     {
         $this->updated = new DateTime();
