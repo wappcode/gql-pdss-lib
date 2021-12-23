@@ -15,16 +15,17 @@ use GraphQL\Doctrine\Annotation as API;
  *
  * @ORM\MappedSuperclass
  */
-abstract class AbstractEntityModelGUID
+abstract class AbstractEntityModelStringId
 {
-    /**
-     * @var string
-     * @ORM\Column(type="guid")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="UUID")
-     */
-    protected $id;
 
+    /**
+    * @ORM\Id
+    * @ORM\Column(name="id", type="string", primarykey=true)
+    * @ORM\GeneratedValue(strategy="CUSTOM")
+    * @ORM\CustomIdGenerator(class="\GPDCore\Library\DoctrineUniqueIDStringGenerator")
+    * @var string
+    */
+    protected $id;
     /**
      * @var DateTimeImmutable
      * @ORM\Column(type="datetimetz_immutable")
