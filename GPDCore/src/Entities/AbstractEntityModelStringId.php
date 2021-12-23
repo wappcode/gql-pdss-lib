@@ -20,7 +20,7 @@ abstract class AbstractEntityModelStringId
 
     /**
     * @ORM\Id
-    * @ORM\Column(name="id", type="string", primarykey=true)
+    * @ORM\Column(name="id", type="string")
     * @ORM\GeneratedValue(strategy="CUSTOM")
     * @ORM\CustomIdGenerator(class="\GPDCore\Library\DoctrineUniqueIDStringGenerator")
     * @var string
