@@ -133,5 +133,6 @@ class ContextService implements IContextService
     {
         $this->serviceManager->setAlias(static::SM_DATETIME, DateTime::class); // Declare alias for Doctrine type to be used for filters
         $this->serviceManager->setAlias(static::SM_DATE, DateTime::class); // Declare alias for Doctrine type to be used for filters
+        $this->serviceManager->setAlias(DateTimeImmutable::class, DateTime::class);
     }
 }
