@@ -8,7 +8,7 @@ use GraphQL\Type\Definition\ResolveInfo;
 class ResolverFactory {
 
     protected static $buffers = [];
-    public static function createResolver(EntityBuffer $buffer, string $property) {
+    public static function createEntityResolver(EntityBuffer $buffer, string $property) {
         return function ($source, array $args, $context, ResolveInfo $info) use($buffer, $property) {
             $id = $source[$property]['id'] ?? 0;
             $buffer->add($id);
