@@ -21,7 +21,7 @@ class ResolverFactory {
     }
     public static function createCollectionResolver(string $mainClass, string $property, array $propertyRelations) {
         $key = sprintf("%s::%s", $mainClass, $property);
-        if (static::$buffers[$key] === null) {
+        if (!isset(static::$buffers[$key])) {
             static::$buffers[$key] = new CollectionBuffer($mainClass, $property, $propertyRelations);
         }
         $buffer = static::$buffers[$key];
