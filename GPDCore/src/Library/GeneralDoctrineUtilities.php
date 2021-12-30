@@ -35,7 +35,7 @@ class GeneralDoctrineUtilities {
      * @param array $relations
      * @return array
      */
-    public static function getArrayEntityById(EntityManager $entityManager, string $class, int $id, array $relations): array{
+    public static function getArrayEntityById(EntityManager $entityManager, string $class,  $id, array $relations): array{
         $qb = $entityManager->createQueryBuilder()->from($class, 'entity')
                 ->andWhere("entity.id = :id")
                 ->setParameter(':id', $id)
