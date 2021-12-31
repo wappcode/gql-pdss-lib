@@ -44,6 +44,9 @@ class ContextService implements IContextService
 
     protected $isProductionMode;
 
+    protected $configFile =__DIR__ . "/../../../../../../config/doctrine.local.php";
+    protected $cacheDir = __DIR__ . "/../../../../../../data/DoctrineORMModule";
+
 
     /**
      * @var ServiceManager
@@ -78,14 +81,14 @@ class ContextService implements IContextService
     protected function setEntityManager()
     {
 
-        $configFile = __DIR__ . "/../../../../../../config/doctrine.local.php";
+        $configFile = $this->configFile;
         if(file_exists($configFile)) {
             $options = require $configFile;
         } else {
             return [];
         }
         $isDevMode = !$this->isProductionMode;
-        $this->entityManager = EntityManagerFactory::createInstance($options, '', $isDevMode);
+        $this->entityManager = EntityManagerFactory::createInstance($options, $this->cacheDir, $isDevMode);
     }
     protected function setTypes()
     {
@@ -135,5 +138,45 @@ class ContextService implements IContextService
         $this->serviceManager->setAlias(static::SM_DATETIME, DateTime::class); // Declare alias for Doctrine type to be used for filters
         $this->serviceManager->setAlias(static::SM_DATE, DateTime::class); // Declare alias for Doctrine type to be used for filters
         $this->serviceManager->setAlias(DateTimeImmutable::class, DateTime::class);
+    }
+
+    /**
+     * Get the value of configFile
+     */ 
+    public function getConfigFile()
+    {
+        return $this->configFile;
+    }
+
+    /**
+     * Set the value of configFile
+     *
+     * @return  self
+     */ 
+    public function setConfigFile($configFile)
+    {
+        $this->configFile = $configFile;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of cacheDir
+     */ 
+    public function getCacheDir()
+    {
+        return $this->cacheDir;
+    }
+
+    /**
+     * Set the value of cacheDir
+     *
+     * @return  self
+     */ 
+    public function setCacheDir($cacheDir)
+    {
+        $this->cacheDir = $cacheDir;
+
+        return $this;
     }
 }
