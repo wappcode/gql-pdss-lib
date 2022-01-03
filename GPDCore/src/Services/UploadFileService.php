@@ -18,9 +18,14 @@ use function GPDCore\Functions\standardizeFileName;
 class UploadFileService {
 
     const FILENAME_SEPARATOR = '----.';
+    const TEMP_DIR = 'tmp';
 
-    public static function uploadFile(): ?UploadedFileModel {
-        $tmpDir = ConfigService::getInstance()->get('core_upload_tmp_dir');
+    public static function getTmpDir(string $uploadsDir) {
+        return $uploadsDir.DIRECTORY_SEPARATOR.static::TEMP_DIR;
+    }
+
+    public static function uploadFile(string $uploadsDir): ?UploadedFileModel {
+        $tmpDir = static::getTmpDir($uploadsDir);
         $config = new Config();
         $config->setTempDir($tmpDir);
         $request = new Request();
@@ -43,10 +48,11 @@ class UploadFileService {
      * @param $overwrite bool cuando el valor es verdadero y existe un archivo con el mismo nombre que el destino lo sobreescribe
      * @return bool Retorna true si fue movido o renombrado false en caso contrario 
      */
-    public static function mvFile(string $src, string $dest, bool $overwrite = false): bool {
+    public static function mvFile(string $uploadsDir, string $src, string $dest, bool $overwrite = false): bool {
         $filename = getFileNameOnly($src);
-        $srcPath = ConfigService::getInstance()->get('core_upload_tmp_dir').DIRECTORY_SEPARATOR.$filename;
-        $destPath = ConfigService::getInstance()->get('core_upload_dir').DIRECTORY_SEPARATOR.$dest;
+        $tmpDir = static::getTmpDir($uploadsDir);
+        $srcPath = $tmpDir.DIRECTORY_SEPARATOR.$filename;
+        $destPath = $uploadsDir.DIRECTORY_SEPARATOR.$dest;
         if(!file_exists($srcPath) || is_dir($srcPath)) {
             throw new Exception("El archivo origen no existe", 400);
         }
@@ -80,8 +86,8 @@ class UploadFileService {
      * @param $src string relativePath del archivo origen
      * @return bool Retorna true si fue eliminado false en caso contrario 
      */
-    public static function rmFile(string $src) {
-        $path = ConfigService::getInstance()->get('core_upload_dir').DIRECTORY_SEPARATOR.$src;
+    public static function rmFile(string $uploadDir, string $src) {
+        $path = $uploadDir.DIRECTORY_SEPARATOR.$src;
         if(!file_exists($path) || is_dir($path)) {
             throw new Exception("El archivo origen no existe", 400);
         }
@@ -93,10 +99,10 @@ class UploadFileService {
      * @param $filename string relativePath del archivo a eliminar
      * @return bool Retorna true si fue eliminado false en caso contrario 
      */
-    public static function rmTmpFile(string $filename) {
+    public static function rmTmpFile(string $uploadDir, string $filename) {
         // obtiene solo el nombre del archivo
         $filename = getFileNameOnly($filename);
-        $path = ConfigService::getInstance()->get('core_upload_tmp_dir').DIRECTORY_SEPARATOR.$filename;
+        $path = $uploadDir.DIRECTORY_SEPARATOR.$filename;
         if(!file_exists($path) || is_dir($path)) {
             throw new Exception("El archivo origen no existe", 400);
         }
@@ -109,8 +115,8 @@ class UploadFileService {
      * @param $src string relativePath del archivo origen
      * @return void
      */
-    public static function readFile(string $src, string $fileName = '') {
-        $path = ConfigService::getInstance()->get('core_upload_dir').DIRECTORY_SEPARATOR.$src;
+    public static function readFile(string $uploadDir, string $src, string $fileName = '') {
+        $path = $uploadDir.DIRECTORY_SEPARATOR.$src;
         if(!file_exists($path) || is_dir($path)){
             throw new Exception("El archivo no existe", 404);
         }
@@ -138,8 +144,8 @@ class UploadFileService {
      * @param $src string relativePath del archivo origen
      * @return void
      */
-    public static function downloadFile(string $src, string $fileName = '') {
-        $path = ConfigService::getInstance()->get('core_upload_dir').DIRECTORY_SEPARATOR.$src;
+    public static function downloadFile(string $uploadDir, string $src, string $fileName = '') {
+        $path = $uploadDir.DIRECTORY_SEPARATOR.$src;
         if (!file_exists($path) || is_dir($path)) {
             throw new Exception("El archivo no existe", 404);
         }
@@ -162,8 +168,8 @@ class UploadFileService {
         readfile($path);
         exit;
     }
-    public static function uploadB64File(string $content, string $src) {
-        $destPath = ConfigService::getInstance()->get('core_upload_dir').DIRECTORY_SEPARATOR.$src;
+    public static function uploadB64File(string $uploadDir, string $content, string $src) {
+        $destPath = $uploadDir.DIRECTORY_SEPARATOR.$src;
         if(file_exists($destPath)){
             throw new GQLException("El nombre del archivo esta duplicado", 400);
         }
