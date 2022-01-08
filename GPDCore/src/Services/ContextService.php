@@ -42,7 +42,12 @@ class ContextService implements IContextService
      */
     protected $types;
 
-    protected $isProductionMode;
+    /**
+     * Determina si la app se esta ejecutando en modo producción
+     *
+     * @var bool
+     */
+    protected $productionMode;
 
     protected $configFile =__DIR__ . "/../../../../../../config/doctrine.local.php";
     protected $cacheDir = __DIR__ . "/../../../../../../data/DoctrineORMModule";
@@ -53,10 +58,10 @@ class ContextService implements IContextService
      */
     protected $serviceManager;
 
-    public function __construct(ServiceManager $serviceManager, bool $isProductionMode)
+    public function __construct(ServiceManager $serviceManager, bool $productionMode)
     {
         $this->serviceManager = $serviceManager;
-        $this->isProductionMode = $isProductionMode;
+        $this->productionMode = $productionMode;
         $this->setEntityManager();
         $this->setTypes();
         $this->addTypes();
@@ -87,7 +92,7 @@ class ContextService implements IContextService
         } else {
             return [];
         }
-        $isDevMode = !$this->isProductionMode;
+        $isDevMode = !$this->productionMode;
         $this->entityManager = EntityManagerFactory::createInstance($options, $this->cacheDir, $isDevMode);
     }
     protected function setTypes()
@@ -178,5 +183,15 @@ class ContextService implements IContextService
         $this->cacheDir = $cacheDir;
 
         return $this;
+    }
+
+    /**
+     * Get determina si la app se esta ejecutando en modo producción
+     *
+     * @return  bool
+     */ 
+    public function isProductionMode(): bool
+    {
+        return $this->productionMode;
     }
 }

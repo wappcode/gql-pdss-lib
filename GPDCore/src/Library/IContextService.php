@@ -12,4 +12,5 @@ interface IContextService {
     public function getConfig(): ConfigService;
     public function getServiceManager(): ServiceManager;
     public function getTypes(): Types;
+    public function isProductionMode(): bool;
 }
