@@ -13,7 +13,8 @@
         "ecodev/graphql-doctrine": "^7.1",
         "nikic/fast-route": "^1.3",
         "flowjs/flow-php-server": "^1.0",
-        "phpoffice/phpspreadsheet": "^1.19"
+        "phpoffice/phpspreadsheet": "^1.19",
+        "doctrine/annotations": "^1.13"
     },
     "autoload": {
         "files": [
