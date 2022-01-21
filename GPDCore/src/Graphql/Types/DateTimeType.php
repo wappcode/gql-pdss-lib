@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace GPDCore\Graphql\Types;
 
 use DateTime;
+use DateTimeInterface;
 use DateTimeZone;
 use GraphQL\Error\Error;
 use GraphQL\Utils\Utils;
@@ -41,7 +42,7 @@ final class DateTimeType extends ScalarType
 
     public function serialize($value)
     {
-        if ($value instanceof DateTime) {
+        if ($value instanceof DateTimeInterface) {
             return $value->format('c');
         }
 
