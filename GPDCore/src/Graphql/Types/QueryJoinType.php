@@ -22,7 +22,7 @@ class QueryJoinType extends InputObjectType{
                     'type' => Type::nonNull(Type::string()),
                 ],
                 'type' => [
-                    'type' => $serviceManager->get(QueryJoinTypeValue::class),
+                    'type' => $serviceManager->get(QueryJoinTypeValue::SM_NAME),
                 ],
                 'alias' => [
                     'type' => Type::string(),
