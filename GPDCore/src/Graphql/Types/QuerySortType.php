@@ -11,16 +11,17 @@ use GPDCore\Graphql\Types\QuerySortDirection;
 
 class QuerySortType extends InputObjectType{
 
+    const SM_NAME = "QuerySortInput";
     public function __construct(ServiceManager $serviceManager)
     {
         $config = [
-            'name' => 'QuerySortType',
+            'name' => static::SM_NAME,
             'fields' => [
                 'property' => [
                     'type' => Type::nonNull(Type::string()),
                 ],
                 'direction' => [
-                    'type' => $serviceManager->get(QuerySortDirection::class),
+                    'type' => $serviceManager->get(QuerySortDirection::SM_NAME),
                 ],
                 'joinedAlias' => [
                     'type' => Type::boolean(),

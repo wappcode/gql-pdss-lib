@@ -8,10 +8,11 @@ use GPDCore\Library\QueryFilter;
 use GraphQL\Type\Definition\EnumType;
 
 class QueryFilterLogic extends EnumType {
+    const SM_NAME = 'QueryFilterLogic';
     public function __construct()
     {
         $config = [
-            'name' => 'QueryFilterLogic',
+            'name' => static::SM_NAME,
             'values' => [
                 QueryFilter::LOGIC_AND,
                 QueryFilter::LOGIC_OR,

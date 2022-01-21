@@ -10,14 +10,14 @@ use GraphQL\Type\Definition\Type;
 use Laminas\ServiceManager\ServiceManager;
 
 class QueryFilterConditionType extends InputObjectType{
-
+    const SM_NAME = 'QueryFilterConditionInput';
     public function __construct(ServiceManager $serviceManager)
     {
         $config = [
-            'name' => 'QueryFilterCondition',
+            'name' => static::SM_NAME,
             'fields' => [
                 'type' => [
-                    'type' => Type::nonNull($serviceManager->get(QueryFilterConditionTypeValue::class)),
+                    'type' => Type::nonNull($serviceManager->get(QueryFilterConditionTypeValue::SM_NAME)),
                 ],
                 'value' => [
                     'type' => Type::string(),

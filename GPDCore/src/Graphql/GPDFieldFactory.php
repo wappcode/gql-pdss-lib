@@ -78,15 +78,15 @@ class GPDFieldFactory
             'args' => [
                 [
                     'name' => 'filter',
-                    'type' => Type::listOf($serviceManager->get(QueryFilterType::class)),
+                    'type' => Type::listOf($serviceManager->get(QueryFilterType::SM_NAME)),
                 ],
                 [
                     'name' => 'sorting',
-                    'type' => Type::listOf($serviceManager->get(QuerySortType::class)),
+                    'type' => Type::listOf($serviceManager->get(QuerySortType::SM_NAME)),
                 ],
                 [
                     'name' => 'joins',
-                    'type' => Type::listOf($serviceManager->get(QueryJoinType::class)),
+                    'type' => Type::listOf($serviceManager->get(QueryJoinType::SM_NAME)),
                 ],
                 [
                     'name' => 'pagination',
@@ -150,15 +150,15 @@ class GPDFieldFactory
             'args' => [
                 [
                     'name' => 'filter',
-                    'type' => Type::listOf($serviceManager->get(QueryFilterType::class)),
+                    'type' => Type::listOf($serviceManager->get(QueryFilterType::SM_NAME)),
                 ],
                 [
                     'name' => 'sorting',
-                    'type' => Type::listOf($serviceManager->get(QuerySortType::class)),
+                    'type' => Type::listOf($serviceManager->get(QuerySortType::SM_NAME)),
                 ],
                 [
                     'name' => 'joins',
-                    'type' => Type::listOf($serviceManager->get(QueryJoinType::class)),
+                    'type' => Type::listOf($serviceManager->get(QueryJoinType::SM_NAME)),
                 ],
             ],
             'resolve' => $proxyResolver 

@@ -11,11 +11,12 @@ use GPDCore\Graphql\Types\QueryJoinTypeValue;
 
 class QueryJoinType extends InputObjectType{
 
+    const SM_NAME = "QueryJoinInput";
    
     public function __construct(ServiceManager $serviceManager)
     {
         $config = [
-            'name' => 'QueryJoin',
+            'name' => static::SM_NAME,
             'fields' => [
                 'joinProperty' => [
                     'type' => Type::nonNull(Type::string()),

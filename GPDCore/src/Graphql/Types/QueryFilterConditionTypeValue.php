@@ -8,10 +8,11 @@ use GPDCore\Library\QueryFilter;
 use GraphQL\Type\Definition\EnumType;
 
 class QueryFilterConditionTypeValue extends EnumType {
+    const SM_NAME = 'QueryFilterConditionType';
     public function __construct()
     {
         $config = [
-            'name' => 'QueryFilterConditionType',
+            'name' => static::SM_NAME,
             'values' => [
                 QueryFilter::CONDITION_EQUAL,
                 QueryFilter::CONDITION_LIKE,

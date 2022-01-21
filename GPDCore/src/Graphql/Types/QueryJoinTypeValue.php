@@ -9,6 +9,7 @@ use GraphQL\Type\Definition\EnumType;
 
 class QueryJoinTypeValue extends EnumType {
     
+    const SM_NAME = "QueryJoinType";
     public function __construct()
     {
         $config = [

@@ -12,19 +12,20 @@ use GPDCore\Graphql\Types\QueryFilterConditionType;
 
 class QueryFilterType extends InputObjectType{
 
+    const SM_NAME = 'QueryFilterInput';
     public function __construct(ServiceManager $serviceManager)
     {
         $config = [
-            'name' => 'QueryFilterType',
+            'name' => static::SM_NAME,
             'fields' => [
                 'groupLogic' => [
-                    'type' => $serviceManager->get(QueryFilterLogic::class),
+                    'type' => $serviceManager->get(QueryFilterLogic::SM_NAME),
                 ],
                 'conditionsLogic' => [
-                    'type' => $serviceManager->get(QueryFilterLogic::class),
+                    'type' => $serviceManager->get(QueryFilterLogic::SM_NAME),
                 ],
                 'conditions' => [
-                    'type' => Type::nonNull(Type::listOf($serviceManager->get(QueryFilterConditionType::class))),
+                    'type' => Type::nonNull(Type::listOf($serviceManager->get(QueryFilterConditionType::SM_NAME))),
                 ],
             ]
         ];

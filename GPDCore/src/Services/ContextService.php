@@ -111,10 +111,10 @@ class ContextService implements IContextService
     protected function addInvokablesToServiceManager()
     {
         $this->serviceManager->setInvokableClass(DateTime::class,  DateTimeType::class);
-        $this->serviceManager->setInvokableClass(QueryFilterLogic::class,  QueryFilterLogic::class);
-        $this->serviceManager->setInvokableClass(QueryFilterConditionTypeValue::class,  QueryFilterConditionTypeValue::class);
-        $this->serviceManager->setInvokableClass(QuerySortDirection::class,  QuerySortDirection::class);
-        $this->serviceManager->setInvokableClass(QueryJoinTypeValue::class,  QueryJoinTypeValue::class);
+        $this->serviceManager->setInvokableClass(QueryFilterLogic::SM_NAME,  QueryFilterLogic::class);
+        $this->serviceManager->setInvokableClass(QueryFilterConditionTypeValue::SM_NAME,  QueryFilterConditionTypeValue::class);
+        $this->serviceManager->setInvokableClass(QuerySortDirection::SM_NAME,  QuerySortDirection::class);
+        $this->serviceManager->setInvokableClass(QueryJoinTypeValue::SM_NAME,  QueryJoinTypeValue::class);
     }
 
     protected function addFactoriesToServiceManager()
@@ -125,16 +125,16 @@ class ContextService implements IContextService
         $this->serviceManager->setFactory(static::SM_PAGE_INFO_INPUT, function () {
             return ConnectionTypeFactory::getPaginationInput();
         });
-        $this->serviceManager->setFactory(QueryFilterConditionType::class, function ($sm) {
+        $this->serviceManager->setFactory(QueryFilterConditionType::SM_NAME, function ($sm) {
             return new QueryFilterConditionType($sm);
         });
-        $this->serviceManager->setFactory(QueryFilterType::class, function ($sm) {
+        $this->serviceManager->setFactory(QueryFilterType::SM_NAME, function ($sm) {
             return new QueryFilterType($sm);
         });
-        $this->serviceManager->setFactory(QuerySortType::class, function ($sm) {
+        $this->serviceManager->setFactory(QuerySortType::SM_NAME, function ($sm) {
             return new QuerySortType($sm);
         });
-        $this->serviceManager->setFactory(QueryJoinType::class, function ($sm) {
+        $this->serviceManager->setFactory(QueryJoinType::SM_NAME, function ($sm) {
             return new QueryJoinType($sm);
         });
     }
