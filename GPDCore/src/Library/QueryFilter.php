@@ -124,7 +124,7 @@ class QueryFilter
             $qb->setParameter($parameter, $values);
         }
         elseif($condition["type"] !== static::CONDITION_IS_NULL) {
-            if (empty($value)) {
+            if (!isset($value) || $value === null ||  (is_string($value) && trim($value) === "")) {
                 throw new Exception($errorMsg);
             }
             $parameter = static::getParameterKey($alias, $condition);
