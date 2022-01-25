@@ -117,7 +117,7 @@ class QueryFilter
             $qb->setParameter($parameters[0], $values[0]);
             $qb->setParameter($parameters[1], $values[1]);
         } elseif($condition["type"] === static::CONDITION_IN) {
-            if (empty($values) || !is_array($values) || count($values) !== 2) {
+            if (empty($values) || !is_array($values)) {
                 throw new Exception($errorMsg);
             }
             $parameter = static::getParameterKey($alias, $condition);
