@@ -22,6 +22,8 @@ class GeneralDoctrineUtilities {
                 $qbCopy->leftJoin("{$rootAlias}.{$relation}", $relation);
                 // si ya esta asignada la relación el select id se debe realizar desde donde se agrego la relación
                 $qbCopy->addSelect("partial {$relation}.{id}");
+            }else {
+                $qbCopy->addSelect("partial {$relation}.{id}");
             }
         }
         return $qbCopy;
