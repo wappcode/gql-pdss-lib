@@ -171,32 +171,47 @@ Agregar al archivo composer.json el siguiente código
 
 Ejecutar ./composer.phar dump-autoload -o
 
+Crear un archivo para sobreescribir la configuración de los módulos
+
+```
+config/local.config.php
+```
+
+```
+<?php
+return [];
+```
+
 
 Crear un archivo public/index.php con el siguiente contenido
+``` 
+<?php
 
-    <?php
+use AppModule\Services\AppRouter;
+use GPDApp\GPDAppModule;
+use GPDCore\Library\GPDApp;
+use GPDCore\Services\ContextService;
+use Laminas\ServiceManager\ServiceManager;
 
-    use AppModule\Services\AppRouter;
-    use GPDCore\Library\GPDApp;
-    use GPDCore\Services\ContextService;
-    use Laminas\ServiceManager\ServiceManager;
+require_once __DIR__ . "/../vendor/autoload.php";
 
-    require_once __DIR__."/../vendor/autoload.php";
-    $production = false;
-    $app = GPDApp::getInstance();
-    $serviceManager = new ServiceManager();
-    $context = new ContextService($serviceManager, $production);
-    $router = new GPDAppRouter($context, $production);
-    $app->setModules([])
-    ->setRouter($router)
-    ->setContext($context)
-    ->setProductionMode($production)
-    ->run();
-
+$production = getenv("APP_ENV") === 'production';
+$serviceManager = new ServiceManager();
+$context = new ContextService($serviceManager, $production);
+$router = new AppRouter($context, $production);
+$app = new GPDApp($context, $router, $production);
+$app->addModules([
+    GPDAppModule::class,
+]);
+$localConfig = require __DIR__."/../config/local.config.php";
+$context->getConfig()->add($localConfig);
+$app->run();
+````
 
 
 Agregar archivo config/doctrine.local.php con el siguiente contenido
 
+    <?php
     return [
         "driver"=> [
             'user'     =>   '',
