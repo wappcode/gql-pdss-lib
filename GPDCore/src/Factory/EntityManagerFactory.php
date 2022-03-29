@@ -19,7 +19,7 @@ class EntityManagerFactory
         $isDevMode = $isDevMode;
         $useSimpleAnnotationReader = false;
         $cache = null;
-        $defaultCacheDir = __DIR__."/../../../../../../../../data/DoctrineORMModule/";
+        $defaultCacheDir = __DIR__."/../../../../../../../data/DoctrineORMModule/";
        
         if (empty($cacheDir)) {
             $cacheDir = $defaultCacheDir;
