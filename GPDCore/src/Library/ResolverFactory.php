@@ -8,6 +8,11 @@ use GraphQL\Type\Definition\ResolveInfo;
 class ResolverFactory {
 
     protected static $buffers = [];
+    /**
+     * NOTA cuando EntityBuffer se utiliza en varias propiedades de diferentes Objetos
+     * Deferred puede ser llamado con la consulta para un objeto y omitir las consultas de los demás objetos
+     * Es necesario crear un EntityBuffer para cada objeto
+     */
     public static function createEntityResolver(EntityBuffer $buffer, string $property) {
         return function ($source, array $args, $context, ResolveInfo $info) use($buffer, $property) {
             $id = $source[$property]['id'] ?? 0;
