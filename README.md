@@ -234,7 +234,8 @@ Crear archivo cli-config.php con el siguiente código
 
     require_once __DIR__."/vendor/autoload.php";
     $options = require __DIR__."/config/doctrine.local.php";
-    $entityManager = EntityManagerFactory::createInstance($options, '', true, '');
+    $cacheDir = __DIR__ . "/data/DoctrineORMModule";
+    $entityManager = EntityManagerFactory::createInstance($options, $cacheDir, true, '');
 
     return ConsoleRunner::createHelperSet($entityManager);
 
