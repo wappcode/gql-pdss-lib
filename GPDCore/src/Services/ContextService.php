@@ -6,6 +6,7 @@ use DateTime;
 use DateTimeImmutable;
 use GraphQL\Doctrine\Types;
 use Doctrine\ORM\EntityManager;
+use Exception;
 use GPDCore\Library\IContextService;
 use GPDCore\Graphql\Types\DateTimeType;
 use GPDCore\Graphql\Types\QueryJoinType;
@@ -32,6 +33,8 @@ class ContextService implements IContextService
     const SM_ENTITY_MANAGER = 'entityManager';
     const SM_CONFIG = 'config';
 
+    
+
     /**
      * @var EntityManager
      */
@@ -48,23 +51,32 @@ class ContextService implements IContextService
      * @var bool
      */
     protected $productionMode;
+    protected $enviroment;
 
     protected $configFile =__DIR__ . "/../../../../../../config/doctrine.local.php";
     protected $cacheDir = __DIR__ . "/../../../../../../data/DoctrineORMModule";
-
+    protected $hasBeenInitialized = false;
 
     /**
      * @var ServiceManager
      */
     protected $serviceManager;
 
-    public function __construct(ServiceManager $serviceManager, bool $productionMode)
+    public function __construct(ServiceManager $serviceManager)
     {
         $this->serviceManager = $serviceManager;
+       
+    }
+    public function init(string $enviroment, bool $productionMode): void {
+        if($this->hasBeenInitialized) {
+            throw new Exception("Context can be initialized just once");
+        }
+        $this->enviroment = $enviroment;
         $this->productionMode = $productionMode;
         $this->setEntityManager();
         $this->setTypes();
         $this->addTypes();
+        $this->hasBeenInitialized = true;
     }
 
     public function getEntityManager(): EntityManager

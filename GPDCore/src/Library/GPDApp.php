@@ -12,15 +12,24 @@ use GPDCore\Library\IContextService;
 
 class GPDApp
 {
+
+    const ENVIROMENT_PRODUCTION = 'production';
+    const ENVIROMENT_DEVELOPMENT = 'development';
+    const ENVIROMENT_TESTING = 'testing';
+
     private $modules = [];
     private $router;
     private $started = false;
     private $productionMode = false;
     private $context;
+    private $enviroment;
 
-    public function __construct(IContextService $context, AbstractRouter $router, bool $productionMode = false)
+    public function __construct(IContextService $context, AbstractRouter $router, ?string $enviroment)
     {
-        $this->productionMode = $productionMode;
+        $enviroment = empty($enviroment) ? GPDApp::ENVIROMENT_DEVELOPMENT : $enviroment;
+        $this->enviroment = trim(strtolower($enviroment));
+        $productionMode = $this->enviroment === trim(strtolower(GPDApp::ENVIROMENT_PRODUCTION));
+        $this->setProductionMode($productionMode);
         $this->setContext($context);
         $this->setRouter($router);
 
@@ -76,6 +85,7 @@ class GPDApp
             throw new Exception('Solo se puede asignar el contexto antes de que la aplicación inicie');
         }
         $this->context = $context;
+        $this->context->init($this->enviroment, $this->productionMode);
         return $this;
     }
 
@@ -87,7 +97,6 @@ class GPDApp
             error_reporting(0);
         } else {
             ini_set("display_errors", '1');
-            error_reporting(E_ALL);
         }
         return $this;
     }
@@ -155,5 +164,13 @@ class GPDApp
         $this->servicesAndGQLTypes["invokables"] = array_merge($selfInvokables, $invokables);
         $this->servicesAndGQLTypes["factories"] = array_merge($selfFactories, $factories);
         $this->servicesAndGQLTypes["aliases"] = array_merge($selfAliases, $aliases);
+    }
+
+    /**
+     * Posibles valores (production, development, testing)
+     */ 
+    public function getEnviroment()
+    {
+        return $this->enviroment;
     }
 }
