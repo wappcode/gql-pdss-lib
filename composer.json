@@ -6,7 +6,7 @@
     "require": {
         "php": "^7.1 ",
         "doctrine/orm": "^2.10.2",
-        "doctrine/dbal": "^3.1.1",
+        "doctrine/dbal": "3.1.4",
         "symfony/yaml": "2.*",
         "symfony/cache": "^5.3",
         "webonyx/graphql-php": "^14.11",
