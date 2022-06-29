@@ -9,7 +9,7 @@ Se puede utilizar la APP Skeleton en el repositorio git
 
 ## Usar Composer
 
-Repositorio GIT privado se requiere permisos y claves ssh
+
 
 Ejecutar
 
@@ -21,19 +21,13 @@ Agregar al archivo composer.json las referencias a la libreria
     "name": "name/project",
     "type": "project",
     "require": {
-        "codewebapp/gqlpdss": "dev-master"
+        "wappcode/gqlpdss": "^2.0.0"
     },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "git@github.com:jesus-abarca-g/gql-pdss-lib.git"
-        }
-     ]
     }
 
 Ejecutar
 
-    ./composer.phar require
+    ./composer.phar require 
 
 
 

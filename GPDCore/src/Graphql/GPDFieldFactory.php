@@ -6,19 +6,19 @@ namespace GPDCore\Graphql;
 
 use Exception;
 use Doctrine\ORM\Query;
-use GPDCore\Library\IContextService;
+use PDSSUtilities\QuerySort;
+use PDSSUtilities\QueryJoins;
+use PDSSUtilities\QueryFilter;
 use GraphQL\Type\Definition\Type;
-use GPDCore\Graphql\ConnectionTypeFactory;
+use GPDCore\Library\IContextService;
 use GraphQL\Type\Definition\ObjectType;
-use GraphQL\Type\Definition\ResolveInfo;
-use GPDCore\Graphql\ConnectionQueryResponse;
-use GPDCore\Graphql\Types\QueryFilterType;
 use GPDCore\Graphql\Types\QueryJoinType;
 use GPDCore\Graphql\Types\QuerySortType;
+use GraphQL\Type\Definition\ResolveInfo;
+use GPDCore\Graphql\ConnectionTypeFactory;
+use GPDCore\Graphql\Types\QueryFilterType;
+use GPDCore\Graphql\ConnectionQueryResponse;
 use GPDCore\Library\GeneralDoctrineUtilities;
-use GPDCore\Library\QueryFilter;
-use GPDCore\Library\QueryJoins;
-use GPDCore\Library\QuerySort;
 
 class GPDFieldFactory
 {

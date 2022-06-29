@@ -5,7 +5,6 @@ declare(strict_types=1);
 
 namespace GPDCore\Entities;
 
-use DateTime;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use GraphQL\Doctrine\Annotation as API;
@@ -22,7 +21,7 @@ abstract class AbstractEntityModelStringId
     * @ORM\Id
     * @ORM\Column(name="id", type="string")
     * @ORM\GeneratedValue(strategy="CUSTOM")
-    * @ORM\CustomIdGenerator(class="\GPDCore\Library\DoctrineUniqueIDStringGenerator")
+    * @ORM\CustomIdGenerator(class="\PDSSUtilities\DoctrineUniqueIDStringGenerator")
     * @var string
     */
     protected $id;
