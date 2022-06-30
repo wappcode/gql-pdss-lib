@@ -189,7 +189,7 @@ use Laminas\ServiceManager\ServiceManager;
 
 require_once __DIR__ . "/../vendor/autoload.php";
 
-$production = getenv("APP_ENV");
+$enviroment = getenv("APP_ENV");
 $serviceManager = new ServiceManager();
 $context = new ContextService($serviceManager);
 $router = new AppRouter();
