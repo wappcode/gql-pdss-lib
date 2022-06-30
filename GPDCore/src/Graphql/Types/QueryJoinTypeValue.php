@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace GPDCore\Graphql\Types;
 
-use GPDCore\Library\QueryJoins;
+use PDSSUtilities\QueryJoins;
 use GraphQL\Type\Definition\EnumType;
 
 class QueryJoinTypeValue extends EnumType {

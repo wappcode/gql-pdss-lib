@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace GPDCore\Graphql\Types;
 
-use GPDCore\Library\QuerySort;
 use GraphQL\Type\Definition\EnumType;
+use PDSSUtilities\QuerySort;
 
 class QuerySortDirection extends EnumType {
     const SM_NAME = "QuerySortDirection";
