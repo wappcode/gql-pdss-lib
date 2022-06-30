@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace GPDCore\Graphql\Types;
 
-use GPDCore\Library\QueryFilter;
+use PDSSUtilities\QueryFilter;
 use GraphQL\Type\Definition\EnumType;
 
 class QueryFilterLogic extends EnumType {
