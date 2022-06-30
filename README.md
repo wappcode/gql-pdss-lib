@@ -189,7 +189,7 @@ use Laminas\ServiceManager\ServiceManager;
 
 require_once __DIR__ . "/../vendor/autoload.php";
 
-$enviroment = getenv("APP_ENV");
+$enviroment = getenv("APP_ENV") ? getenv("APP_ENV") : GPDApp::ENVIROMENT_DEVELOPMENT;
 $serviceManager = new ServiceManager();
 $context = new ContextService($serviceManager);
 $router = new AppRouter();
