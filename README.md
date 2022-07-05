@@ -181,21 +181,21 @@ Crear un archivo public/index.php con el siguiente contenido
 ``` 
 <?php
 
+use AppModule\AppModule;
 use AppModule\Services\AppRouter;
-use GPDApp\GPDAppModule;
 use GPDCore\Library\GPDApp;
 use GPDCore\Services\ContextService;
 use Laminas\ServiceManager\ServiceManager;
 
 require_once __DIR__ . "/../vendor/autoload.php";
 
-$enviroment = getenv("APP_ENV") ? getenv("APP_ENV") : GPDApp::ENVIROMENT_DEVELOPMENT;
+$enviroment = getenv("APP_ENV");
 $serviceManager = new ServiceManager();
 $context = new ContextService($serviceManager);
 $router = new AppRouter();
 $app = new GPDApp($context, $router, $enviroment);
 $app->addModules([
-    GPDAppModule::class,
+    AppModule::class,
 ]);
 $localConfig = require __DIR__."/../config/local.config.php";
 $context->getConfig()->add($localConfig);
@@ -403,6 +403,7 @@ Iniciar con el comándo
 
     php -S localhost:8000 public/index.php
 
+Para consultar api Graphql la ruta es http://localhost:8000/api
 
 # API
 
