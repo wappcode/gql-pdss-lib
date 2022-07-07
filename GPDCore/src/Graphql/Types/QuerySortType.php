@@ -24,7 +24,7 @@ class QuerySortType extends InputObjectType{
                     'type' => $serviceManager->get(QuerySortDirection::SM_NAME),
                 ],
                 'joinedAlias' => [
-                    'type' => Type::boolean(),
+                    'type' => Type::string(),
                     // 'description' => 'nombre de la propiedad que es una referencia de otro objeto y de la cual se va a realizar el filtro. es necesario agregar manualmente los joins'
                 ],
             ]
