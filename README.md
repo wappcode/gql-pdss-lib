@@ -202,6 +202,15 @@ $context->getConfig()->add($localConfig);
 $app->run();
 ````
 
+Agregar archivo config/doctrine.entities.php con el siguiente contenido
+
+    <?php
+
+    return  [
+        "Contest\Entities" => __DIR__."/../modules/Contest/src/Entities",
+    ];
+
+
 
 Agregar archivo config/doctrine.local.php con el siguiente contenido
 
@@ -215,7 +224,7 @@ Agregar archivo config/doctrine.local.php con el siguiente contenido
             'host'   =>     '127.0.0.1',
             'charset' =>    'utf8mb4'
         ],
-        "entities"=> []
+        "entities"=> require __DIR__."/doctrine.entities.php"
     ];
 
 
@@ -382,10 +391,10 @@ Crear archivo modules/AppModule/src/Entities/Post.php
 
 
 
-Agregar al archivo config/doctrine.local.php la ubicación de las entidades
+Actualizar  archivo doctrine.entities.php con la ubicación de las entidades
 
-    "entities"=> [
-            "AppModule\Entities" => __DIR__."/../modules/AppModule/src/Entities",
+    return  [
+            "AppModule\Entities" => __DIR__."/../modules/AppModule/src/Entities",            
     ]
 
 
