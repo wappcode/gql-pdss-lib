@@ -2,9 +2,6 @@ Intalar
 -------
 
 
-Se puede utilizar la APP Skeleton en el repositorio git
-
-    git clone https://github.com/jesus-abarca-g/gql-pdss.git
 
 
 ## Usar Composer
