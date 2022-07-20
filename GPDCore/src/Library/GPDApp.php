@@ -32,10 +32,9 @@ class GPDApp
         $this->setProductionMode($productionMode);
         $this->setContext($context);
         $this->setRouter($router);
-
     }
 
-    
+
     /**
      * Los modulos se agregan en orden inverso para que el primer modulo registrado (App) sobreescriba la configuración de los demás modulos
      *
@@ -154,7 +153,7 @@ class GPDApp
         }
 
         foreach ($aliases as $k => $alias) {
-            $serviceManager->setAlias($k, $aliases);
+            $serviceManager->setAlias($k, $alias);
         }
 
 
@@ -168,7 +167,7 @@ class GPDApp
 
     /**
      * Posibles valores (production, development, testing)
-     */ 
+     */
     public function getEnviroment()
     {
         return $this->enviroment;
