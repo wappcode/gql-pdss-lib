@@ -3,11 +3,11 @@
 namespace GPDCore\Services;
 
 use DateTime;
+use Exception;
 use DateTimeImmutable;
 use DateTimeInterface;
 use GraphQL\Doctrine\Types;
 use Doctrine\ORM\EntityManager;
-use Exception;
 use GPDCore\Library\IContextService;
 use GPDCore\Graphql\Types\DateTimeType;
 use GPDCore\Graphql\Types\QueryJoinType;
@@ -19,6 +19,7 @@ use Laminas\ServiceManager\ServiceManager;
 use GPDCore\Graphql\Types\QueryFilterLogic;
 use GPDCore\Graphql\Types\QueryJoinTypeValue;
 use GPDCore\Graphql\Types\QuerySortDirection;
+use GPDCore\Graphql\Types\DateTimeImmutableType;
 use GPDCore\Graphql\Types\QueryFilterConditionType;
 use GPDCore\Graphql\Types\QueryFilterConditionTypeValue;
 
