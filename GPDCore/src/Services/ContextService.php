@@ -4,6 +4,7 @@ namespace GPDCore\Services;
 
 use DateTime;
 use DateTimeImmutable;
+use DateTimeInterface;
 use GraphQL\Doctrine\Types;
 use Doctrine\ORM\EntityManager;
 use Exception;
@@ -33,7 +34,7 @@ class ContextService implements IContextService
     const SM_ENTITY_MANAGER = 'entityManager';
     const SM_CONFIG = 'config';
 
-    
+
 
     /**
      * @var EntityManager
@@ -53,7 +54,7 @@ class ContextService implements IContextService
     protected $productionMode;
     protected $enviroment;
 
-    protected $configFile =__DIR__ . "/../../../../../../config/doctrine.local.php";
+    protected $configFile = __DIR__ . "/../../../../../../config/doctrine.local.php";
     protected $cacheDir = __DIR__ . "/../../../../../../data/DoctrineORMModule";
     protected $hasBeenInitialized = false;
 
@@ -65,10 +66,10 @@ class ContextService implements IContextService
     public function __construct(ServiceManager $serviceManager)
     {
         $this->serviceManager = $serviceManager;
-       
     }
-    public function init(string $enviroment, bool $productionMode): void {
-        if($this->hasBeenInitialized) {
+    public function init(string $enviroment, bool $productionMode): void
+    {
+        if ($this->hasBeenInitialized) {
             throw new Exception("Context can be initialized just once");
         }
         $this->enviroment = $enviroment;
@@ -99,7 +100,7 @@ class ContextService implements IContextService
     {
 
         $configFile = $this->configFile;
-        if(file_exists($configFile)) {
+        if (file_exists($configFile)) {
             $options = require $configFile;
         } else {
             return [];
@@ -123,6 +124,7 @@ class ContextService implements IContextService
     protected function addInvokablesToServiceManager()
     {
         $this->serviceManager->setInvokableClass(DateTime::class,  DateTimeType::class);
+        $this->serviceManager->setInvokableClass(DateTimeImmutable::class,  DateTimeImmutableType::class);
         $this->serviceManager->setInvokableClass(QueryFilterLogic::SM_NAME,  QueryFilterLogic::class);
         $this->serviceManager->setInvokableClass(QueryFilterConditionTypeValue::SM_NAME,  QueryFilterConditionTypeValue::class);
         $this->serviceManager->setInvokableClass(QuerySortDirection::SM_NAME,  QuerySortDirection::class);
@@ -154,12 +156,12 @@ class ContextService implements IContextService
     {
         $this->serviceManager->setAlias(static::SM_DATETIME, DateTime::class); // Declare alias for Doctrine type to be used for filters
         $this->serviceManager->setAlias(static::SM_DATE, DateTime::class); // Declare alias for Doctrine type to be used for filters
-        $this->serviceManager->setAlias(DateTimeImmutable::class, DateTime::class);
+        $this->serviceManager->setAlias(DateTimeInterface::class, DateTime::class);
     }
 
     /**
      * Get the value of configFile
-     */ 
+     */
     public function getConfigFile()
     {
         return $this->configFile;
@@ -169,7 +171,7 @@ class ContextService implements IContextService
      * Set the value of configFile
      *
      * @return  self
-     */ 
+     */
     public function setConfigFile($configFile)
     {
         $this->configFile = $configFile;
@@ -179,7 +181,7 @@ class ContextService implements IContextService
 
     /**
      * Get the value of cacheDir
-     */ 
+     */
     public function getCacheDir()
     {
         return $this->cacheDir;
@@ -189,7 +191,7 @@ class ContextService implements IContextService
      * Set the value of cacheDir
      *
      * @return  self
-     */ 
+     */
     public function setCacheDir($cacheDir)
     {
         $this->cacheDir = $cacheDir;
@@ -201,7 +203,7 @@ class ContextService implements IContextService
      * Get determina si la app se esta ejecutando en modo producción
      *
      * @return  bool
-     */ 
+     */
     public function isProductionMode(): bool
     {
         return $this->productionMode;
