@@ -204,7 +204,7 @@ Agregar archivo config/doctrine.entities.php con el siguiente contenido
     <?php
 
     return  [
-        "Contest\Entities" => __DIR__."/../modules/Contest/src/Entities",
+        // "ModuleName\Entities" => __DIR__."/../modules/ModuleName/src/Entities",
     ];
 
 
