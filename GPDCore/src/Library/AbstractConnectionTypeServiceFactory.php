@@ -27,6 +27,14 @@ class AbstractConnectionTypeServiceFactory
         }
         return static::$instance;
     }
+    /**
+     * Recupera una función que se utiliza como factory para un servicio
+     * Para asignar el tipo del nodo utiliza $serviceManager->get($edgeTypeName)
+     * En el serviceManager debe haber un servicio con el nombre igual a $edgeTypeName
+     * @param IContextService $context
+     * @param string $edgeTypeName
+     * @return callable
+     */
     public static function getFactory(IContextService $context, string $edgeTypeName): callable
     {
         return function ($sm) use ($context, $edgeTypeName) {
