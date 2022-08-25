@@ -18,12 +18,12 @@ abstract class AbstractEntityModelStringId
 {
 
     /**
-    * @ORM\Id
-    * @ORM\Column(name="id", type="string")
-    * @ORM\GeneratedValue(strategy="CUSTOM")
-    * @ORM\CustomIdGenerator(class="\PDSSUtilities\DoctrineUniqueIDStringGenerator")
-    * @var string
-    */
+     * @ORM\Id
+     * @ORM\Column(name="id", type="string")
+     * @ORM\GeneratedValue(strategy="CUSTOM")
+     * @ORM\CustomIdGenerator(class="\PDSSUtilities\DoctrineUniqueIDStringGenerator")
+     * @var string
+     */
     protected $id;
     /**
      * @var DateTimeImmutable
@@ -49,7 +49,7 @@ abstract class AbstractEntityModelStringId
     }
     /**
      * Get the value of created
-     *
+     * @API/Field(type="DateTime")
      * @return  DateTimeImmutable
      */
     public function getCreated(): DateTimeImmutable
@@ -59,7 +59,7 @@ abstract class AbstractEntityModelStringId
 
     /**
      * Get the value of updated
-     *
+     * @API/Field(type="DateTime")
      * @return  DateTimeImmutable
      */
     public function getUpdated(): DateTimeImmutable

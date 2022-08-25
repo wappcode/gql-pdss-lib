@@ -16,7 +16,7 @@ use GraphQL\Doctrine\Annotation as API;
  */
 abstract class AbstractEntityModel
 {
-     /**
+    /**
      * @var int
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
@@ -42,7 +42,7 @@ abstract class AbstractEntityModel
         $this->created = new DateTimeImmutable();
         $this->updated = new DateTimeImmutable();
     }
-  
+
     public function getId(): ?int
     {
         return $this->id;
@@ -50,8 +50,9 @@ abstract class AbstractEntityModel
     /**
      * Get the value of created
      *
+     * @API/Field(type="DateTime")
      * @return  DateTimeImmutable
-     */ 
+     */
     public function getCreated(): DateTimeImmutable
     {
         return $this->created;
@@ -59,9 +60,9 @@ abstract class AbstractEntityModel
 
     /**
      * Get the value of updated
-     *
+     * @API/Field(type="DateTime")
      * @return  DateTimeImmutable
-     */ 
+     */
     public function getUpdated(): DateTimeImmutable
     {
         return $this->updated;
@@ -74,7 +75,7 @@ abstract class AbstractEntityModel
      * 
      *
      * @return  self
-     */ 
+     */
     public function setUpdated()
     {
         $this->updated = new DateTimeImmutable();
