@@ -49,7 +49,7 @@ abstract class AbstractEntityModelStringId
     }
     /**
      * Get the value of created
-     * @API/Field(type="DateTime")
+     * @API\Field(type="DateTime")
      * @return  DateTimeImmutable
      */
     public function getCreated(): DateTimeImmutable
@@ -59,7 +59,7 @@ abstract class AbstractEntityModelStringId
 
     /**
      * Get the value of updated
-     * @API/Field(type="DateTime")
+     * @API\Field(type="DateTime")
      * @return  DateTimeImmutable
      */
     public function getUpdated(): DateTimeImmutable
