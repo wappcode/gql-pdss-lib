@@ -43,6 +43,7 @@ Crear la siguiente estructura de directorios
         AppModule
             config
             src
+                Entities
                 Graphql
                 Services
 
@@ -204,7 +205,7 @@ Agregar archivo config/doctrine.entities.php con el siguiente contenido
     <?php
 
     return  [
-        // "ModuleName\Entities" => __DIR__."/../modules/ModuleName/src/Entities",
+        "AppModule\Entities" => __DIR__."/../modules/AppModule/src/Entities",
     ];
 
 
