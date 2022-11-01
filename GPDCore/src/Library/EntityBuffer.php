@@ -1,13 +1,14 @@
-<?php 
+<?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace GPDCore\Library;
 
 use GraphQL\Type\Definition\ResolveInfo;
 
-class EntityBuffer {
-    
+class EntityBuffer
+{
+
     protected $ids = array();
     protected $result = array();
     protected $class;
@@ -24,11 +25,13 @@ class EntityBuffer {
     }
 
 
-   
-    public function add($id) {
+
+    public function add($id)
+    {
         $this->ids[] = $id;
     }
-    public  function get($id) {
+    public  function get($id)
+    {
         return $this->result[$id] ?? null;
     }
 
@@ -44,21 +47,25 @@ class EntityBuffer {
      * @param callable|null $decorator
      * @return void
      */
-    public  function loadBuffered($source, array $args, IContextService $context, ResolveInfo $info) {
-        
-        if(!empty($this->result) || empty($this->ids)) {
+    public  function loadBuffered($source, array $args, IContextService $context, ResolveInfo $info)
+    {
+
+        if (!empty($this->result) || empty($this->ids)) {
             return;
         }
         $entityManager = $context->getEntityManager();
         $ids = array_unique($this->ids);
+        // Convierte los ids en tipo string para no tener problemas al ejecutar un query con id = 0 cuando la columna es un string
+        $ids = array_map(function ($id) {
+            return "{$id}";
+        }, $ids);
         $qb = $entityManager->createQueryBuilder()->from($this->class, "entity")
-        ->select("entity")
-        ;
+            ->select("entity");
         $qb = GeneralDoctrineUtilities::addRelationsToQuery($qb, $this->relations);
         $qb->andWhere($qb->expr()->in('entity.id', ':ids'))
-        ->setParameter(':ids', $ids);
+            ->setParameter(':ids', $ids);
         $items = $qb->getQuery()->getArrayResult();
-        foreach($items as $k => $item) {
+        foreach ($items as $k => $item) {
             $this->result[$item["id"]] = $item ?? null;
         }
     }
