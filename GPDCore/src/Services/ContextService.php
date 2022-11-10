@@ -55,8 +55,8 @@ class ContextService implements IContextService
     protected $productionMode;
     protected $enviroment;
 
-    protected $configFile = __DIR__ . "/../../../../../../config/doctrine.local.php";
-    protected $cacheDir = __DIR__ . "/../../../../../../data/DoctrineORMModule";
+    protected $doctrineConfigFile = __DIR__ . "/../../../../../../config/doctrine.local.php";
+    protected $doctrineCacheDir = __DIR__ . "/../../../../../../data/DoctrineORMModule";
     protected $hasBeenInitialized = false;
 
     /**
@@ -100,14 +100,14 @@ class ContextService implements IContextService
     protected function setEntityManager()
     {
 
-        $configFile = $this->configFile;
+        $configFile = $this->doctrineConfigFile;
         if (file_exists($configFile)) {
             $options = require $configFile;
         } else {
             return [];
         }
         $isDevMode = !$this->productionMode;
-        $this->entityManager = EntityManagerFactory::createInstance($options, $this->cacheDir, $isDevMode);
+        $this->entityManager = EntityManagerFactory::createInstance($options, $this->doctrineCacheDir, $isDevMode);
     }
     protected function setTypes()
     {
@@ -162,42 +162,44 @@ class ContextService implements IContextService
 
     /**
      * Get the value of configFile
+     * @deprecated version 2.0.13 usar getDoctrineConfigFile
      */
     public function getConfigFile()
     {
-        return $this->configFile;
+        // @todo remover version 3
+        return $this->getDoctrineConfigFile();
     }
 
     /**
      * Set the value of configFile
      *
      * @return  self
+     * @deprecated version 2.0.13 usar setDoctrineConfigFile
      */
     public function setConfigFile($configFile)
     {
-        $this->configFile = $configFile;
-
-        return $this;
+        // @todo remover version 3
+        return $this->setDoctrineConfigFile($configFile);
     }
 
     /**
      * Get the value of cacheDir
+     * @deprecated version 2.0.13 usar getDoctrineCacheDir
      */
     public function getCacheDir()
     {
-        return $this->cacheDir;
+        return $this->getDoctrineCacheDir();
     }
 
     /**
      * Set the value of cacheDir
      *
      * @return  self
+     * @deprecated version 2.0.13 usar getDoctrineCacheDir
      */
     public function setCacheDir($cacheDir)
     {
-        $this->cacheDir = $cacheDir;
-
-        return $this;
+        return $this->setDoctrineCacheDir($cacheDir);
     }
 
     /**
@@ -208,5 +210,45 @@ class ContextService implements IContextService
     public function isProductionMode(): bool
     {
         return $this->productionMode;
+    }
+
+    /**
+     * Get the value of doctrineConfigFile
+     */
+    public function getDoctrineConfigFile()
+    {
+        return $this->doctrineConfigFile;
+    }
+
+    /**
+     * Set the value of doctrineConfigFile
+     *
+     * @return  self
+     */
+    public function setDoctrineConfigFile($doctrineConfigFile)
+    {
+        $this->doctrineConfigFile = $doctrineConfigFile;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of doctrineCacheDir
+     */
+    public function getDoctrineCacheDir()
+    {
+        return $this->doctrineCacheDir;
+    }
+
+    /**
+     * Set the value of doctrineCacheDir
+     *
+     * @return  self
+     */
+    public function setDoctrineCacheDir($doctrineCacheDir)
+    {
+        $this->doctrineCacheDir = $doctrineCacheDir;
+
+        return $this;
     }
 }
