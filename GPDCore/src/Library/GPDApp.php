@@ -36,7 +36,7 @@ class GPDApp
 
 
     /**
-     * Los modulos se agregan en orden inverso para que el primer modulo registrado (App) sobreescriba la configuración de los demás modulos
+     * El último módulo del array debe ser el modulo de la app pricipal para que sobreescriba sobreescriba la configuración de los demás modulos
      *
      * @param array $modules
      * @return GPDApp
