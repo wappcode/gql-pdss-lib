@@ -1,21 +1,32 @@
-<h1>GQL-PDSS Skeleton</h1>
+<!DOCTYPE html>
+<html lang="en">
 
-<p>
-    Estructura básica para iniciar un proyecto para una API Graphql en PHP con Doctrine
-</p>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GQL-PDSS</title>
+</head>
 
-<h2>Instalar</h2>
-<code>
+<body>
+    <h1>GQL-PDSS Skeleton</h1>
+
+    <p>
+        Estructura básica para iniciar un proyecto para una API Graphql en PHP con Doctrine
+    </p>
+
+    <h2>Instalar</h2>
+    <code>
     composer create-project wappcode/gql-pdss-skeleton
 </code>
 
-<p>
-    Crear archivo config/doctrine.local.php con la configuración de la base de datos
+    <p>
+        Crear archivo config/doctrine.local.php con la configuración de la base de datos
 
 
-</p>
+    </p>
 
-<code>
+    <code>
     &lt; ?php
 return [
     "driver" => [
@@ -30,12 +41,15 @@ return [
 ];
 </code>
 
-<p>Iniciar API con el comándo</p>
+    <p>Iniciar API con el comándo</p>
 
-<code>
+    <code>
     php -S localhost:8000 public/index.php
 </code>
 
-<p>
-    Para consultar API Graphql la ruta es http://localhost:8000/api
-</p>
+    <p>
+        Para consultar API Graphql la ruta es http://localhost:8000/api
+    </p>
+</body>
+
+</html>
