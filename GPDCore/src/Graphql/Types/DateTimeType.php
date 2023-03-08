@@ -22,7 +22,7 @@ final class DateTimeType extends ScalarType
             throw new Error('Query error: Can only parse strings got: ' . $valueNode->kind, $valueNode);
         }
 
-        return $valueNode->value;
+        return $this->parseValue($valueNode->value);
     }
 
     public function parseValue($value, array $variables = null)
@@ -32,7 +32,7 @@ final class DateTimeType extends ScalarType
         }
         $date = new DateTime($value);
         $dateZone = date_default_timezone_get();
-        if(!($dateZone instanceof DateTimeZone)) {
+        if (!($dateZone instanceof DateTimeZone)) {
             $dateZone = new DateTimeZone($dateZone);
         }
         $date->setTimezone($dateZone);

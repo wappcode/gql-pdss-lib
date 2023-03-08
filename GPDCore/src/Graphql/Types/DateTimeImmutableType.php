@@ -22,7 +22,7 @@ final class DateTimeImmutableType extends ScalarType
             throw new Error('Query error: Can only parse strings got: ' . $valueNode->kind, $valueNode);
         }
 
-        return $valueNode->value;
+        return $this->parseValue($valueNode->value);
     }
 
     public function parseValue($value, array $variables = null)
