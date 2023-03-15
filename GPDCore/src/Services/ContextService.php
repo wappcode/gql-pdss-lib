@@ -127,18 +127,11 @@ class ContextService implements IContextService
     {
         $this->serviceManager->setInvokableClass(DateTime::class,  DateTimeType::class);
         $this->serviceManager->setInvokableClass(DateTimeImmutable::class,  DateTimeImmutableType::class);
-        $this->serviceManager->setInvokableClass(QueryFilterLogic::SM_NAME,  QueryFilterLogic::class);
-        $this->serviceManager->setInvokableClass(QueryFilterConditionTypeValue::SM_NAME,  QueryFilterConditionTypeValue::class);
-        $this->serviceManager->setInvokableClass(QuerySortDirection::SM_NAME,  QuerySortDirection::class);
-        $this->serviceManager->setInvokableClass(QueryJoinTypeValue::SM_NAME,  QueryJoinTypeValue::class);
-        $this->serviceManager->setInvokableClass(JSONData::SM_NAME,  JSONData::class);
-
-        $this->serviceManager->setAlias(QueryFilterLogic::class,  QueryFilterLogic::SM_NAME);
-        $this->serviceManager->setAlias(QueryFilterConditionTypeValue::class,  QueryFilterConditionTypeValue::SM_NAME);
-        $this->serviceManager->setAlias(QuerySortDirection::class,  QuerySortDirection::SM_NAME);
-        $this->serviceManager->setAlias(QueryJoinTypeValue::class,  QueryJoinTypeValue::SM_NAME);
-        $this->serviceManager->setAlias(JSONData::class,  JSONData::SM_NAME);
-        $this->serviceManager->setAlias(JSONData::class,  JSONData::SM_NAME);
+        $this->serviceManager->setInvokableClass(QueryFilterLogic::class,  QueryFilterLogic::class);
+        $this->serviceManager->setInvokableClass(QueryFilterConditionTypeValue::class,  QueryFilterConditionTypeValue::class);
+        $this->serviceManager->setInvokableClass(QuerySortDirection::class,  QuerySortDirection::class);
+        $this->serviceManager->setInvokableClass(QueryJoinTypeValue::class,  QueryJoinTypeValue::class);
+        $this->serviceManager->setInvokableClass(JSONData::class,  JSONData::class);
     }
 
     protected function addFactoriesToServiceManager()
@@ -167,6 +160,13 @@ class ContextService implements IContextService
         $this->serviceManager->setAlias(static::SM_DATETIME, DateTime::class); // Declare alias for Doctrine type to be used for filters
         $this->serviceManager->setAlias(static::SM_DATE, DateTime::class); // Declare alias for Doctrine type to be used for filters
         $this->serviceManager->setAlias(DateTimeInterface::class, DateTime::class);
+
+        $this->serviceManager->setAlias(QueryFilterLogic::class,  QueryFilterLogic::SM_NAME);
+        $this->serviceManager->setAlias(QueryFilterConditionTypeValue::class,  QueryFilterConditionTypeValue::SM_NAME);
+        $this->serviceManager->setAlias(QuerySortDirection::class,  QuerySortDirection::SM_NAME);
+        $this->serviceManager->setAlias(QueryJoinTypeValue::class,  QueryJoinTypeValue::SM_NAME);
+        $this->serviceManager->setAlias(JSONData::class,  JSONData::SM_NAME);
+        $this->serviceManager->setAlias(JSONData::class,  JSONData::SM_NAME);
     }
 
     /**

@@ -1,5 +1,5 @@
 {
-    "version": "2.0.15",
+    "version": "2.0.16",
     "name": "wappcode/gqlpdss",
     "description": "Utilidades para crear una api GraphQL",
     "type": "library",
