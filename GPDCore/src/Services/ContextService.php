@@ -161,12 +161,12 @@ class ContextService implements IContextService
         $this->serviceManager->setAlias(static::SM_DATE, DateTime::class); // Declare alias for Doctrine type to be used for filters
         $this->serviceManager->setAlias(DateTimeInterface::class, DateTime::class);
 
-        $this->serviceManager->setAlias(QueryFilterLogic::class,  QueryFilterLogic::SM_NAME);
-        $this->serviceManager->setAlias(QueryFilterConditionTypeValue::class,  QueryFilterConditionTypeValue::SM_NAME);
-        $this->serviceManager->setAlias(QuerySortDirection::class,  QuerySortDirection::SM_NAME);
-        $this->serviceManager->setAlias(QueryJoinTypeValue::class,  QueryJoinTypeValue::SM_NAME);
-        $this->serviceManager->setAlias(JSONData::class,  JSONData::SM_NAME);
-        $this->serviceManager->setAlias(JSONData::class,  JSONData::SM_NAME);
+        $this->serviceManager->setAlias(QueryFilterLogic::SM_NAME,  QueryFilterLogic::class);
+        $this->serviceManager->setAlias(QueryFilterConditionTypeValue::SM_NAME,  QueryFilterConditionTypeValue::class);
+        $this->serviceManager->setAlias(QuerySortDirection::SM_NAME,  QuerySortDirection::class);
+        $this->serviceManager->setAlias(QueryJoinTypeValue::SM_NAME,  QueryJoinTypeValue::class);
+        $this->serviceManager->setAlias(JSONData::SM_NAME,  JSONData::class);
+        $this->serviceManager->setAlias(JSONData::SM_NAME,  JSONData::class);
     }
 
     /**
