@@ -8,6 +8,7 @@ use DateTimeImmutable;
 use DateTimeInterface;
 use GraphQL\Doctrine\Types;
 use Doctrine\ORM\EntityManager;
+use GPDCore\Graphql\Types\JSONData;
 use GPDCore\Library\IContextService;
 use GPDCore\Graphql\Types\DateTimeType;
 use GPDCore\Graphql\Types\QueryJoinType;
@@ -130,6 +131,14 @@ class ContextService implements IContextService
         $this->serviceManager->setInvokableClass(QueryFilterConditionTypeValue::SM_NAME,  QueryFilterConditionTypeValue::class);
         $this->serviceManager->setInvokableClass(QuerySortDirection::SM_NAME,  QuerySortDirection::class);
         $this->serviceManager->setInvokableClass(QueryJoinTypeValue::SM_NAME,  QueryJoinTypeValue::class);
+        $this->serviceManager->setInvokableClass(JSONData::SM_NAME,  JSONData::class);
+
+        $this->serviceManager->setAlias(QueryFilterLogic::class,  QueryFilterLogic::SM_NAME);
+        $this->serviceManager->setAlias(QueryFilterConditionTypeValue::class,  QueryFilterConditionTypeValue::SM_NAME);
+        $this->serviceManager->setAlias(QuerySortDirection::class,  QuerySortDirection::SM_NAME);
+        $this->serviceManager->setAlias(QueryJoinTypeValue::class,  QueryJoinTypeValue::SM_NAME);
+        $this->serviceManager->setAlias(JSONData::class,  JSONData::SM_NAME);
+        $this->serviceManager->setAlias(JSONData::class,  JSONData::SM_NAME);
     }
 
     protected function addFactoriesToServiceManager()
