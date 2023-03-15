@@ -17,6 +17,7 @@ final class JSONData extends ScalarType
     {
         parent::__construct($config);
         $this->name = static::SM_NAME;
+        $this->description = "Parse a string to an array";
     }
     public function parseLiteral($valueNode, array $variables = null)
     {
