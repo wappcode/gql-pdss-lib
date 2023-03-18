@@ -126,7 +126,7 @@ class ContextService implements IContextService
     protected function addInvokablesToServiceManager()
     {
         $this->serviceManager->setInvokableClass(DateTime::class,  DateTimeType::class);
-        // $this->serviceManager->setInvokableClass(DateTimeImmutable::class,  DateTimeImmutableType::class);
+        $this->serviceManager->setInvokableClass(DateTimeImmutable::class,  DateTimeImmutableType::class);
         $this->serviceManager->setInvokableClass(QueryFilterLogic::class,  QueryFilterLogic::class);
         $this->serviceManager->setInvokableClass(QueryFilterConditionTypeValue::class,  QueryFilterConditionTypeValue::class);
         $this->serviceManager->setInvokableClass(QuerySortDirection::class,  QuerySortDirection::class);
@@ -160,7 +160,6 @@ class ContextService implements IContextService
         $this->serviceManager->setAlias(static::SM_DATETIME, DateTime::class); // Declare alias for Doctrine type to be used for filters
         $this->serviceManager->setAlias(static::SM_DATE, DateTime::class); // Declare alias for Doctrine type to be used for filters
         $this->serviceManager->setAlias(DateTimeInterface::class, DateTime::class);
-        $this->serviceManager->setAlias(DateTimeImmutable::class, DateTime::class);
 
         $this->serviceManager->setAlias(QueryFilterLogic::SM_NAME,  QueryFilterLogic::class);
         $this->serviceManager->setAlias(QueryFilterConditionTypeValue::SM_NAME,  QueryFilterConditionTypeValue::class);
