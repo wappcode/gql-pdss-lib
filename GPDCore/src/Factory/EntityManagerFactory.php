@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace GPDCore\Factory;
 
@@ -12,32 +12,33 @@ use Symfony\Component\Cache\Adapter\PhpFilesAdapter;
 
 class EntityManagerFactory
 {
-    public static function createInstance(array $options, string $cacheDir = '', bool $isDevMode = false,  bool $writeLog = false): EntityManager {
+    public static function createInstance(array $options, string $cacheDir = '', bool $isDevMode = false,  bool $writeLog = false): EntityManager
+    {
 
         $paths = $options["entities"];
         $driver = $options["driver"];
         $isDevMode = $isDevMode;
         $useSimpleAnnotationReader = false;
         $cache = null;
-        $defaultCacheDir = __DIR__."/../../../../../../data/DoctrineORMModule/";
-       
+        $defaultCacheDir = __DIR__ . "/../../../../../../data/DoctrineORMModule/";
+
         if (empty($cacheDir)) {
             $cacheDir = $defaultCacheDir;
         }
-        
-        if(!$isDevMode && !file_exists($cacheDir)) {
-            throw new Exception("The directory ".$cacheDir." does not exist");
+
+        if (!$isDevMode && !file_exists($cacheDir)) {
+            throw new Exception("The directory " . $cacheDir . " does not exist");
         }
-        
-        $proxyDir = $cacheDir."/Proxy";
+
+        $proxyDir = $cacheDir . "/Proxy";
         $config = Setup::createAnnotationMetadataConfiguration($paths, $isDevMode, $proxyDir, $cache, $useSimpleAnnotationReader);
-        if($isDevMode && $writeLog) {
+        if ($isDevMode && $writeLog) {
             $logger = new DoctrineSQLLogger();
             $config->setSQLLogger($logger);
         }
-        if(!$isDevMode && !empty($cacheDir)) {
-            $cacheQueryDir = $cacheDir.'/Query';
-            $cacheMetadataDir = $cacheDir.'/Metadata';
+        if (!$isDevMode && !empty($cacheDir)) {
+            $cacheQueryDir = $cacheDir . '/Query';
+            $cacheMetadataDir = $cacheDir . '/Metadata';
             $cacheQueryDriver = new PhpFilesAdapter("doctrine_query_cache", 0, $cacheQueryDir, true);
             $cacheMetadataDriver = new PhpFilesAdapter("doctrine_metadata_cache", 0, $cacheMetadataDir, true);
             $config->setQueryCache($cacheQueryDriver);
@@ -61,13 +62,4 @@ class EntityManagerFactory
     private function __clone()
     {
     }
-
-    /**
-     * prevent from being unserialized (which would create a second instance of it)
-     */
-    private function __wakeup()
-    {
-    }
 }
-
-

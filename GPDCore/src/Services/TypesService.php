@@ -7,14 +7,16 @@ use Exception;
 use GraphQL\Doctrine\Types;
 use Laminas\ServiceManager\ServiceManager;
 
-class TypesService {
+class TypesService
+{
 
 
     private static  $instance = null;
     private static $inited = false;
+    private $config;
 
-
-    public static function init(EntityManager $entityManager, ServiceManager $serviceManager): void {
+    public static function init(EntityManager $entityManager, ServiceManager $serviceManager): void
+    {
         if (static::$inited) {
             return;
         }
@@ -27,13 +29,12 @@ class TypesService {
             throw new Exception('Aún no se ha iniciado el servicio');
         }
         return static::$instance;
-       
     }
     /**
      * is not allowed to call from outside to prevent from creating multiple instances,
      * to use the singleton, you have to obtain the instance from Singleton::getInstance() instead
      */
-    private function __construct(array $config) 
+    private function __construct(array $config)
     {
         $this->config = $config;
     }
@@ -42,13 +43,6 @@ class TypesService {
      * prevent the instance from being cloned (which would create a second instance of it)
      */
     private function __clone()
-    {
-    }
-
-    /**
-     * prevent from being unserialized (which would create a second instance of it)
-     */
-    private function __wakeup()
     {
     }
 }

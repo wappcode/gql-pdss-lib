@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace GPDCore\Graphql;
 
@@ -13,10 +13,12 @@ class ResolverManager
 
     private static  $resolvers = array();
 
-    public static function add(string $key, callable  $resolver) {
+    public static function add(string $key, callable  $resolver)
+    {
         self::$resolvers[$key] = $resolver;
     }
-    public static function get(string $key) {
+    public static function get(string $key)
+    {
         return self::$resolvers[$key] ?? null;
     }
 
@@ -34,13 +36,4 @@ class ResolverManager
     private function __clone()
     {
     }
-
-    /**
-     * prevent from being unserialized (which would create a second instance of it)
-     */
-    private function __wakeup()
-    {
-    }
 }
-
-

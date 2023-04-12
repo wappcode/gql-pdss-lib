@@ -2,11 +2,12 @@
 
 namespace GPDCore\Services;
 
-class ConfigService {
+class ConfigService
+{
 
 
     private static  $instance = null;
-    private $config; 
+    private $config;
 
     public static function getInstance(): ConfigService
     {
@@ -16,12 +17,13 @@ class ConfigService {
         }
 
         return static::$instance;
-       
     }
-    public function get($value, $default = null) {
+    public function get($value, $default = null)
+    {
         return $this->getValue($value, $default);
     }
-    public function getValue($value, $default = null) {
+    public function getValue($value, $default = null)
+    {
         return $this->config[$value] ?? $default;
     }
     /**
@@ -30,25 +32,27 @@ class ConfigService {
      * @param array $newConfig
      * @return void
      */
-    public function add(array $newConfig): ConfigService {
+    public function add(array $newConfig): ConfigService
+    {
         $instance = static::getInstance();
         $this->config = array_merge($this->config, $newConfig);
         return $instance;
     }
-   
 
-    private static function createInstance(): ConfigService {
+
+    private static function createInstance(): ConfigService
+    {
         $config = [];
         return new ConfigService($config);
     }
 
-    
+
 
     /**
      * is not allowed to call from outside to prevent from creating multiple instances,
      * to use the singleton, you have to obtain the instance from Singleton::getInstance() instead
      */
-    private function __construct(array $config) 
+    private function __construct(array $config)
     {
         $this->config = $config;
     }
@@ -57,13 +61,6 @@ class ConfigService {
      * prevent the instance from being cloned (which would create a second instance of it)
      */
     private function __clone()
-    {
-    }
-
-    /**
-     * prevent from being unserialized (which would create a second instance of it)
-     */
-    private function __wakeup()
     {
     }
 }

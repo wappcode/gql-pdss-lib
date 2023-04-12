@@ -47,7 +47,4 @@ class AbstractConnectionTypeServiceFactory
     private function __clone()
     {
     }
-    private function __wakeup()
-    {
-    }
 }
