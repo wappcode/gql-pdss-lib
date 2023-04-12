@@ -23,6 +23,8 @@ class GPDApp
     private $productionMode = false;
     private $context;
     private $enviroment;
+    protected $servicesAndGQLTypes = [];
+
 
     public function __construct(IContextService $context, AbstractRouter $router, ?string $enviroment)
     {
@@ -156,7 +158,7 @@ class GPDApp
             $serviceManager->setAlias($k, $alias);
         }
 
-
+        // TODO: Verificar si este código es necesario y si no lo es quitarlo
         $selfInvokables = $this->servicesAndGQLTypes["invokables"] ?? [];
         $selfFactories = $this->servicesAndGQLTypes["factories"] ?? [];
         $selfAliases = $this->servicesAndGQLTypes["aliases"] ?? [];
