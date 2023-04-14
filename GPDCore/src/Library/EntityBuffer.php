@@ -9,10 +9,11 @@ use GraphQL\Type\Definition\ResolveInfo;
 class EntityBuffer
 {
 
-    protected $ids = array();
-    protected $result = array();
+    protected $ids = [];
+    protected $result = [];
     protected $class;
-    protected $relations = array();
+    protected $relations = [];
+    protected $processedIds = [];
 
     /**
      * @param string $class nombre de la clase que esta relacionada
@@ -50,15 +51,18 @@ class EntityBuffer
     public  function loadBuffered($source, array $args, IContextService $context, ResolveInfo $info)
     {
 
-        if (!empty($this->result) || empty($this->ids)) {
+        $processedIds = $this->processedIds;
+        $uniqueIds = array_unique($this->ids);
+        // Convierte los ids en tipo string para no tener problemas al ejecutar un query con id = 0 cuando la columna es un string
+        $uniqueIds = array_map("strval", $uniqueIds);
+        $ids = array_filter($uniqueIds, function ($id) use ($processedIds) {
+            return !in_array($id, $processedIds);
+        });
+        if (empty($ids)) {
             return;
         }
+        $this->processedIds = array_merge($this->processedIds, $ids);
         $entityManager = $context->getEntityManager();
-        $ids = array_unique($this->ids);
-        // Convierte los ids en tipo string para no tener problemas al ejecutar un query con id = 0 cuando la columna es un string
-        $ids = array_map(function ($id) {
-            return "{$id}";
-        }, $ids);
         $qb = $entityManager->createQueryBuilder()->from($this->class, "entity")
             ->select("entity");
         $qb = GeneralDoctrineUtilities::addRelationsToQuery($qb, $this->relations);
