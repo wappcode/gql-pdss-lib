@@ -1,0 +1,23 @@
+version: '2.0'
+services: 
+  gqlpdsslib-mysql:
+    container_name: gqlpdsslib-mysql8
+    image: mysql:8.0.28
+    command: --default-authentication-plugin=mysql_native_password
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: dbpassword
+    ports:
+      - "3306:3306"
+    platform: linux/x86_64
+    volumes:
+      - ~/opt/dockerMysql8:/var/lib/mysql
+  gqlpdsslib-php:
+    container_name: gqlpdsslib-php7.3
+    build: .
+    volumes: 
+      - ..:/var/www/html
+      - ./xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+    ports: 
+      - "80:80"
+    platform: linux/x86_64

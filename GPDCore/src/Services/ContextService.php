@@ -21,6 +21,7 @@ use GPDCore\Graphql\Types\QueryFilterLogic;
 use GPDCore\Graphql\Types\QueryJoinTypeValue;
 use GPDCore\Graphql\Types\QuerySortDirection;
 use GPDCore\Graphql\Types\DateTimeImmutableType;
+use GPDCore\Graphql\Types\DateType;
 use GPDCore\Graphql\Types\QueryFilterConditionType;
 use GPDCore\Graphql\Types\QueryFilterConditionTypeValue;
 
@@ -31,8 +32,8 @@ class ContextService implements IContextService
 
     const SM_PAGE_INFO = 'PageInfo';
     const SM_PAGE_INFO_INPUT = 'PaginationInput';
-    const SM_DATETIME = 'datetime';
-    const SM_DATE = 'date';
+    const SM_DATETIME = 'DateTime';
+    const SM_DATE = 'Date';
     const SM_ENTITY_MANAGER = 'entityManager';
     const SM_CONFIG = 'config';
 
@@ -126,6 +127,7 @@ class ContextService implements IContextService
     protected function addInvokablesToServiceManager()
     {
         $this->serviceManager->setInvokableClass(DateTime::class,  DateTimeType::class);
+        $this->serviceManager->setInvokableClass(DateType::class,  DateType::class);
         $this->serviceManager->setInvokableClass(DateTimeImmutable::class,  DateTimeImmutableType::class);
         $this->serviceManager->setInvokableClass(QueryFilterLogic::class,  QueryFilterLogic::class);
         $this->serviceManager->setInvokableClass(QueryFilterConditionTypeValue::class,  QueryFilterConditionTypeValue::class);
@@ -158,7 +160,7 @@ class ContextService implements IContextService
     protected function addAliasesToServiceManager()
     {
         $this->serviceManager->setAlias(static::SM_DATETIME, DateTime::class); // Declare alias for Doctrine type to be used for filters
-        $this->serviceManager->setAlias(static::SM_DATE, DateTime::class); // Declare alias for Doctrine type to be used for filters
+        $this->serviceManager->setAlias(static::SM_DATE, DateType::class); // Declare alias for Doctrine type to be used for filters
         $this->serviceManager->setAlias(DateTimeInterface::class, DateTime::class);
 
         $this->serviceManager->setAlias(QueryFilterLogic::SM_NAME,  QueryFilterLogic::class);
