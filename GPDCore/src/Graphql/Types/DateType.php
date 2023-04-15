@@ -35,7 +35,11 @@ final class DateType extends ScalarType
         if (!is_string($value)) {
             throw new \UnexpectedValueException('Cannot represent value as DateTime date: ' . Utils::printSafe($value));
         }
-        $date = new DateTime($value);
+        $valueTrim = trim($value);
+        if (!preg_match("/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/", $valueTrim)) {
+            throw new Error('Invalid date format (YYYY-MM-dd)');
+        }
+        $date = new DateTime($valueTrim);
         $dateZone = date_default_timezone_get();
         if (!($dateZone instanceof DateTimeZone)) {
             $dateZone = new DateTimeZone($dateZone);
