@@ -1,2 +1,3 @@
 dev/    export-ignore
 dev-docs/    export-ignore
+cli-config.php  export-ignore 
