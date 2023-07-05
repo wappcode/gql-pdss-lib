@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace GPDCore\Graphql\Types;
 
+use DateTime;
+use DateTimeZone;
 use DateTimeImmutable;
 use DateTimeInterface;
-use DateTimeZone;
 use GraphQL\Error\Error;
 use GraphQL\Utils\Utils;
 use GraphQL\Type\Definition\ScalarType;
@@ -30,14 +31,15 @@ final class DateTimeImmutableType extends ScalarType
         if (!is_string($value)) {
             throw new \UnexpectedValueException('Cannot represent value as DateTime date: ' . Utils::printSafe($value));
         }
-        $date = new DateTimeImmutable($value);
+        $date = new DateTime($value);
         $dateZone = date_default_timezone_get();
         if (!($dateZone instanceof DateTimeZone)) {
             $dateZone = new DateTimeZone($dateZone);
         }
         $date->setTimezone($dateZone);
 
-        return $date;
+        $immutableDate = new DateTimeImmutable($date->format("c"));
+        return $immutableDate;
     }
 
     public function serialize($value)
