@@ -19,6 +19,7 @@ use GPDCore\Graphql\ConnectionTypeFactory;
 use GPDCore\Graphql\Types\QueryFilterType;
 use GPDCore\Graphql\ConnectionQueryResponse;
 use GPDCore\Library\GeneralDoctrineUtilities;
+use GPDCore\Library\QueryDecorator;
 
 class GPDFieldFactory
 {
@@ -30,10 +31,10 @@ class GPDFieldFactory
      *
      * @param string $class
      * @param array $relations
-     * @param callable|null $queryDecorator
+     * @param QueryDecorator | callable | null $queryDecorator  Acceso a función para modificar el query
      * @return callable
      */
-    public static function buildResolverConnection(string $class, array $relations, ?callable $queryDecorator = null): callable
+    public static function buildResolverConnection(string $class, array $relations, $queryDecorator = null): callable
     {
         return function ($root, array $args, IContextService $context, ResolveInfo $info) use ($class, $relations, $queryDecorator) {
             $types = $context->getTypes();
@@ -45,8 +46,9 @@ class GPDFieldFactory
             $qb = QueryFilter::addFilters($qb, $filters);
             $qb = QuerySort::addOrderBy($qb, $sorting);
             $qb = GeneralDoctrineUtilities::addRelationsToQuery($qb, $relations);
-            if (is_callable($queryDecorator)) {
-                $qb = $queryDecorator($qb, $root, $args, $context, $info);
+            $finalQueryDecorator = ($queryDecorator instanceof QueryDecorator) ? $queryDecorator->getDecorator() : $queryDecorator;
+            if (is_callable($finalQueryDecorator)) {
+                $qb = $finalQueryDecorator($qb, $root, $args, $context, $info);
             }
             return ConnectionQueryResponse::get($qb, $root, $args, $context, $info, $relations);
         };
@@ -61,6 +63,7 @@ class GPDFieldFactory
      * @param string $description
      * @param array $relations
      * @param callable|null $proxy // funcion que acepta como parametro un resolver y devuelve un resolver
+     * @param QueryDecorator | callable | null $queryDecorator Acceso a función para modificar el query
      * @return array
      */
     public static function buildFieldConnection(
@@ -68,11 +71,12 @@ class GPDFieldFactory
         ObjectType $connection,
         string $class,
         array $relations = [],
-        ?callable $proxy = null
+        ?callable $proxy = null,
+        $queryDecorator = null
     ): array {
         $types = $context->getTypes();
         $serviceManager = $context->getServiceManager();
-        $resolver = self::buildResolverConnection($class, $relations);
+        $resolver = self::buildResolverConnection($class, $relations, $queryDecorator);
         $proxyResolver = is_callable($proxy) ? $proxy($resolver) : $resolver;
         return [
             'type' => $connection,
@@ -105,10 +109,10 @@ class GPDFieldFactory
      * @param IContextService $context
      * @param string $class
      * @param array $relations
-     * @param callable|null $queryDecorator
+     * @param QueryDecorator | callable | null $queryDecorator Acceso a función para modificar el query
      * @return callable
      */
-    public static function buildResolverList(string $class, array $relations, ?callable $queryDecorator = null): callable
+    public static function buildResolverList(string $class, array $relations, $queryDecorator = null): callable
     {
         return function ($root, array $args, IContextService $context, ResolveInfo $info) use ($class, $relations, $queryDecorator) {
             $types = $context->getTypes();
@@ -124,8 +128,9 @@ class GPDFieldFactory
                 $qb->setMaxResults($limit);
             }
             $qb = GeneralDoctrineUtilities::addRelationsToQuery($qb, $relations);
-            if (is_callable($queryDecorator)) {
-                $qb = $queryDecorator($qb, $root, $args, $context, $info);
+            $finalQueryDecorator = ($queryDecorator instanceof QueryDecorator) ? $queryDecorator->getDecorator() : $queryDecorator;
+            if (is_callable($finalQueryDecorator)) {
+                $qb = $finalQueryDecorator($qb, $root, $args, $context, $info);
             }
             return $qb->getQuery()->getArrayResult();
         };
@@ -138,12 +143,13 @@ class GPDFieldFactory
      * @param string $class
      * @param array $relations
      * @param callable|null $proxy // funcion que acepta como parametro un resolver y devuelve un resolver
+     * @param QueryDecorator | callable | null $queryDecorator  Acceso a función para modificar el query
      * @return array
      */
-    public static function buildFieldList(IContextService $context, string $class, array $relations = [], ?callable $proxy = null): array
+    public static function buildFieldList(IContextService $context, string $class, array $relations = [], ?callable $proxy = null, $queryDecorator): array
     {
         $types = $context->getTypes();
-        $resolver = self::buildResolverList($class, $relations);
+        $resolver = self::buildResolverList($class, $relations, $queryDecorator);
         $proxyResolver = is_callable($proxy) ? $proxy($resolver) : $resolver;
         $serviceManager = $context->getServiceManager();
         return [
