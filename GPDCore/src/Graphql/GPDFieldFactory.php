@@ -18,6 +18,7 @@ use GraphQL\Type\Definition\ResolveInfo;
 use GPDCore\Graphql\ConnectionTypeFactory;
 use GPDCore\Graphql\Types\QueryFilterType;
 use GPDCore\Graphql\ConnectionQueryResponse;
+use GPDCore\Library\EntityAssociations;
 use GPDCore\Library\GeneralDoctrineUtilities;
 use GPDCore\Library\QueryDecorator;
 
@@ -41,6 +42,11 @@ class GPDFieldFactory
             $joins = $args["joins"] ?? [];
             $filters = $args["filter"] ?? [];
             $sorting = $args["sorting"] ?? [];
+
+            $entityManager = $context->getEntityManager();
+            if (empty($relations)) {
+                $relations = EntityAssociations::getWithJoinColumns($entityManager, $class);
+            }
             $qb = $types->createFilteredQueryBuilder($class, [], []);
             $qb = QueryJoins::addJoins($qb, $joins); // se agregan primero los joins para que puedan ser utilizados por filters y orderby
             $qb = QueryFilter::addFilters($qb, $filters);
@@ -74,6 +80,7 @@ class GPDFieldFactory
         ?callable $proxy = null,
         $queryDecorator = null
     ): array {
+
         $types = $context->getTypes();
         $serviceManager = $context->getServiceManager();
         $resolver = self::buildResolverConnection($class, $relations, $queryDecorator);
@@ -119,6 +126,11 @@ class GPDFieldFactory
             $joins = $args["joins"] ?? [];
             $filters = $args["filter"] ?? [];
             $sorting = $args["sorting"] ?? [];
+
+            $entityManager = $context->getEntityManager();
+            if (empty($relations)) {
+                $relations = EntityAssociations::getWithJoinColumns($entityManager, $class);
+            }
             $qb = $types->createFilteredQueryBuilder($class, [], []);
             $qb = QueryJoins::addJoins($qb, $joins); // se agregan primero los joins para que puedan ser utilizados por filters y orderby
             $qb = QueryFilter::addFilters($qb, $filters);
@@ -184,6 +196,11 @@ class GPDFieldFactory
     public static function buildResolverItem(string $class, array $relations, ?callable $queryDecorator = null): callable
     {
         return function ($root, array $args, IContextService $context, ResolveInfo $info) use ($class, $relations, $queryDecorator) {
+
+            $entityManager = $context->getEntityManager();
+            if (empty($relations)) {
+                $relations = EntityAssociations::getWithJoinColumns($entityManager, $class);
+            }
             $types = $context->getTypes();
             $qb = $types->createFilteredQueryBuilder($class,  [], []);
             $id = $args["id"];
@@ -236,6 +253,9 @@ class GPDFieldFactory
     {
         return function ($root, array $args, IContextService $context, ResolveInfo $info) use ($class, $relations) {
             $entityManager = $context->getEntityManager();
+            if (empty($relations)) {
+                $relations = EntityAssociations::getWithJoinColumns($entityManager, $class);
+            }
             $entity = new $class();
             $input = $args["input"];
             ArrayToEntity::apply($entity, $input); // carga los valores del array a la entidad
@@ -281,6 +301,9 @@ class GPDFieldFactory
     {
         return function ($root, array $args, IContextService $context, ResolveInfo $info) use ($class, $relations) {
             $entityManager = $context->getEntityManager();
+            if (empty($relations)) {
+                $relations = EntityAssociations::getWithJoinColumns($entityManager, $class);
+            }
             $id = $args["id"];
             $input = $args["input"];
             $entity = $entityManager->getRepository($class)->find($id);
@@ -327,6 +350,9 @@ class GPDFieldFactory
     {
         return function ($root, array $args, IContextService $context, ResolveInfo $info) use ($class, $relations) {
             $entityManager = $context->getEntityManager();
+            if (empty($relations)) {
+                $relations = EntityAssociations::getWithJoinColumns($entityManager, $class);
+            }
             $id = $args["id"];
             if (empty($id)) {
                 throw new Exception("Id Inválido");
