@@ -78,7 +78,7 @@ class CollectionBuffer
             ->leftJoin("entity.{$this->joinProperty}", $this->joinProperty)
             ->select(array("partial entity.{id}", $this->joinProperty));
 
-        $qb = GeneralDoctrineUtilities::addRelationsToQuery($qb, $finalRelations, $this->joinProperty);
+        $qb = GeneralDoctrineUtilities::addColumnAssociationToQuery($entityManager, $qb, $this->joinClass, $finalRelations, $this->joinProperty);
         if ($this->queryDecorator instanceof QueryDecorator) {
             $decorator = $this->queryDecorator->getDecorator();
             $qb = $decorator($qb, $source, $args, $context, $info);

@@ -51,7 +51,7 @@ class GPDFieldFactory
             $qb = QueryJoins::addJoins($qb, $joins); // se agregan primero los joins para que puedan ser utilizados por filters y orderby
             $qb = QueryFilter::addFilters($qb, $filters);
             $qb = QuerySort::addOrderBy($qb, $sorting);
-            $qb = GeneralDoctrineUtilities::addRelationsToQuery($qb, $relations);
+            $qb = GeneralDoctrineUtilities::addColumnAssociationToQuery($entityManager, $qb, $class, $relations);
             $finalQueryDecorator = ($queryDecorator instanceof QueryDecorator) ? $queryDecorator->getDecorator() : $queryDecorator;
             if (is_callable($finalQueryDecorator)) {
                 $qb = $finalQueryDecorator($qb, $root, $args, $context, $info);
@@ -139,7 +139,7 @@ class GPDFieldFactory
             if ($limit !== null) {
                 $qb->setMaxResults($limit);
             }
-            $qb = GeneralDoctrineUtilities::addRelationsToQuery($qb, $relations);
+            $qb = GeneralDoctrineUtilities::addColumnAssociationToQuery($entityManager, $qb, $class, $relations);
             $finalQueryDecorator = ($queryDecorator instanceof QueryDecorator) ? $queryDecorator->getDecorator() : $queryDecorator;
             if (is_callable($finalQueryDecorator)) {
                 $qb = $finalQueryDecorator($qb, $root, $args, $context, $info);
@@ -207,7 +207,7 @@ class GPDFieldFactory
             $alias = $qb->getRootAliases()[0];
             $qb->andWhere("{$alias}.id = :id")
                 ->setParameter(":id", $id);
-            $qb = GeneralDoctrineUtilities::addRelationsToQuery($qb, $relations);
+            $qb = GeneralDoctrineUtilities::addColumnAssociationToQuery($entityManager, $qb, $class, $relations);
             if (is_callable($queryDecorator)) {
                 $qb = $queryDecorator($qb, $root, $args, $context, $info);
             }

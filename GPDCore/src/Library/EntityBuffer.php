@@ -67,7 +67,7 @@ class EntityBuffer
             ->select("entity");
         $entityColumnAssociations = EntityAssociations::getWithJoinColumns($entityManager, $this->class);
         $finalRelations = !empty($this->relations) ? $this->relations : $entityColumnAssociations;
-        $qb = GeneralDoctrineUtilities::addRelationsToQuery($qb, $finalRelations);
+        $qb = GeneralDoctrineUtilities::addColumnAssociationToQuery($entityManager, $qb, $this->class, $finalRelations);
         $qb->andWhere($qb->expr()->in('entity.id', ':ids'))
             ->setParameter(':ids', $ids);
         $items = $qb->getQuery()->getArrayResult();
