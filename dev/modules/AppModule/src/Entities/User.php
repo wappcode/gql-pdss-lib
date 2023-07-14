@@ -2,6 +2,7 @@
 
 namespace AppModule\Entities;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use GPDCore\Entities\AbstractEntityModelStringId;
 use Doctrine\ORM\Mapping as ORM;
 use GraphQL\Doctrine\Annotation as API;
@@ -40,6 +41,12 @@ class User extends AbstractEntityModelStringId
      */
     private $accounts;
 
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->accounts = new ArrayCollection();
+    }
     /**
      * Get the value of name
      *
