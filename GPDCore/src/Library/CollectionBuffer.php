@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GPDCore\Library;
 
+use GPDCore\Library\QueryDecorator;
 use GraphQL\Type\Definition\ResolveInfo;
 
 class CollectionBuffer
@@ -15,17 +16,23 @@ class CollectionBuffer
     protected $joinProperty;
     protected $joinRelations = [];
     protected $processedIds = [];
+    protected $joinClass;
+    protected $queryDecorator;
 
     /**
      * @param string $class Clase de la entidad que tiene relación con otra
      * @param string $joinProperty  nombre de la propiedad de la relación 
-     * @param string $joinRelations nombres de las propiedades que son a su vez relaciones de la entidad relacionada
+     * @param array $joinRelations nombres de las propiedades que son a su vez relaciones de la entidad relacionada
+     * @param string $joincClass Clase de la entidad relacionada
+     * @param QueryDecorator  | null $queryDecorator  Acceso a función para modificar el query
      */
-    public function __construct(string $class, string $joinProperty, array $joinRelations = [])
+    public function __construct(string $class, string $joinProperty, array $joinRelations = [], string $joinClass = null, ?QueryDecorator $queryDecorator = null)
     {
         $this->class = $class;
         $this->joinProperty = $joinProperty;
         $this->joinRelations = $joinRelations;
+        $this->joinClass = $joinClass;
+        $this->queryDecorator = $queryDecorator;
     }
 
 
@@ -65,12 +72,17 @@ class CollectionBuffer
         }
         $this->processedIds = array_merge($this->processedIds, $ids);
         $entityManager = $context->getEntityManager();
+        $entityColumnAssociations = !empty($this->joinClass) ? EntityAssociations::getWithJoinColumns($entityManager, $this->joinClass) : [];
+        $finalRelations = !empty($this->joinRelations) ? $this->joinRelations : $entityColumnAssociations;
         $qb = $entityManager->createQueryBuilder()->from($this->class, "entity")
             ->leftJoin("entity.{$this->joinProperty}", $this->joinProperty)
             ->select(array("partial entity.{id}", $this->joinProperty));
 
-        $qb = GeneralDoctrineUtilities::addRelationsToQuery($qb, $this->joinRelations, $this->joinProperty);
-
+        $qb = GeneralDoctrineUtilities::addRelationsToQuery($qb, $finalRelations, $this->joinProperty);
+        if ($this->queryDecorator instanceof QueryDecorator) {
+            $decorator = $this->queryDecorator->getDecorator();
+            $qb = $decorator($qb, $source, $args, $context, $info);
+        }
         $items = $qb->andWhere($qb->expr()->in('entity.id', ':ids'))
             ->setParameter(':ids', $ids);
 

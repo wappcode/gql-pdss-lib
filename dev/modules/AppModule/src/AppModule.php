@@ -2,10 +2,26 @@
 
 namespace AppModule;
 
+use AppModule\Entities\Account;
 use DateTime;
+use AppModule\Entities\Post;
+use AppModule\Entities\User;
+use AppModule\Entities\Comment;
+use AppModule\Graphql\ResolversAccount;
+use AppModule\Graphql\ResolversComment;
+use AppModule\Graphql\ResolversPost;
+use AppModule\Graphql\ResolversUser;
+use AppModule\Graphql\TypeAccountConnection;
+use AppModule\Graphql\TypeAccountEdge;
+use AppModule\Graphql\TypeCommentConnection;
+use GraphQL\Type\Definition\Type;
+use AppModule\Graphql\TypePostEdge;
+use AppModule\Graphql\TypeUserEdge;
 use GPDCore\Graphql\Types\DateType;
 use GPDCore\Library\AbstractModule;
-use GraphQL\Type\Definition\Type;
+use AppModule\Graphql\TypeCommentEdge;
+use AppModule\Graphql\TypePostConnection;
+use AppModule\Graphql\TypeUserConnection;
 
 class AppModule extends AbstractModule
 {
@@ -23,7 +39,16 @@ class AppModule extends AbstractModule
     {
         return [
             'invokables' => [],
-            'factories' => [],
+            'factories' => [
+                TypeUserEdge::NAME => TypeUserEdge::getFactory($this->context, User::class),
+                TypeUserConnection::NAME =>  TypeUserConnection::getFactory($this->context, TypeUserEdge::NAME),
+                TypePostEdge::NAME => TypePostEdge::getFactory($this->context, Post::class),
+                TypePostConnection::NAME => TypePostConnection::getFactory($this->context, Post::class),
+                TypeCommentEdge::NAME => TypeCommentEdge::getFactory($this->context, Comment::class),
+                TypeCommentConnection::NAME => TypeCommentConnection::getFactory($this->context, Comment::class),
+                TypeAccountEdge::NAME => TypeAccountEdge::getFactory($this->context, Account::class),
+                TypeAccountConnection::NAME => TypeAccountConnection::getFactory($this->context, Account::class)
+            ],
             'aliases' => []
         ];
     }
@@ -34,7 +59,16 @@ class AppModule extends AbstractModule
      */
     function getResolvers(): array
     {
-        return [];
+        return [
+            'User::accounts' => ResolversUser::getAccountsResolver(),
+            'User::posts' => ResolversUser::getPostsResolver(),
+            'Account::users' => ResolversAccount::getUsersResolver(),
+            'Post::author' => ResolversPost::getAuthorResolver(),
+            'Post::comments' => ResolversPost::getCommentsResolver(),
+            'Comment::post' => ResolversComment::getPostResolver()
+
+
+        ];
     }
     /**
      * Array con los graphql Queries del módulo

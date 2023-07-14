@@ -65,7 +65,9 @@ class EntityBuffer
         $entityManager = $context->getEntityManager();
         $qb = $entityManager->createQueryBuilder()->from($this->class, "entity")
             ->select("entity");
-        $qb = GeneralDoctrineUtilities::addRelationsToQuery($qb, $this->relations);
+        $entityColumnAssociations = EntityAssociations::getWithJoinColumns($entityManager, $this->class);
+        $finalRelations = !empty($this->relations) ? $this->relations : $entityColumnAssociations;
+        $qb = GeneralDoctrineUtilities::addRelationsToQuery($qb, $finalRelations);
         $qb->andWhere($qb->expr()->in('entity.id', ':ids'))
             ->setParameter(':ids', $ids);
         $items = $qb->getQuery()->getArrayResult();

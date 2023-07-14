@@ -26,11 +26,11 @@ class ResolverFactory
             });
         };
     }
-    public static function createCollectionResolver(string $mainClass, string $property, array $propertyRelations)
+    public static function createCollectionResolver(string $mainClass, string $property, array $propertyRelations, string $joinClass = null)
     {
         $key = sprintf("%s::%s", $mainClass, $property);
         if (!isset(static::$buffers[$key])) {
-            static::$buffers[$key] = new CollectionBuffer($mainClass, $property, $propertyRelations);
+            static::$buffers[$key] = new CollectionBuffer($mainClass, $property, $propertyRelations, $joinClass);
         }
         $buffer = static::$buffers[$key];
         return function ($source, $args, $context, $info) use ($buffer) {
