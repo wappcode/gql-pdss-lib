@@ -1,5 +1,6 @@
 <?php
 
+use AppModule\Entities\Account;
 use AppModule\Entities\Post;
 use AppModule\Entities\User;
 use GPDCore\Library\EntityAssociation;

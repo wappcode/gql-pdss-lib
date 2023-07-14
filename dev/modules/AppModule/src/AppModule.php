@@ -44,11 +44,11 @@ class AppModule extends AbstractModule
                 TypeUserEdge::NAME => TypeUserEdge::getFactory($this->context, User::class),
                 TypeUserConnection::NAME =>  TypeUserConnection::getFactory($this->context, TypeUserEdge::NAME),
                 TypePostEdge::NAME => TypePostEdge::getFactory($this->context, Post::class),
-                TypePostConnection::NAME => TypePostConnection::getFactory($this->context, Post::class),
+                TypePostConnection::NAME => TypePostConnection::getFactory($this->context, TypePostEdge::NAME),
                 TypeCommentEdge::NAME => TypeCommentEdge::getFactory($this->context, Comment::class),
-                TypeCommentConnection::NAME => TypeCommentConnection::getFactory($this->context, Comment::class),
+                TypeCommentConnection::NAME => TypeCommentConnection::getFactory($this->context, TypeCommentEdge::NAME),
                 TypeAccountEdge::NAME => TypeAccountEdge::getFactory($this->context, Account::class),
-                TypeAccountConnection::NAME => TypeAccountConnection::getFactory($this->context, Account::class)
+                TypeAccountConnection::NAME => TypeAccountConnection::getFactory($this->context, TypeAccountEdge::NAME)
             ],
             'aliases' => []
         ];
@@ -78,7 +78,11 @@ class AppModule extends AbstractModule
      */
     function getQueryFields(): array
     {
-
+        $serviceManager = $this->context->getServiceManager();
+        $userConnectionType = $serviceManager->get(TypeUserConnection::NAME);
+        $postConnectionType = $serviceManager->get(TypePostConnection::NAME);
+        $accountConnectionType = $serviceManager->get(TypeAccountConnection::NAME);
+        $commentConnectionType = $serviceManager->get(TypeCommentConnection::NAME);
         return [
             'echo' =>  [
                 'type' => Type::nonNull(Type::string()),
@@ -101,7 +105,15 @@ class AppModule extends AbstractModule
                 'resolve' => function ($root, $args) {
                     return new DateTime();
                 }
-            ]
+            ],
+            'userConnection' => GPDFieldFactory::buildFieldConnection($this->context, $userConnectionType, User::class),
+            'user' => GPDFieldFactory::buildFieldItem($this->context, User::class),
+            'postConnection' => GPDFieldFactory::buildFieldConnection($this->context, $postConnectionType, Post::class),
+            'post' => GPDFieldFactory::buildFieldItem($this->context, Post::class),
+            'accountConnection' => GPDFieldFactory::buildFieldConnection($this->context, $accountConnectionType, Account::class),
+            'account' => GPDFieldFactory::buildFieldItem($this->context, Account::class),
+            'commentConnection' => GPDFieldFactory::buildFieldConnection($this->context, $commentConnectionType, Comment::class),
+            'comment' => GPDFieldFactory::buildFieldItem($this->context, Comment::class),
 
         ];
     }
