@@ -3,19 +3,49 @@
 namespace GPDCore\Library;
 
 use ReflectionClass;
+use ReflectionMethod;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\Entity;
 use GPDCore\Library\EntityAssociation;
 
-class EntityAssociationUtilities
+class EntityUtilities
 {
 
+
     /**
-     * Recupera un array con las propiedades de las asociaciones relacionadas con la entidad con una columna en la base de datos
+     * Recupera el nombre de la propiedad que esta como clave primaria
+     *
+     * @param EntityManager $entityManager
+     * @param string $className
+     * @return string
+     */
+    public static function getFirstIdentifier(EntityManager $entityManager, string $className): string
+    {
+        $metadata = $entityManager->getClassMetadata($className);
+        $identifier = $metadata->identifier[0];
+        return $identifier;
+    }
+
+    public static function getFirstIdentifierValue(EntityManager $entityManager, $entity)
+    {
+        $className = get_class($entity);
+        $identifier = static::getFirstIdentifier($entityManager, $className);
+        $refl = new ReflectionClass($entity);
+        $methodName = 'get' . ucfirst($identifier);
+        if ($refl->hasMethod($methodName)) {
+            $method = $refl->getMethod($methodName);
+            if ($method->getModifiers() & ReflectionMethod::IS_PUBLIC) {
+                return $method->invoke($entity);
+            }
+        }
+        return null;
+    }
+    /**
+     * Recupera un array con las  asociaciones de la entidad que estan registradas en una columna de la tabla de la entidad en la base de datos
      *  
      * @return array EntityAssociation[]
      */
-    public static function getWithJoinColumns(EntityManager $entityManager, string $className): array
+    public static function getColumnAssociations(EntityManager $entityManager, string $className): array
     {
         $metadata = $entityManager->getClassMetadata($className);
 

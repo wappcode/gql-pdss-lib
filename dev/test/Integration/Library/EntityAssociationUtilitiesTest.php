@@ -1,19 +1,17 @@
 <?php
 
-use ReflectionClass;
 use AppModule\Entities\Post;
 use AppModule\Entities\User;
-use AppModule\Entities\Account;
 use GPDCore\Library\EntityAssociation;
-use GPDCore\Library\EntityAssociationUtilities;
+use GPDCore\Library\EntityUtilities;
 
-class EntityAssociationUtilitiesTest extends \PHPUnit\Framework\TestCase
+class EntityUtilitiesTest extends \PHPUnit\Framework\TestCase
 {
 	public function testAssociationJoinColumns()
 	{
 
 		global $entityManager;
-		$associations = EntityAssociationUtilities::getWithJoinColumns($entityManager, Post::class);
+		$associations = EntityUtilities::getColumnAssociations($entityManager, Post::class);
 		$hasAssociations =  count($associations) === 1;
 		/** @var EntityAssociation */
 		$relation = $associations["author"];
@@ -27,7 +25,7 @@ class EntityAssociationUtilitiesTest extends \PHPUnit\Framework\TestCase
 	public function testAssociationCollections()
 	{
 		global $entityManager;
-		$associations = EntityAssociationUtilities::getCollections($entityManager, User::class);
+		$associations = EntityUtilities::getCollections($entityManager, User::class);
 		$accountId = $associations["accounts"]->getIdentifier();
 		$this->assertEquals("code", $accountId, "El identificador de una cuenta debe ser la propiedad code");
 	}

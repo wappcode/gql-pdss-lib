@@ -65,14 +65,23 @@ class EntityBuffer
         $entityManager = $context->getEntityManager();
         $qb = $entityManager->createQueryBuilder()->from($this->class, "entity")
             ->select("entity");
-        $entityColumnAssociations = EntityAssociationUtilities::getWithJoinColumns($entityManager, $this->class);
+        $entityColumnAssociations = EntityUtilities::getColumnAssociations($entityManager, $this->class);
         $finalRelations = !empty($this->relations) ? $this->relations : $entityColumnAssociations;
+        $idPropertyName = EntityUtilities::getFirstIdentifier($entityManager, $this->class);
         $qb = GeneralDoctrineUtilities::addColumnAssociationToQuery($entityManager, $qb, $this->class, $finalRelations);
-        $qb->andWhere($qb->expr()->in('entity.id', ':ids'))
+        $qb->andWhere($qb->expr()->in("entity.{$idPropertyName}", ':ids'))
             ->setParameter(':ids', $ids);
         $items = $qb->getQuery()->getArrayResult();
         foreach ($items as $k => $item) {
-            $this->result[$item["id"]] = $item ?? null;
+            $this->result[$item[$idPropertyName]] = $item ?? null;
         }
+    }
+
+    /**
+     * Get the value of class
+     */
+    public function getClass()
+    {
+        return $this->class;
     }
 }

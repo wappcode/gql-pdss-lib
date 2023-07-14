@@ -27,7 +27,8 @@
         }
     },
     "require-dev": {
-        "phpunit/phpunit": "^9.5"
+        "phpunit/phpunit": "^9.5",
+        "wappcode/graphql-basic-client": "^1"
     },
     "license": "MIT"
 }

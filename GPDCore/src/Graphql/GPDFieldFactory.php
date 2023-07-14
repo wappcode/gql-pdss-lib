@@ -18,7 +18,7 @@ use GraphQL\Type\Definition\ResolveInfo;
 use GPDCore\Graphql\ConnectionTypeFactory;
 use GPDCore\Graphql\Types\QueryFilterType;
 use GPDCore\Graphql\ConnectionQueryResponse;
-use GPDCore\Library\EntityAssociationUtilities;
+use GPDCore\Library\EntityUtilities;
 use GPDCore\Library\GeneralDoctrineUtilities;
 use GPDCore\Library\QueryDecorator;
 
@@ -45,7 +45,7 @@ class GPDFieldFactory
 
             $entityManager = $context->getEntityManager();
             if (empty($relations)) {
-                $relations = EntityAssociationUtilities::getWithJoinColumns($entityManager, $class);
+                $relations = EntityUtilities::getColumnAssociations($entityManager, $class);
             }
             $qb = $types->createFilteredQueryBuilder($class, [], []);
             $qb = QueryJoins::addJoins($qb, $joins); // se agregan primero los joins para que puedan ser utilizados por filters y orderby
@@ -129,7 +129,7 @@ class GPDFieldFactory
 
             $entityManager = $context->getEntityManager();
             if (empty($relations)) {
-                $relations = EntityAssociationUtilities::getWithJoinColumns($entityManager, $class);
+                $relations = EntityUtilities::getColumnAssociations($entityManager, $class);
             }
             $qb = $types->createFilteredQueryBuilder($class, [], []);
             $qb = QueryJoins::addJoins($qb, $joins); // se agregan primero los joins para que puedan ser utilizados por filters y orderby
@@ -199,13 +199,14 @@ class GPDFieldFactory
 
             $entityManager = $context->getEntityManager();
             if (empty($relations)) {
-                $relations = EntityAssociationUtilities::getWithJoinColumns($entityManager, $class);
+                $relations = EntityUtilities::getColumnAssociations($entityManager, $class);
             }
             $types = $context->getTypes();
             $qb = $types->createFilteredQueryBuilder($class,  [], []);
+            $idPropertyName = EntityUtilities::getFirstIdentifier($entityManager, $class);
             $id = $args["id"];
             $alias = $qb->getRootAliases()[0];
-            $qb->andWhere("{$alias}.id = :id")
+            $qb->andWhere("{$alias}.{$idPropertyName} = :id")
                 ->setParameter(":id", $id);
             $qb = GeneralDoctrineUtilities::addColumnAssociationToQuery($entityManager, $qb, $class, $relations);
             if (is_callable($queryDecorator)) {
@@ -254,14 +255,15 @@ class GPDFieldFactory
         return function ($root, array $args, IContextService $context, ResolveInfo $info) use ($class, $relations) {
             $entityManager = $context->getEntityManager();
             if (empty($relations)) {
-                $relations = EntityAssociationUtilities::getWithJoinColumns($entityManager, $class);
+                $relations = EntityUtilities::getColumnAssociations($entityManager, $class);
             }
             $entity = new $class();
             $input = $args["input"];
             ArrayToEntity::setValues($entityManager, $entity, $input); // carga los valores del array a la entidad
             $entityManager->persist($entity);
             $entityManager->flush();
-            $result = GeneralDoctrineUtilities::getArrayEntityById($entityManager, $class, $entity->getId(), $relations);
+            $id = EntityUtilities::getFirstIdentifierValue($entityManager, $entity);
+            $result = GeneralDoctrineUtilities::getArrayEntityById($entityManager, $class, $id, $relations);
             return $result;
         };
     }
@@ -302,7 +304,7 @@ class GPDFieldFactory
         return function ($root, array $args, IContextService $context, ResolveInfo $info) use ($class, $relations) {
             $entityManager = $context->getEntityManager();
             if (empty($relations)) {
-                $relations = EntityAssociationUtilities::getWithJoinColumns($entityManager, $class);
+                $relations = EntityUtilities::getColumnAssociations($entityManager, $class);
             }
             $id = $args["id"];
             $input = $args["input"];
@@ -313,7 +315,8 @@ class GPDFieldFactory
             }
             $entityManager->persist($entity);
             $entityManager->flush();
-            $result = GeneralDoctrineUtilities::getArrayEntityById($entityManager, $class, $entity->getId(), $relations);
+            $id = EntityUtilities::getFirstIdentifierValue($entityManager, $entity);
+            $result = GeneralDoctrineUtilities::getArrayEntityById($entityManager, $class, $id, $relations);
             return $result;
         };
     }
@@ -351,8 +354,9 @@ class GPDFieldFactory
         return function ($root, array $args, IContextService $context, ResolveInfo $info) use ($class, $relations) {
             $entityManager = $context->getEntityManager();
             if (empty($relations)) {
-                $relations = EntityAssociationUtilities::getWithJoinColumns($entityManager, $class);
+                $relations = EntityUtilities::getColumnAssociations($entityManager, $class);
             }
+            $idPropertyName = EntityUtilities::getFirstIdentifier($entityManager, $class);
             $id = $args["id"];
             if (empty($id)) {
                 throw new Exception("Id Inválido");
@@ -363,7 +367,7 @@ class GPDFieldFactory
                 throw new Exception("Registro no encontrado");
             }
 
-            $entityManager->createQueryBuilder()->delete($class, 'entity')->andWhere('entity.id = :id')
+            $entityManager->createQueryBuilder()->delete($class, 'entity')->andWhere("entity.{$idPropertyName} = :id")
                 ->setMaxResults(1)
                 ->setParameter(':id', $id)->getQuery()->execute();
             $entityManager->flush();

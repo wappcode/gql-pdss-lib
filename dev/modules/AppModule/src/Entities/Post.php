@@ -137,6 +137,7 @@ class Post extends AbstractEntityModel
     /**
      * Set the value of comments
      *
+     * @API\Exclude
      * @param  Collection  $comments
      *
      * @return  self

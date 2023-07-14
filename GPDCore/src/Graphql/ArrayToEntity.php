@@ -5,7 +5,7 @@ namespace GPDCore\Graphql;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManager;
 use GPDCore\Library\EntityAssociation;
-use GPDCore\Library\EntityAssociationUtilities;
+use GPDCore\Library\EntityUtilities;
 use GraphQL\Doctrine\Definition\EntityID;
 use ReflectionClass;
 use ReflectionMethod;
@@ -37,7 +37,7 @@ class ArrayToEntity
     public static function setValues(EntityManager $entityManager, $entity, array $array)
     {
         $class = new ReflectionClass($entity);
-        $collectionAssociations = EntityAssociationUtilities::getCollections($entityManager, get_class($entity));
+        $collectionAssociations = EntityUtilities::getCollections($entityManager, get_class($entity));
         foreach ($array as $k => $value) {
             $collectionAssociation = $collectionAssociations[$k] ?? null;
             if ($collectionAssociation) {
@@ -89,10 +89,12 @@ class ArrayToEntity
             return;
         }
         $identifier = $relation->getIdentifier();
-        $qb = $entityManager->createQueryBuilder()->from($relation->getTargetEntity(), "entity");
-        $qb->andWhere($qb->expr("entity.{$identifier}", ":ids"))
+        $qb = $entityManager->createQueryBuilder()->from($relation->getTargetEntity(), "entity")
+            ->select("entity");
+        $qb->andWhere($qb->expr()->in("entity.{$identifier}", ":ids"))
             ->setParameter(":ids", $value);
         $result = $qb->getQuery()->getResult();
+
         foreach ($result as $item) {
             $collection->add($item);
         }

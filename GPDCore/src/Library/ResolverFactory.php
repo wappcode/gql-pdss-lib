@@ -17,7 +17,10 @@ class ResolverFactory
     public static function createEntityResolver(EntityBuffer $buffer, string $property)
     {
         return function ($source, array $args, $context, ResolveInfo $info) use ($buffer, $property) {
-            $id = $source[$property]['id'] ?? "0";
+            $entityManager = $context->getEntityManager();
+            $className = $buffer->getClass();
+            $idPropertyName = EntityUtilities::getFirstIdentifier($entityManager, $className);
+            $id = $source[$property][$idPropertyName] ?? "0";
             $buffer->add($id);
             return new Deferred(function () use ($id, $source, $args, $context, $info, $buffer) {
                 $buffer->loadBuffered($source, $args, $context, $info);
@@ -33,8 +36,10 @@ class ResolverFactory
             static::$buffers[$key] = new CollectionBuffer($mainClass, $property, $propertyRelations, $joinClass);
         }
         $buffer = static::$buffers[$key];
-        return function ($source, $args, $context, $info) use ($buffer) {
-            $id = $source['id'] ?? "0";
+        return function ($source, $args, IContextService $context, $info) use ($buffer, $mainClass) {
+            $entityManager = $context->getEntityManager();
+            $idPropertyName = EntityUtilities::getFirstIdentifier($entityManager, $mainClass);
+            $id = $source[$idPropertyName] ?? "0";
             $buffer->add($id);
             return new Deferred(function () use ($id, $source, $args, $context, $info, $buffer) {
                 $buffer->loadBuffered($source, $args, $context, $info);

@@ -45,7 +45,7 @@ class GeneralDoctrineUtilities
     {
         $qbCopy = clone $qb;
         $rootAlias = $alias ?? $qbCopy->getRootAliases()[0];
-        $associations = !empty($associations) ? $associations : EntityAssociationUtilities::getWithJoinColumns($entityManager, $className);
+        $associations = !empty($associations) ? $associations : EntityUtilities::getColumnAssociations($entityManager, $className);
 
         $aliases = $qbCopy->getAllAliases();
         foreach ($associations as $relation) {
@@ -77,8 +77,9 @@ class GeneralDoctrineUtilities
      */
     public static function getArrayEntityById(EntityManager $entityManager, string $class,  $id, array $relations): array
     {
+        $idPropertyName = EntityUtilities::getFirstIdentifier($entityManager, $class);
         $qb = $entityManager->createQueryBuilder()->from($class, 'entity')
-            ->andWhere("entity.id = :id")
+            ->andWhere("entity.{$idPropertyName} = :id")
             ->setParameter(':id', $id)
             ->select('entity');
 

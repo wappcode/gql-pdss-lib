@@ -33,7 +33,7 @@ class Account
 
 
     /**
-     * @ORM\ManyToMany(targetEntity="\AppModule\Entities\User", mappedBy="accounts", cascade={"persist","remove"}, orphanRemoval=true)
+     * @ORM\ManyToMany(targetEntity="\AppModule\Entities\User", mappedBy="accounts")
      *
      * @var Collection
      */
@@ -97,7 +97,7 @@ class Account
     /**
      * Set the value of users
      *
-     * @API\Input(type="id[]")
+     * @API\Exclude
      * @param  Collection  $users
      *
      * @return  self
@@ -111,7 +111,6 @@ class Account
 
     /**
      * Get the value of created
-     *
      * @return  DateTimeImmutable
      */
     public function getCreated()
@@ -121,7 +120,7 @@ class Account
 
     /**
      * Set the value of created
-     *
+     * @API\Exclude
      * @param  DateTimeImmutable  $created
      *
      * @return  self
@@ -135,7 +134,6 @@ class Account
 
     /**
      * Get the value of updated
-     *
      * @return  DateTimeImmutable
      */
     public function getUpdated()
@@ -145,13 +143,14 @@ class Account
 
     /**
      * Set the value of updated
-     *
+     * @API\Exclude
      * @param  DateTimeImmutable  $updated
      *
      * @return  self
      */
-    public function setUpdated(DateTimeImmutable $updated)
+    public function setUpdated()
     {
+        $updated = new DateTimeImmutable();
         $this->updated = $updated;
 
         return $this;

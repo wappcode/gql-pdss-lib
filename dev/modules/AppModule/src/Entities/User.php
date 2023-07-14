@@ -44,7 +44,7 @@ class User extends AbstractEntityModelStringId
 
 
     /**
-     * @ORM\OneToMany(targetEntity="\AppModule\Entities\Post", mappedBy="user",  cascade={"persist","remove"}, orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="\AppModule\Entities\Post", mappedBy="user")
      *
      * @var Collection
      */

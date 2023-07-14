@@ -72,23 +72,24 @@ class CollectionBuffer
         }
         $this->processedIds = array_merge($this->processedIds, $ids);
         $entityManager = $context->getEntityManager();
-        $entityColumnAssociations = !empty($this->joinClass) ? EntityAssociationUtilities::getWithJoinColumns($entityManager, $this->joinClass) : [];
+        $entityColumnAssociations = !empty($this->joinClass) ? EntityUtilities::getColumnAssociations($entityManager, $this->joinClass) : [];
         $finalRelations = !empty($this->joinRelations) ? $this->joinRelations : $entityColumnAssociations;
+        $idPropertyName = EntityUtilities::getFirstIdentifier($entityManager, $this->class);
         $qb = $entityManager->createQueryBuilder()->from($this->class, "entity")
             ->leftJoin("entity.{$this->joinProperty}", $this->joinProperty)
-            ->select(array("partial entity.{id}", $this->joinProperty));
+            ->select(array("partial entity.{{$idPropertyName}}", $this->joinProperty));
 
         $qb = GeneralDoctrineUtilities::addColumnAssociationToQuery($entityManager, $qb, $this->joinClass, $finalRelations, $this->joinProperty);
         if ($this->queryDecorator instanceof QueryDecorator) {
             $decorator = $this->queryDecorator->getDecorator();
             $qb = $decorator($qb, $source, $args, $context, $info);
         }
-        $items = $qb->andWhere($qb->expr()->in('entity.id', ':ids'))
+        $items = $qb->andWhere($qb->expr()->in("entity.{$idPropertyName}", ':ids'))
             ->setParameter(':ids', $ids);
 
         $items = $qb->getQuery()->getArrayResult();
         foreach ($items as $k => $item) {
-            $this->result[$item["id"]] = $item[$this->joinProperty] ?? [];
+            $this->result[$item[$idPropertyName]] = $item[$this->joinProperty] ?? [];
         }
     }
 }

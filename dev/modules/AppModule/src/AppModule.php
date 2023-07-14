@@ -113,7 +113,19 @@ class AppModule extends AbstractModule
     function getMutationFields(): array
     {
         return [
-            'createUser' => GPDFieldFactory::buildFieldCreate($this->context, User::class)
+            'createUser' => GPDFieldFactory::buildFieldCreate($this->context, User::class),
+            'updateUser' => GPDFieldFactory::buildFieldUpdate($this->context, User::class),
+            'deleteUser' => GPDFieldFactory::buildFieldDelete($this->context, User::class),
+            'createAccount' => GPDFieldFactory::buildFieldCreate($this->context, Account::class),
+            'updateAccount' => GPDFieldFactory::buildFieldUpdate($this->context, Account::class),
+            'deleteAccount' => GPDFieldFactory::buildFieldDelete($this->context, Account::class),
+            'createPost' => GPDFieldFactory::buildFieldCreate($this->context, Post::class),
+            'updatePost' => GPDFieldFactory::buildFieldUpdate($this->context, Post::class),
+            'deletePost' => GPDFieldFactory::buildFieldDelete($this->context, Post::class),
+            'createComment' => GPDFieldFactory::buildFieldCreate($this->context, Comment::class),
+            'updateComment' => GPDFieldFactory::buildFieldUpdate($this->context, Comment::class),
+            'deleteComment' => GPDFieldFactory::buildFieldDelete($this->context, Comment::class),
+
         ];
     }
 }
