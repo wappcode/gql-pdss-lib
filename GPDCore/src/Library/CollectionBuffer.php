@@ -22,7 +22,7 @@ class CollectionBuffer
     /**
      * @param string $class Clase de la entidad que tiene relación con otra
      * @param string $joinProperty  nombre de la propiedad de la relación 
-     * @param array $joinRelations nombres de las propiedades que son a su vez relaciones de la entidad relacionada
+     * @param array $joinRelations string[] | EntityAssociation[] nombres de las propiedades que son a su vez relaciones de la entidad relacionada
      * @param string $joincClass Clase de la entidad relacionada
      * @param QueryDecorator  | null $queryDecorator  Acceso a función para modificar el query
      */
@@ -72,7 +72,7 @@ class CollectionBuffer
         }
         $this->processedIds = array_merge($this->processedIds, $ids);
         $entityManager = $context->getEntityManager();
-        $entityColumnAssociations = !empty($this->joinClass) ? EntityAssociations::getWithJoinColumns($entityManager, $this->joinClass) : [];
+        $entityColumnAssociations = !empty($this->joinClass) ? EntityAssociationUtilities::getWithJoinColumns($entityManager, $this->joinClass) : [];
         $finalRelations = !empty($this->joinRelations) ? $this->joinRelations : $entityColumnAssociations;
         $qb = $entityManager->createQueryBuilder()->from($this->class, "entity")
             ->leftJoin("entity.{$this->joinProperty}", $this->joinProperty)

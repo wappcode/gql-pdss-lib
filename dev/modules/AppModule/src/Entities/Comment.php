@@ -15,8 +15,8 @@ class Comment extends AbstractEntityModel
 {
 
     /**
-     * @ORM\Column(type="TEXT",nullable = false)
-     * @var String
+     * @ORM\Column(type="text",nullable = false)
+     * @var string
      */
 
     private $text;
@@ -33,7 +33,7 @@ class Comment extends AbstractEntityModel
     /**
      * Get the value of text
      */
-    public function getText()
+    public function getText(): string
     {
         return $this->text;
     }
@@ -43,7 +43,7 @@ class Comment extends AbstractEntityModel
      *
      * @return  self
      */
-    public function setText($text)
+    public function setText(string $text)
     {
         $this->text = $text;
 

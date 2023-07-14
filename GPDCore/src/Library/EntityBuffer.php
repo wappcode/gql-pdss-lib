@@ -17,7 +17,7 @@ class EntityBuffer
 
     /**
      * @param string $class nombre de la clase que esta relacionada
-     * @param string $relations nombres de las propiedades que son a su vez relaciones de la entidad relacionada
+     * @param string $relations string[] | EntityAssociation[] nombres de las propiedades que son a su vez relaciones de la entidad relacionada
      */
     public function __construct(string $class, array $relations = [])
     {
@@ -65,7 +65,7 @@ class EntityBuffer
         $entityManager = $context->getEntityManager();
         $qb = $entityManager->createQueryBuilder()->from($this->class, "entity")
             ->select("entity");
-        $entityColumnAssociations = EntityAssociations::getWithJoinColumns($entityManager, $this->class);
+        $entityColumnAssociations = EntityAssociationUtilities::getWithJoinColumns($entityManager, $this->class);
         $finalRelations = !empty($this->relations) ? $this->relations : $entityColumnAssociations;
         $qb = GeneralDoctrineUtilities::addColumnAssociationToQuery($entityManager, $qb, $this->class, $finalRelations);
         $qb->andWhere($qb->expr()->in('entity.id', ':ids'))

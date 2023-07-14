@@ -33,18 +33,25 @@ class GeneralDoctrineUtilities
     }
     /**
      * Crea una copia del query agregandole los alias con las claves primarias
+     *
+     * @param EntityManager $entityManager
+     * @param QueryBuilder $qb
+     * @param string $className
+     * @param array $associations string[] | EntityAssociation[]
+     * @param string|null $alias
+     * @return QueryBuilder
      */
     public static function addColumnAssociationToQuery(EntityManager $entityManager, QueryBuilder $qb, string $className, array $associations = [], ?string $alias = null): QueryBuilder
     {
         $qbCopy = clone $qb;
         $rootAlias = $alias ?? $qbCopy->getRootAliases()[0];
-        $associations = !empty($associations) ? $associations : EntityAssociations::getWithJoinColumns($entityManager, $className);
+        $associations = !empty($associations) ? $associations : EntityAssociationUtilities::getWithJoinColumns($entityManager, $className);
 
         $aliases = $qbCopy->getAllAliases();
         foreach ($associations as $relation) {
-            if (is_array($relation)) {
-                $fieldName = $relation["fieldName"];
-                $identifier = $relation["targetEntity"];
+            if ($relation instanceof EntityAssociation) {
+                $fieldName = $relation->getFieldName();
+                $identifier = $relation->getTargetEntity();
             } else {
                 $fieldName = $relation;
                 $identifier = "id";

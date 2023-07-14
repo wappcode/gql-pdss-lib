@@ -18,7 +18,7 @@ use GraphQL\Type\Definition\ResolveInfo;
 use GPDCore\Graphql\ConnectionTypeFactory;
 use GPDCore\Graphql\Types\QueryFilterType;
 use GPDCore\Graphql\ConnectionQueryResponse;
-use GPDCore\Library\EntityAssociations;
+use GPDCore\Library\EntityAssociationUtilities;
 use GPDCore\Library\GeneralDoctrineUtilities;
 use GPDCore\Library\QueryDecorator;
 
@@ -31,7 +31,7 @@ class GPDFieldFactory
      * $queryDecorator es una funcion que modifica el query acepta como parámetro un QueryBuilder y retorna una copia modificada function(QueryBuilder $qb);
      *
      * @param string $class
-     * @param array $relations
+     * @param array $relations string[] | EntityAssociation[]
      * @param QueryDecorator | callable | null $queryDecorator  Acceso a función para modificar el query
      * @return callable
      */
@@ -45,7 +45,7 @@ class GPDFieldFactory
 
             $entityManager = $context->getEntityManager();
             if (empty($relations)) {
-                $relations = EntityAssociations::getWithJoinColumns($entityManager, $class);
+                $relations = EntityAssociationUtilities::getWithJoinColumns($entityManager, $class);
             }
             $qb = $types->createFilteredQueryBuilder($class, [], []);
             $qb = QueryJoins::addJoins($qb, $joins); // se agregan primero los joins para que puedan ser utilizados por filters y orderby
@@ -129,7 +129,7 @@ class GPDFieldFactory
 
             $entityManager = $context->getEntityManager();
             if (empty($relations)) {
-                $relations = EntityAssociations::getWithJoinColumns($entityManager, $class);
+                $relations = EntityAssociationUtilities::getWithJoinColumns($entityManager, $class);
             }
             $qb = $types->createFilteredQueryBuilder($class, [], []);
             $qb = QueryJoins::addJoins($qb, $joins); // se agregan primero los joins para que puedan ser utilizados por filters y orderby
@@ -158,7 +158,7 @@ class GPDFieldFactory
      * @param QueryDecorator | callable | null $queryDecorator  Acceso a función para modificar el query
      * @return array
      */
-    public static function buildFieldList(IContextService $context, string $class, array $relations = [], ?callable $proxy = null, $queryDecorator): array
+    public static function buildFieldList(IContextService $context, string $class, array $relations = [], ?callable $proxy = null, $queryDecorator = null): array
     {
         $types = $context->getTypes();
         $resolver = self::buildResolverList($class, $relations, $queryDecorator);
@@ -199,7 +199,7 @@ class GPDFieldFactory
 
             $entityManager = $context->getEntityManager();
             if (empty($relations)) {
-                $relations = EntityAssociations::getWithJoinColumns($entityManager, $class);
+                $relations = EntityAssociationUtilities::getWithJoinColumns($entityManager, $class);
             }
             $types = $context->getTypes();
             $qb = $types->createFilteredQueryBuilder($class,  [], []);
@@ -254,11 +254,11 @@ class GPDFieldFactory
         return function ($root, array $args, IContextService $context, ResolveInfo $info) use ($class, $relations) {
             $entityManager = $context->getEntityManager();
             if (empty($relations)) {
-                $relations = EntityAssociations::getWithJoinColumns($entityManager, $class);
+                $relations = EntityAssociationUtilities::getWithJoinColumns($entityManager, $class);
             }
             $entity = new $class();
             $input = $args["input"];
-            ArrayToEntity::apply($entity, $input); // carga los valores del array a la entidad
+            ArrayToEntity::setValues($entityManager, $entity, $input); // carga los valores del array a la entidad
             $entityManager->persist($entity);
             $entityManager->flush();
             $result = GeneralDoctrineUtilities::getArrayEntityById($entityManager, $class, $entity->getId(), $relations);
@@ -302,12 +302,12 @@ class GPDFieldFactory
         return function ($root, array $args, IContextService $context, ResolveInfo $info) use ($class, $relations) {
             $entityManager = $context->getEntityManager();
             if (empty($relations)) {
-                $relations = EntityAssociations::getWithJoinColumns($entityManager, $class);
+                $relations = EntityAssociationUtilities::getWithJoinColumns($entityManager, $class);
             }
             $id = $args["id"];
             $input = $args["input"];
             $entity = $entityManager->getRepository($class)->find($id);
-            ArrayToEntity::apply($entity, $input); // carga los valores del array a la entidad
+            ArrayToEntity::setValues($entityManager, $entity, $input); // carga los valores del array a la entidad
             if (method_exists($entity, 'setUpdated')) {
                 $entity->setUpdated();
             }
@@ -351,7 +351,7 @@ class GPDFieldFactory
         return function ($root, array $args, IContextService $context, ResolveInfo $info) use ($class, $relations) {
             $entityManager = $context->getEntityManager();
             if (empty($relations)) {
-                $relations = EntityAssociations::getWithJoinColumns($entityManager, $class);
+                $relations = EntityAssociationUtilities::getWithJoinColumns($entityManager, $class);
             }
             $id = $args["id"];
             if (empty($id)) {

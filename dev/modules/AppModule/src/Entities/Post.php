@@ -129,7 +129,7 @@ class Post extends AbstractEntityModel
      *
      * @return  Collection
      */
-    public function getComments()
+    public function getComments(): Collection
     {
         return $this->comments;
     }

@@ -97,6 +97,7 @@ class Account
     /**
      * Set the value of users
      *
+     * @API\Input(type="id[]")
      * @param  Collection  $users
      *
      * @return  self

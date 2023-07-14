@@ -35,7 +35,7 @@ class User extends AbstractEntityModelStringId
      * @ORM\JoinTable(name="users_accounts", joinColumns={
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      * },
-     * inverseJoinColumns={@ORM\JoinColumn(name="account_id", referencedColumnName="id")}
+     * inverseJoinColumns={@ORM\JoinColumn(name="account_code", referencedColumnName="code")}
      * )
      *
      * @var Collection
@@ -143,7 +143,7 @@ class User extends AbstractEntityModelStringId
     /**
      * Set the value of posts
      *
-     * @API\Input(type="id[]")
+     * @API\Exclude
      * @param  Collection  $posts
      *
      * @return  self

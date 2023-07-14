@@ -22,6 +22,7 @@ use GPDCore\Library\AbstractModule;
 use AppModule\Graphql\TypeCommentEdge;
 use AppModule\Graphql\TypePostConnection;
 use AppModule\Graphql\TypeUserConnection;
+use GPDCore\Graphql\GPDFieldFactory;
 
 class AppModule extends AbstractModule
 {
@@ -101,6 +102,7 @@ class AppModule extends AbstractModule
                     return new DateTime();
                 }
             ]
+
         ];
     }
     /**
@@ -110,6 +112,8 @@ class AppModule extends AbstractModule
      */
     function getMutationFields(): array
     {
-        return [];
+        return [
+            'createUser' => GPDFieldFactory::buildFieldCreate($this->context, User::class)
+        ];
     }
 }
