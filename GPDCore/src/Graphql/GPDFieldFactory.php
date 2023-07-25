@@ -35,7 +35,7 @@ class GPDFieldFactory
      * @param QueryDecorator | callable | null $queryDecorator  Acceso a función para modificar el query
      * @return callable
      */
-    public static function buildResolverConnection(string $class, array $relations, $queryDecorator = null): callable
+    public static function buildResolverConnection(string $class, ?array $relations = null, $queryDecorator = null): callable
     {
         return function ($root, array $args, IContextService $context, ResolveInfo $info) use ($class, $relations, $queryDecorator) {
             $types = $context->getTypes();
@@ -76,7 +76,7 @@ class GPDFieldFactory
         IContextService $context,
         ObjectType $connection,
         string $class,
-        array $relations = [],
+        ?array $relations = null,
         ?callable $proxy = null,
         $queryDecorator = null
     ): array {
@@ -119,7 +119,7 @@ class GPDFieldFactory
      * @param QueryDecorator | callable | null $queryDecorator Acceso a función para modificar el query
      * @return callable
      */
-    public static function buildResolverList(string $class, array $relations, $queryDecorator = null): callable
+    public static function buildResolverList(string $class, ?array $relations = null, $queryDecorator = null): callable
     {
         return function ($root, array $args, IContextService $context, ResolveInfo $info) use ($class, $relations, $queryDecorator) {
             $types = $context->getTypes();
@@ -158,7 +158,7 @@ class GPDFieldFactory
      * @param QueryDecorator | callable | null $queryDecorator  Acceso a función para modificar el query
      * @return array
      */
-    public static function buildFieldList(IContextService $context, string $class, array $relations = [], ?callable $proxy = null, $queryDecorator = null): array
+    public static function buildFieldList(IContextService $context, string $class, ?array $relations = null, ?callable $proxy = null, $queryDecorator = null): array
     {
         $types = $context->getTypes();
         $resolver = self::buildResolverList($class, $relations, $queryDecorator);
@@ -193,7 +193,7 @@ class GPDFieldFactory
      * @param callable|null $queryDecorator
      * @return callable
      */
-    public static function buildResolverItem(string $class, array $relations, ?callable $queryDecorator = null): callable
+    public static function buildResolverItem(string $class, ?array $relations = null, ?callable $queryDecorator = null): callable
     {
         return function ($root, array $args, IContextService $context, ResolveInfo $info) use ($class, $relations, $queryDecorator) {
 
@@ -224,7 +224,7 @@ class GPDFieldFactory
      * @param callable|null $proxy // funcion que acepta como parametro un resolver y devuelve un resolver
      * @return array
      */
-    public static function buildFieldItem(IContextService $context, string $class, array $relations = [], ?callable $proxy = null): array
+    public static function buildFieldItem(IContextService $context, string $class, ?array $relations = null, ?callable $proxy = null): array
     {
         $types = $context->getTypes();
         $resolver = self::buildResolverItem($class, $relations);
@@ -250,7 +250,7 @@ class GPDFieldFactory
      * @param array $relations
      * @return callable
      */
-    public static function buildResolverCreate(string $class, array $relations): callable
+    public static function buildResolverCreate(string $class, ?array $relations = null): callable
     {
         return function ($root, array $args, IContextService $context, ResolveInfo $info) use ($class, $relations) {
             $entityManager = $context->getEntityManager();
@@ -277,7 +277,7 @@ class GPDFieldFactory
      * @param callable|null $proxy // funcion que acepta como parametro un resolver y devuelve un resolver
      * @return array
      */
-    public static function buildFieldCreate(IContextService $context, string $class, array $relations = [], ?callable $proxy = null): array
+    public static function buildFieldCreate(IContextService $context, string $class, ?array $relations = null, ?callable $proxy = null): array
     {
         $types = $context->getTypes();
         $resolver = self::buildResolverCreate($class, $relations);
@@ -299,7 +299,7 @@ class GPDFieldFactory
      * @param array $relations
      * @return callable
      */
-    public static function buildResolverUpdate(string $class, array $relations): callable
+    public static function buildResolverUpdate(string $class, ?array $relations = null): callable
     {
         return function ($root, array $args, IContextService $context, ResolveInfo $info) use ($class, $relations) {
             $entityManager = $context->getEntityManager();
@@ -329,7 +329,7 @@ class GPDFieldFactory
      * @param callable|null $proxy // funcion que acepta como parametro un resolver y devuelve un resolver
      * @return array
      */
-    public static function buildFieldUpdate(IContextService $context, string $class, array $relations = [], ?callable $proxy = null): array
+    public static function buildFieldUpdate(IContextService $context, string $class, ?array $relations = null, ?callable $proxy = null): array
     {
         $types = $context->getTypes();
         $resolver = self::buildResolverUpdate($class, $relations);
@@ -349,7 +349,7 @@ class GPDFieldFactory
      * Aplica el resolve por default para eliminar una entidad
      * @return array
      */
-    public static function buildResolverDelete(string $class, array $relations): callable
+    public static function buildResolverDelete(string $class, ?array $relations = null): callable
     {
         return function ($root, array $args, IContextService $context, ResolveInfo $info) use ($class, $relations) {
             $entityManager = $context->getEntityManager();
@@ -385,7 +385,7 @@ class GPDFieldFactory
      * @param callable|null $proxy // funcion que acepta como parametro un resolver y devuelve un resolver
      * @return array
      */
-    public static function buildFieldDelete(IContextService $context, string $class, array $relations = [], ?callable $proxy = null)
+    public static function buildFieldDelete(IContextService $context, string $class, ?array $relations = null, ?callable $proxy = null)
     {
         $types = $context->getTypes();
         $resolver = self::buildResolverDelete($class, $relations);
