@@ -59,9 +59,9 @@ class GeneralDoctrineUtilities
             if (!in_array($fieldName, $aliases)) {
                 $qbCopy->leftJoin("{$rootAlias}.{$fieldName}", $fieldName);
                 // si ya esta asignada la relación el select id se debe realizar desde donde se agrego la relación
-                $qbCopy->addSelect("partial {$fieldName}.{ {$identifier} as id}");
+                $qbCopy->addSelect("partial {$fieldName}.{{$identifier}}");
             } else {
-                $qbCopy->addSelect("partial {$fieldName}.{ {$identifier} as id}");
+                $qbCopy->addSelect("partial {$fieldName}.{{$identifier}}");
             }
         }
         return $qbCopy;
