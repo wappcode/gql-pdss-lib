@@ -51,7 +51,7 @@ class GeneralDoctrineUtilities
         foreach ($associations as $relation) {
             if ($relation instanceof EntityAssociation) {
                 $fieldName = $relation->getFieldName();
-                $identifier = $relation->getTargetEntity();
+                $identifier = $relation->getIdentifier();
             } else {
                 $fieldName = $relation;
                 $identifier = "id";
