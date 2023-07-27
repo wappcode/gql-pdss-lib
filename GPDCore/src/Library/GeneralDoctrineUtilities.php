@@ -11,10 +11,17 @@ use Doctrine\ORM\EntityManager;
 class GeneralDoctrineUtilities
 {
 
+
+
     /**
      * Crea una copia del query agregandole los alias con ids
+     * IMPORTANTE: Solo se debe utilizar para agregar las relaciones de un entidad, si se utiliza para múltiples hay la posibilidad que los alias se confundan cuando hay mas de una entidad con la misma propiead
+     * @param QueryBuilder $qb
+     * @param array $relations
+     * @param string|null $alias Se utiliza para agregar las asociaciones de un join en lugar de la clase principal del query 
+     * @return QueryBuilder
      */
-    public static function addRelationsToQuery(QueryBuilder $qb, $relations, ?string $alias = null): QueryBuilder
+    public static function addRelationsToQuery(QueryBuilder $qb, array $relations, ?string $alias = null): QueryBuilder
     {
         $qbCopy = clone $qb;
         $rootAlias = $alias ?? $qbCopy->getRootAliases()[0];
@@ -33,15 +40,15 @@ class GeneralDoctrineUtilities
     }
     /**
      * Crea una copia del query agregandole los alias con las claves primarias
-     *
+     * IMPORTANTE: Solo se debe utilizar para agregar las relaciones de un entidad, si se utiliza para múltiples hay la posibilidad que los alias se confundan cuando hay mas de una entidad con la misma propiead
      * @param EntityManager $entityManager
      * @param QueryBuilder $qb
      * @param string $className
      * @param array $associations string[] | EntityAssociation[]
-     * @param string|null $alias
+     * @param string|null $alias  Se utiliza para agregar las asociaciones de un join en lugar de la clase principal del query 
      * @return QueryBuilder
      */
-    public static function addColumnAssociationToQuery(EntityManager $entityManager, QueryBuilder $qb, string $className, array $associations = [], ?string $alias = null): QueryBuilder
+    public static function addColumnAssociationToQuery(EntityManager $entityManager, QueryBuilder $qb, string $className, ?array $associations = null, ?string $alias = null): QueryBuilder
     {
         $qbCopy = clone $qb;
         $rootAlias = $alias ?? $qbCopy->getRootAliases()[0];
@@ -75,7 +82,7 @@ class GeneralDoctrineUtilities
      * @param array $relations
      * @return array
      */
-    public static function getArrayEntityById(EntityManager $entityManager, string $class,  $id, array $relations): array
+    public static function getArrayEntityById(EntityManager $entityManager, string $class,  $id, ?array $relations = null): array
     {
         $idPropertyName = EntityUtilities::getFirstIdentifier($entityManager, $class);
         $qb = $entityManager->createQueryBuilder()->from($class, 'entity')

@@ -42,8 +42,9 @@ class EntityUtilities
     }
     /**
      * Recupera un array con las  asociaciones de la entidad que estan registradas en una columna de la tabla de la entidad en la base de datos
+     * Importante las claves del array son los nombres de las propiedades relacionadas.
      *  
-     * @return array EntityAssociation[]
+     * @return array [associationName => EntityAsociation,...]
      */
     public static function getColumnAssociations(EntityManager $entityManager, string $className): array
     {
