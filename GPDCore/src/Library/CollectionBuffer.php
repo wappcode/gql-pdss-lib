@@ -26,7 +26,7 @@ class CollectionBuffer
      * @param string $joincClass Clase de la entidad relacionada
      * @param QueryDecorator  | null $queryDecorator  Acceso a función para modificar el query
      */
-    public function __construct(string $class, string $joinProperty, array $joinRelations = [], string $joinClass = null, ?QueryDecorator $queryDecorator = null)
+    public function __construct(string $class, string $joinProperty, ?array $joinRelations = null, string $joinClass = null, ?QueryDecorator $queryDecorator = null)
     {
         $this->class = $class;
         $this->joinProperty = $joinProperty;

@@ -29,7 +29,17 @@ class ResolverFactory
             });
         };
     }
-    public static function createCollectionResolver(string $mainClass, string $property, array $propertyRelations, string $joinClass = null)
+    /**
+     * Crea un collection resolver
+     * IMPORTANTE asignar el valor de propertyRelations o joinClass no agrega los datos de las asociaciones si los dos son nulos
+     *
+     * @param string $mainClass
+     * @param string $property
+     * @param array|null $propertyRelations
+     * @param string|null $joinClass
+     * @return void
+     */
+    public static function createCollectionResolver(string $mainClass, string $property, ?array $propertyRelations = null, string $joinClass = null)
     {
         $key = sprintf("%s::%s", $mainClass, $property);
         if (!isset(static::$buffers[$key])) {
