@@ -79,7 +79,7 @@ class CollectionBuffer
             ->leftJoin("entity.{$this->joinProperty}", $this->joinProperty)
             ->select(array("partial entity.{{$idPropertyName}}", $this->joinProperty));
 
-        if (!empty($joincClass)) {
+        if (!empty($this->joinClass)) {
             $qb = GeneralDoctrineUtilities::addColumnAssociationToQuery($entityManager, $qb, $this->joinClass, $finalRelations, $this->joinProperty);
         } else {
             $qb = GeneralDoctrineUtilities::addRelationsToQuery($qb, $finalRelations, $this->joinProperty);
