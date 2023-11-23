@@ -1,3 +1,5 @@
 dev/    export-ignore
 dev-docs/    export-ignore
 cli-config.php  export-ignore 
+dockerfiles_gqlpdsslib_php7_apache2_mysql8 export-ignore
+.gitattributes

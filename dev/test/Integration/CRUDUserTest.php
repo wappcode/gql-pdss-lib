@@ -25,9 +25,10 @@ class CRUDUserTest extends \PHPUnit\Framework\TestCase
    */
   protected function setUp(): void
   {
+    $app_port = getenv("APP_PORT") ? getenv("APP_PORT") : "8000";
     global $entityManager;
     $this->entityManager = $entityManager;
-    $this->gqlClient = new GQLClient("http://localhost:8000/api");
+    $this->gqlClient = new GQLClient("http://localhost:{$app_port}/index.php/api");
   }
 
   public function testCreateUser()

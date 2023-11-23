@@ -1,12 +1,6 @@
-Intalar
--------
-
-
-
+## Intalar
 
 ## Usar Composer
-
-
 
 Ejecutar
 
@@ -24,9 +18,7 @@ Agregar al archivo composer.json las referencias a la libreria
 
 Ejecutar
 
-    ./composer.phar require 
-
-
+    ./composer.phar install
 
 Crear estructura de directorios
 
@@ -47,10 +39,7 @@ Crear la siguiente estructura de directorios
                 Graphql
                 Services
 
-
-
 Crear archivo modules/AppModule/src/Services/AppRouter.php con el siguiente contenido
-
 
     <?php
 
@@ -68,7 +57,7 @@ Crear archivo modules/AppModule/src/Services/AppRouter.php con el siguiente cont
             {
                 $GraphqlMethod = $this->isProductionMode ? 'POST' : ['POST','GET'];
 
-                // Agrega las entradas para consultas graphql 
+                // Agrega las entradas para consultas graphql
                 $this->addRoute(new RouteModel($GraphqlMethod, '/api', GraphqlController::class));
 
                 // Las demás rutas deben ir abajo para poder utilizar la configuración de los módulos y sus servicios
@@ -147,10 +136,9 @@ Agregar el archivo modules/AppModule/src/AppModule.php
             return [];
         }
 
-    
 
-    } 
 
+    }
 
 Agregar al archivo composer.json el siguiente código
 
@@ -159,7 +147,6 @@ Agregar al archivo composer.json el siguiente código
             "AppModule\\": "modules/AppModule/src/"
         }
     }
-
 
 Ejecutar ./composer.phar dump-autoload -o
 
@@ -174,9 +161,9 @@ config/local.config.php
 return [];
 ```
 
-
 Crear un archivo public/index.php con el siguiente contenido
-``` 
+
+```
 <?php
 
 use AppModule\AppModule;
@@ -198,7 +185,7 @@ $app->addModules([
 $localConfig = require __DIR__."/../config/local.config.php";
 $context->getConfig()->add($localConfig);
 $app->run();
-````
+```
 
 Agregar archivo config/doctrine.entities.php con el siguiente contenido
 
@@ -207,8 +194,6 @@ Agregar archivo config/doctrine.entities.php con el siguiente contenido
     return  [
         "AppModule\Entities" => __DIR__."/../modules/AppModule/src/Entities",
     ];
-
-
 
 Agregar archivo config/doctrine.local.php con el siguiente contenido
 
@@ -225,7 +210,6 @@ Agregar archivo config/doctrine.local.php con el siguiente contenido
         "entities"=> require __DIR__."/doctrine.entities.php"
     ];
 
-
 Crear archivo cli-config.php con el siguiente código
 
     <?php
@@ -240,11 +224,7 @@ Crear archivo cli-config.php con el siguiente código
 
     return ConsoleRunner::createHelperSet($entityManager);
 
-
-
-
 ## Crear entities en AppModule
-
 
 Crear archivo modules/AppModule/src/Entities/Post.php
 
@@ -261,7 +241,7 @@ Crear archivo modules/AppModule/src/Entities/Post.php
     /**
     *
     * @ORM\Entity
-    * 
+    *
     */
     final class Post extends AbstractEntityModel
     {
@@ -300,7 +280,7 @@ Crear archivo modules/AppModule/src/Entities/Post.php
         /**
         *
         * @return  string
-        */ 
+        */
         public function getTitle(): string
         {
             return $this->title;
@@ -311,7 +291,7 @@ Crear archivo modules/AppModule/src/Entities/Post.php
         * @param  string  $title
         *
         * @return  self
-        */ 
+        */
         public function setTitle(string $title)
         {
             $this->title = $title;
@@ -322,7 +302,7 @@ Crear archivo modules/AppModule/src/Entities/Post.php
         /**
         *
         * @return  string
-        */ 
+        */
         public function getBody(): string
         {
             return $this->body;
@@ -333,7 +313,7 @@ Crear archivo modules/AppModule/src/Entities/Post.php
         * @param  string  $body
         *
         * @return  self
-        */ 
+        */
         public function setBody(string $body)
         {
             $this->body = $body;
@@ -344,7 +324,7 @@ Crear archivo modules/AppModule/src/Entities/Post.php
         /**
         *
         * @return  DateTimeImmutable
-        */ 
+        */
         public function getPublicationDate(): DateTimeImmutable
         {
             return $this->publicationDate;
@@ -355,7 +335,7 @@ Crear archivo modules/AppModule/src/Entities/Post.php
         * @param  DateTimeImmutable  $publicationDate
         *
         * @return  self
-        */ 
+        */
         public function setPublicationDate(DateTimeImmutable $publicationDate)
         {
             $this->publicationDate = $publicationDate;
@@ -366,7 +346,7 @@ Crear archivo modules/AppModule/src/Entities/Post.php
         /**
         *
         * @return  string
-        */ 
+        */
         public function getStatus()
         {
             return $this->status;
@@ -377,7 +357,7 @@ Crear archivo modules/AppModule/src/Entities/Post.php
         * @param  string  $status
         *
         * @return  self
-        */ 
+        */
         public function setStatus(string $status)
         {
             $this->status = $status;
@@ -386,15 +366,11 @@ Crear archivo modules/AppModule/src/Entities/Post.php
         }
     }
 
-
-
-
-Actualizar  archivo doctrine.entities.php con la ubicación de las entidades
+Actualizar archivo doctrine.entities.php con la ubicación de las entidades
 
     return  [
-            "AppModule\Entities" => __DIR__."/../modules/AppModule/src/Entities",            
+            "AppModule\Entities" => __DIR__."/../modules/AppModule/src/Entities",
     ]
-
 
 Ejecutar el siguiente comando para generar el código SQL para actualizar la base de datos
 
@@ -414,7 +390,7 @@ Para consultar api Graphql la ruta es http://localhost:8000/api
 
 # API
 
-### ConnectionTypeFactory 
+### ConnectionTypeFactory
 
 Clase que genera tipos connection para consultas de listas con paginación
 
@@ -438,7 +414,6 @@ Crea un tipo connection con los siguientes campos
         }
     }
 
-
 getPageInfoType(): \GraphQL\Type\Definition\ObjectType
 
 Crea un tipo PageInfo
@@ -449,6 +424,7 @@ Crea un tipo PageInfo
         startCursor: string!
         endCursor: string!
     }
+
 createEdgeType(\GraphQL\Type\Definition\ObjectType $nodeType): \GraphQL\Type\Definition\ObjectType
 
 Crea un tipo Edge
