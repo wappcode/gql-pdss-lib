@@ -45,7 +45,7 @@ class ContextService implements IContextService
     protected $entityManager;
 
     /**
-     * @var Types
+     * @var ?Types
      */
     protected $types;
 
@@ -60,6 +60,7 @@ class ContextService implements IContextService
     protected $doctrineConfigFile = __DIR__ . "/../../../../../../config/doctrine.local.php";
     protected $doctrineCacheDir = __DIR__ . "/../../../../../../data/DoctrineORMModule";
     protected $hasBeenInitialized = false;
+    protected $withoutDoctrine = false;
 
     /**
      * @var ServiceManager
@@ -70,20 +71,22 @@ class ContextService implements IContextService
     {
         $this->serviceManager = $serviceManager;
     }
-    public function init(string $enviroment, bool $productionMode): void
+    public function init(string $enviroment, bool $productionMode, bool $withoutDoctrine = false): void
     {
         if ($this->hasBeenInitialized) {
             throw new Exception("Context can be initialized just once");
         }
         $this->enviroment = $enviroment;
         $this->productionMode = $productionMode;
-        $this->setEntityManager();
-        $this->setTypes();
-        $this->addTypes();
+        if (!$withoutDoctrine) {
+            $this->setEntityManager();
+            $this->setTypes();
+            $this->addTypes();
+        }
         $this->hasBeenInitialized = true;
     }
 
-    public function getEntityManager(): EntityManager
+    public function getEntityManager(): ?EntityManager
     {
         return $this->entityManager;
     }
@@ -91,7 +94,7 @@ class ContextService implements IContextService
     {
         return ConfigService::getInstance();
     }
-    public function getTypes(): Types
+    public function getTypes(): ?Types
     {
         return $this->types;
     }

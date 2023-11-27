@@ -43,7 +43,8 @@ abstract class AbstractGQLServer
     protected $app;
 
 
-    public function __construct(GPDApp $app){
+    public function __construct(GPDApp $app)
+    {
         // Agrega el contexto (acceso a servicios y configuración compartidos a traves de toda la app)
         $this->app = $app;
         $this->context = $app->getContext();
@@ -132,14 +133,14 @@ abstract class AbstractGQLServer
         $invokables = $this->servicesAndGQLTypes["invokables"] ?? [];
         $factories = $this->servicesAndGQLTypes["factories"] ?? [];
         $aliases = $this->servicesAndGQLTypes["aliases"] ?? [];
-        foreach($invokables as $k => $invokable) {
+        foreach ($invokables as $k => $invokable) {
             $this->serviceManager->setInvokableClass($k, $invokable);
         }
         foreach ($factories as $k => $factory) {
             $this->serviceManager->setFactory($k, $factory);
         }
-        
-        foreach($aliases as $k => $alias) {
+
+        foreach ($aliases as $k => $alias) {
             $this->serviceManager->setAlias($k, $aliases);
         }
     }
@@ -238,7 +239,7 @@ abstract class AbstractGQLServer
         ]);
     }
 
-    protected function getSchema(Types $types)
+    protected function getSchema(?Types $types)
     {
         $query = $this->getGQLQueriesFields();
         $mutations = $this->getGQLMutationsFields();
@@ -246,8 +247,10 @@ abstract class AbstractGQLServer
             'query' => $query,
             'mutation' =>   $mutations,
             'typeLoader' => function ($name) use ($types) {
-                $type = $types->get($name);
-                return $type;
+                if ($types != null) {
+                    $type = $types->get($name);
+                    return $type;
+                }
             }
         ]);
     }

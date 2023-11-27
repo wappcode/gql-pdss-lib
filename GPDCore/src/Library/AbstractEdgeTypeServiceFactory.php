@@ -4,6 +4,7 @@ namespace GPDCore\Library;
 
 use GraphQL\Type\Definition\ObjectType;
 use GPDCore\Graphql\ConnectionTypeFactory;
+use GPDCore\Library\UndefinedTypesException;
 
 /**
  * Uso: Sobreescribir esta clase;
@@ -23,6 +24,10 @@ class AbstractEdgeTypeServiceFactory
     {
         $name = static::NAME;
         $description = static::DESCRIPTION;
+        $types = $context->getTypes();
+        if (!$types) {
+            throw new UndefinedTypesException();
+        }
         $nodeType = $context->getTypes()->getOutput($nodeClassName);
         if (static::$instance === null) {
             static::$instance = ConnectionTypeFactory::createEdgeType($nodeType, $name, $description);
