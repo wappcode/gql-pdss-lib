@@ -7,7 +7,7 @@ Para iniciar el servidor usar el comando
 Se puede pasar variables de entorno como el siguiente ejemplo
 
     docker compose build && docker compose run  -e APP_PORT=8080 -e MYSQL_PORT=3308 -e DB_PASSWORD=dbpassword gqlpdsslib-mysql gqlpdsslib-php
-    APP_PORT=8080;MYSQL_PORT=3308;DB_PASSWORD=dbpassword docker compose up
+    APP_PORT=8080 MYSQL_PORT=3308 DB_PASSWORD=dbpassword docker compose up
 
 Si se esta usando un archivo Dockerfile para compilar la imagen yhay cambios usar el siguiente comando para compilarlas
 
