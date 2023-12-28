@@ -402,7 +402,7 @@ Crea un tipo connection con los siguientes campos
 
     {
         totalCount: int!
-        pageInfo: PageInfoType! {
+        pageInfo: PaginationInput {
             hasPreviousPage: bool!
             hasNextPage: bool!
             startCursor: string!
@@ -412,17 +412,6 @@ Crea un tipo connection con los siguientes campos
             cursor: string!,
             node: ObjectType!
         }
-    }
-
-getPageInfoType(): \GraphQL\Type\Definition\ObjectType
-
-Crea un tipo PageInfo
-
-    {
-        hasPreviousPage: bool!
-        hasNextPage: bool!
-        startCursor: string!
-        endCursor: string!
     }
 
 createEdgeType(\GraphQL\Type\Definition\ObjectType $nodeType): \GraphQL\Type\Definition\ObjectType

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace GPDCore\Graphql;
 
+use GPDCore\Graphql\Types\PageInfoType;
+use GPDCore\Graphql\Types\PaginationInput;
 use GraphQL\Type\Definition\Type;
 use GraphQL\Type\Definition\ObjectType;
 use GPDCore\Library\IContextService;
@@ -33,12 +35,17 @@ class ConnectionTypeFactory
             'description' => $description,
             'fields' => [
                 'totalCount' => Type::nonNull(Type::int()),
-                'pageInfo' => $serviceManager->get('PageInfo'),
+                'pageInfo' => $serviceManager->get(PageInfoType::SM_NAME),
                 'edges' => Type::nonNull(Type::listOf($edgeType))
             ]
         ]);
     }
 
+    /**
+     * 
+     * @deprecated 2.1.4 Utilizar PageInfoType class
+     * @return ObjectType
+     */
     public static function getPageInfoType(): ObjectType
     {
 
@@ -69,6 +76,11 @@ class ConnectionTypeFactory
         ]);
     }
 
+    /**
+     *  @deprecated 2.1.4 Utilizar PaginationInput class
+     *
+     * @return void
+     */
     public static function getPaginationInput()
     {
         if (static::$paginationInput === null) {

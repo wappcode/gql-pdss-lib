@@ -1,7 +1,8 @@
 <?php
 
-use Doctrine\ORM\EntityManager;
 use GQLBasicClient\GQLClient;
+use PDSSUtilities\QueryFilter;
+use Doctrine\ORM\EntityManager;
 
 class CRUDUserTest extends \PHPUnit\Framework\TestCase
 {
@@ -25,10 +26,11 @@ class CRUDUserTest extends \PHPUnit\Framework\TestCase
    */
   protected function setUp(): void
   {
-    $app_port = getenv("APP_PORT") ? getenv("APP_PORT") : "8000";
+
     global $entityManager;
+    global $gqlClient;
     $this->entityManager = $entityManager;
-    $this->gqlClient = new GQLClient("http://localhost:{$app_port}/index.php/api");
+    $this->gqlClient = $gqlClient;
   }
 
   public function testCreateUser()
@@ -37,12 +39,28 @@ class CRUDUserTest extends \PHPUnit\Framework\TestCase
     $newName = "Pancho López Actualizado";
     $updatedName = $this->updateUserName($id, $newName);
     $connection = $this->getDataUsersConnection();
+    $connectionFilterinput = [
+      "filters" => [
+        [
+          "conditions" => [
+            [
+              "filterOperator" => QueryFilter::CONDITION_LIKE,
+              "value" => ["single" => "%juan%"],
+              "property" => "name"
+            ]
+          ]
+        ]
+      ],
+      "pagination" => ["first" => 2]
+    ];
+    $connectionFilter = $this->getDataUsersConnection($connectionFilterinput);
     $userId = $this->getUserId($id);
     $deletedUserId = $this->deleteUser($id);
     $this->assertNotEmpty($id);
     $this->assertEquals($newName, $updatedName, "Actualizar un usuario");
     $this->assertGreaterThan(0, $connection["totalCount"], "Debe haber almenos un registro");
     $this->assertEquals(0, count($connection["edges"]), "No debe haber edges porque no se agrego información de paginación");
+    $this->assertEquals(1, $connectionFilter["totalCount"], "Debe haber  un registro con nombre juan");
     $this->assertEquals($id, $userId, "Consulta que se obtengan datos al consultar un elmento con id");
     $this->assertEquals($id, $deletedUserId, "Eliminar un usuario");
   }
@@ -102,11 +120,13 @@ class CRUDUserTest extends \PHPUnit\Framework\TestCase
     return $name;
   }
 
-  private function getDataUsersConnection()
+  private function getDataUsersConnection($input = null)
   {
+
+
     $query = '
-    query QueryUserConnection{
-      connection: userConnection {
+    query QueryUserConnection($input:ConnectionInput){
+      connection: userConnection(input: $input) {
         totalCount
         edges {
           node{
@@ -116,7 +136,7 @@ class CRUDUserTest extends \PHPUnit\Framework\TestCase
       }
     }
     ';
-    $reuslt = $this->gqlClient->execute($query);
+    $reuslt = $this->gqlClient->execute($query, ["input" => $input]);
     return $reuslt["data"]["connection"];
   }
   private function getUserId($id)

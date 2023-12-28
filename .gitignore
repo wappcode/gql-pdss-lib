@@ -13,5 +13,4 @@ public/uploads/exit-interview-upload-dir/*
 !public/uploads/exit-interview-upload-dir/.gitkeep
 *.code-workspace
 public/test.php
-dev/config/doctrine.local.php
 .vscode/

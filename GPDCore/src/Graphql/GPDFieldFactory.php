@@ -15,9 +15,9 @@ use GraphQL\Type\Definition\ObjectType;
 use GPDCore\Graphql\Types\QueryJoinType;
 use GPDCore\Graphql\Types\QuerySortType;
 use GraphQL\Type\Definition\ResolveInfo;
-use GPDCore\Graphql\ConnectionTypeFactory;
 use GPDCore\Graphql\Types\QueryFilterType;
 use GPDCore\Graphql\ConnectionQueryResponse;
+use GPDCore\Graphql\Types\ConnectionInput;
 use GPDCore\Library\EntityUtilities;
 use GPDCore\Library\GeneralDoctrineUtilities;
 use GPDCore\Library\QueryDecorator;
@@ -39,9 +39,9 @@ class GPDFieldFactory
     {
         return function ($root, array $args, IContextService $context, ResolveInfo $info) use ($class, $relations, $queryDecorator) {
             $types = $context->getTypes();
-            $joins = $args["joins"] ?? [];
-            $filters = $args["filter"] ?? [];
-            $sorting = $args["sorting"] ?? [];
+            $joins = $args["input"]["joins"] ?? [];
+            $filters = $args["input"]["filters"] ?? [];
+            $sorting = $args["input"]["sorting"] ?? [];
 
             $entityManager = $context->getEntityManager();
             if (empty($relations)) {
@@ -89,20 +89,9 @@ class GPDFieldFactory
             'type' => $connection,
             'args' => [
                 [
-                    'name' => 'filter',
-                    'type' => Type::listOf($serviceManager->get(QueryFilterType::SM_NAME)),
-                ],
-                [
-                    'name' => 'sorting',
-                    'type' => Type::listOf($serviceManager->get(QuerySortType::SM_NAME)),
-                ],
-                [
-                    'name' => 'joins',
-                    'type' => Type::listOf($serviceManager->get(QueryJoinType::SM_NAME)),
-                ],
-                [
-                    'name' => 'pagination',
-                    'type' => ConnectionTypeFactory::getPaginationInput()
+
+                    "name" => "input",
+                    "type" => $serviceManager->get(ConnectionInput::SM_NAME)
                 ]
             ],
             'resolve' => $proxyResolver,

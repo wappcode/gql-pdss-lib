@@ -8,6 +8,7 @@ use DateTimeImmutable;
 use DateTimeInterface;
 use GraphQL\Doctrine\Types;
 use Doctrine\ORM\EntityManager;
+use GPDCore\Graphql\Types\DateType;
 use GPDCore\Graphql\Types\JSONData;
 use GPDCore\Library\IContextService;
 use GPDCore\Graphql\Types\DateTimeType;
@@ -15,23 +16,24 @@ use GPDCore\Graphql\Types\QueryJoinType;
 use GPDCore\Graphql\Types\QuerySortType;
 use GPDCore\Factory\EntityManagerFactory;
 use GPDCore\Graphql\ConnectionTypeFactory;
+use GPDCore\Graphql\Types\ConnectionInput;
 use GPDCore\Graphql\Types\QueryFilterType;
 use Laminas\ServiceManager\ServiceManager;
 use GPDCore\Graphql\Types\QueryFilterLogic;
 use GPDCore\Graphql\Types\QueryJoinTypeValue;
 use GPDCore\Graphql\Types\QuerySortDirection;
 use GPDCore\Graphql\Types\DateTimeImmutableType;
-use GPDCore\Graphql\Types\DateType;
+use GPDCore\Graphql\Types\PageInfoType;
+use GPDCore\Graphql\Types\PaginationInput;
 use GPDCore\Graphql\Types\QueryFilterConditionType;
 use GPDCore\Graphql\Types\QueryFilterConditionTypeValue;
+use GPDCore\Graphql\Types\QueryFilterConditionValueType;
 
 class ContextService implements IContextService
 {
 
 
 
-    const SM_PAGE_INFO = 'PageInfo';
-    const SM_PAGE_INFO_INPUT = 'PaginationInput';
     const SM_DATETIME = 'DateTime';
     const SM_DATE = 'Date';
     const SM_ENTITY_MANAGER = 'entityManager';
@@ -134,27 +136,28 @@ class ContextService implements IContextService
         $this->serviceManager->setInvokableClass(QuerySortDirection::class,  QuerySortDirection::class);
         $this->serviceManager->setInvokableClass(QueryJoinTypeValue::class,  QueryJoinTypeValue::class);
         $this->serviceManager->setInvokableClass(JSONData::class,  JSONData::class);
+        $this->serviceManager->setInvokableClass(PaginationInput::class,  PaginationInput::class);
+        $this->serviceManager->setInvokableClass(PageInfoType::class,  PageInfoType::class);
+        $this->serviceManager->setInvokableClass(QueryFilterConditionValueType::class,  QueryFilterConditionValueType::class);
     }
 
     protected function addFactoriesToServiceManager()
     {
-        $this->serviceManager->setFactory(static::SM_PAGE_INFO, function () {
-            return ConnectionTypeFactory::getPageInfoType();
-        });
-        $this->serviceManager->setFactory(static::SM_PAGE_INFO_INPUT, function () {
-            return ConnectionTypeFactory::getPaginationInput();
-        });
-        $this->serviceManager->setFactory(QueryFilterConditionType::SM_NAME, function ($sm) {
+
+        $this->serviceManager->setFactory(QueryFilterConditionType::class, function ($sm) {
             return new QueryFilterConditionType($sm);
         });
-        $this->serviceManager->setFactory(QueryFilterType::SM_NAME, function ($sm) {
+        $this->serviceManager->setFactory(QueryFilterType::class, function ($sm) {
             return new QueryFilterType($sm);
         });
-        $this->serviceManager->setFactory(QuerySortType::SM_NAME, function ($sm) {
+        $this->serviceManager->setFactory(QuerySortType::class, function ($sm) {
             return new QuerySortType($sm);
         });
-        $this->serviceManager->setFactory(QueryJoinType::SM_NAME, function ($sm) {
+        $this->serviceManager->setFactory(QueryJoinType::class, function ($sm) {
             return new QueryJoinType($sm);
+        });
+        $this->serviceManager->setFactory(ConnectionInput::class, function ($sm) {
+            return new ConnectionInput($sm);
         });
     }
     protected function addAliasesToServiceManager()
@@ -162,13 +165,19 @@ class ContextService implements IContextService
         $this->serviceManager->setAlias(static::SM_DATETIME, DateTime::class); // Declare alias for Doctrine type to be used for filters
         $this->serviceManager->setAlias(static::SM_DATE, DateType::class); // Declare alias for Doctrine type to be used for filters
         $this->serviceManager->setAlias(DateTimeInterface::class, DateTime::class);
-
         $this->serviceManager->setAlias(QueryFilterLogic::SM_NAME,  QueryFilterLogic::class);
         $this->serviceManager->setAlias(QueryFilterConditionTypeValue::SM_NAME,  QueryFilterConditionTypeValue::class);
         $this->serviceManager->setAlias(QuerySortDirection::SM_NAME,  QuerySortDirection::class);
         $this->serviceManager->setAlias(QueryJoinTypeValue::SM_NAME,  QueryJoinTypeValue::class);
         $this->serviceManager->setAlias(JSONData::SM_NAME,  JSONData::class);
-        $this->serviceManager->setAlias(JSONData::SM_NAME,  JSONData::class);
+        $this->serviceManager->setAlias(QueryFilterConditionValueType::SM_NAME,  QueryFilterConditionValueType::class);
+        $this->serviceManager->setAlias(PaginationInput::SM_NAME,  PaginationInput::class);
+        $this->serviceManager->setAlias(QueryFilterConditionType::SM_NAME,  QueryFilterConditionType::class);
+        $this->serviceManager->setAlias(QueryFilterType::SM_NAME,  QueryFilterType::class);
+        $this->serviceManager->setAlias(QuerySortType::SM_NAME,  QuerySortType::class);
+        $this->serviceManager->setAlias(QueryJoinType::SM_NAME,  QueryJoinType::class);
+        $this->serviceManager->setAlias(ConnectionInput::SM_NAME,  ConnectionInput::class);
+        $this->serviceManager->setAlias(PageInfoType::SM_NAME,  PageInfoType::class);
     }
 
     /**
