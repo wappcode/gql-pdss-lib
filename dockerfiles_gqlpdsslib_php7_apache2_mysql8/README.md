@@ -26,6 +26,10 @@ Ingresar a bash del servicio php
 
     docker exec -it talentotoyota-php7.4 bash
 
+## URL Api
+
+    http://localhost:8080/index.php/api
+
 ## Xdebug
 
 Para VSCode agregar la siguiente configuración en launch.json

@@ -24,10 +24,12 @@ class GPDApp
     private $context;
     private $enviroment;
     protected $servicesAndGQLTypes = [];
+    protected $withoutDoctrine = false;
 
 
-    public function __construct(IContextService $context, AbstractRouter $router, ?string $enviroment)
+    public function __construct(IContextService $context, AbstractRouter $router, ?string $enviroment, bool  $withoutDoctrine = false)
     {
+        $this->withoutDoctrine = $withoutDoctrine;
         $enviroment = empty($enviroment) ? GPDApp::ENVIROMENT_DEVELOPMENT : $enviroment;
         $this->enviroment = trim(strtolower($enviroment));
         $productionMode = $this->enviroment === trim(strtolower(GPDApp::ENVIROMENT_PRODUCTION));
@@ -86,7 +88,7 @@ class GPDApp
             throw new Exception('Solo se puede asignar el contexto antes de que la aplicación inicie');
         }
         $this->context = $context;
-        $this->context->init($this->enviroment, $this->productionMode);
+        $this->context->init($this->enviroment, $this->productionMode, $this->withoutDoctrine);
         return $this;
     }
 
