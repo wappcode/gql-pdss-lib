@@ -361,7 +361,7 @@ class GPDFieldFactory
                 ->setParameter(':id', $id)->getQuery()->execute();
             $entityManager->flush();
 
-            return $entity;
+            return true;
         };
     }
 
@@ -380,7 +380,7 @@ class GPDFieldFactory
         $resolver = self::buildResolverDelete($class, $relations);
         $proxyResolver = is_callable($proxy) ? $proxy($resolver) : $resolver;
         return [
-            'type' => Type::nonNull($types->getOutput($class)),
+            'type' => Type::nonNull(Type::boolean()),
             'args' => [
                 'id' => Type::nonNull(Type::id()),
             ],
