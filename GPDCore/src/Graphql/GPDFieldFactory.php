@@ -9,18 +9,19 @@ use Doctrine\ORM\Query;
 use PDSSUtilities\QuerySort;
 use PDSSUtilities\QueryJoins;
 use PDSSUtilities\QueryFilter;
+use GPDCore\Library\GQLException;
 use GraphQL\Type\Definition\Type;
+use GPDCore\Library\QueryDecorator;
+use GPDCore\Library\EntityUtilities;
 use GPDCore\Library\IContextService;
 use GraphQL\Type\Definition\ObjectType;
 use GPDCore\Graphql\Types\QueryJoinType;
 use GPDCore\Graphql\Types\QuerySortType;
 use GraphQL\Type\Definition\ResolveInfo;
+use GPDCore\Graphql\Types\ConnectionInput;
 use GPDCore\Graphql\Types\QueryFilterType;
 use GPDCore\Graphql\ConnectionQueryResponse;
-use GPDCore\Graphql\Types\ConnectionInput;
-use GPDCore\Library\EntityUtilities;
 use GPDCore\Library\GeneralDoctrineUtilities;
-use GPDCore\Library\QueryDecorator;
 
 class GPDFieldFactory
 {
@@ -248,12 +249,24 @@ class GPDFieldFactory
             }
             $entity = new $class();
             $input = $args["input"];
+            $entityManager->beginTransaction();
             ArrayToEntity::setValues($entityManager, $entity, $input); // carga los valores del array a la entidad
-            $entityManager->persist($entity);
-            $entityManager->flush();
-            $id = EntityUtilities::getFirstIdentifierValue($entityManager, $entity);
-            $result = GeneralDoctrineUtilities::getArrayEntityById($entityManager, $class, $id, $relations);
-            return $result;
+            try {
+                $entityManager->persist($entity);
+                $entityManager->flush();
+                $entityManager->commit();
+                $id = EntityUtilities::getFirstIdentifierValue($entityManager, $entity);
+                $result = GeneralDoctrineUtilities::getArrayEntityById($entityManager, $class, $id, $relations);
+                return $result;
+            } catch (Exception $e) {
+                $entityManager->rollback();
+                $message = $e->getMessage();
+                if (str_contains($message, "SQLSTATE") && str_contains($message, "Duplicate")) {
+                    throw new GQLException("Duplicated Key");
+                } else {
+                    throw $e;
+                }
+            }
         };
     }
 
@@ -302,11 +315,24 @@ class GPDFieldFactory
             if (method_exists($entity, 'setUpdated')) {
                 $entity->setUpdated();
             }
-            $entityManager->persist($entity);
-            $entityManager->flush();
-            $id = EntityUtilities::getFirstIdentifierValue($entityManager, $entity);
-            $result = GeneralDoctrineUtilities::getArrayEntityById($entityManager, $class, $id, $relations);
-            return $result;
+            $entityManager->beginTransaction();
+            try {
+
+                $entityManager->persist($entity);
+                $entityManager->flush();
+                $entityManager->commit();
+                $id = EntityUtilities::getFirstIdentifierValue($entityManager, $entity);
+                $result = GeneralDoctrineUtilities::getArrayEntityById($entityManager, $class, $id, $relations);
+                return $result;
+            } catch (Exception $e) {
+                $entityManager->rollback();
+                $message = $e->getMessage();
+                if (str_contains($message, "SQLSTATE") && str_contains($message, "Duplicate")) {
+                    throw new GQLException("Duplicated Key");
+                } else {
+                    throw $e;
+                }
+            }
         };
     }
     /**
@@ -355,13 +381,23 @@ class GPDFieldFactory
             if (empty($entity)) {
                 throw new Exception("Registro no encontrado");
             }
-
-            $entityManager->createQueryBuilder()->delete($class, 'entity')->andWhere("entity.{$idPropertyName} = :id")
-                ->setMaxResults(1)
-                ->setParameter(':id', $id)->getQuery()->execute();
-            $entityManager->flush();
-
-            return true;
+            $entityManager->beginTransaction();
+            try {
+                $entityManager->createQueryBuilder()->delete($class, 'entity')->andWhere("entity.{$idPropertyName} = :id")
+                    ->setMaxResults(1)
+                    ->setParameter(':id', $id)->getQuery()->execute();
+                $entityManager->flush();
+                $entityManager->commit();
+                return true;
+            } catch (Exception $e) {
+                $entityManager->rollback();
+                $message = $e->getMessage();
+                if (str_contains($message, "SQLSTATE") && str_contains($message, "Cannot delete or update a parent row")) {
+                    throw new GQLException("Related elements must be deleted first");
+                } else {
+                    throw $e;
+                }
+            }
         };
     }
 

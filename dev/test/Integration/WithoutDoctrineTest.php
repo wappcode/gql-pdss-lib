@@ -19,8 +19,8 @@ class WithoutDoctrineTest extends \PHPUnit\Framework\TestCase
      */
     protected function setUp(): void
     {
-        $app_port = getenv("APP_PORT") ? getenv("APP_PORT") : "8000";
-        $this->gqlClient = new GQLClient("http://localhost:{$app_port}/without-doctrine.php/api");
+        global $gqlClient;
+        $this->gqlClient = $gqlClient;
     }
 
     public function testEchoUser()

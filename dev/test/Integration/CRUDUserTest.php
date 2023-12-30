@@ -55,14 +55,14 @@ class CRUDUserTest extends \PHPUnit\Framework\TestCase
     ];
     $connectionFilter = $this->getDataUsersConnection($connectionFilterinput);
     $userId = $this->getUserId($id);
-    $deletedUserId = $this->deleteUser($id);
+    $deletedUser = $this->deleteUser($id);
     $this->assertNotEmpty($id);
     $this->assertEquals($newName, $updatedName, "Actualizar un usuario");
     $this->assertGreaterThan(0, $connection["totalCount"], "Debe haber almenos un registro");
     $this->assertEquals(0, count($connection["edges"]), "No debe haber edges porque no se agrego información de paginación");
     $this->assertEquals(1, $connectionFilter["totalCount"], "Debe haber  un registro con nombre juan");
     $this->assertEquals($id, $userId, "Consulta que se obtengan datos al consultar un elmento con id");
-    $this->assertEquals($id, $deletedUserId, "Eliminar un usuario");
+    $this->assertEquals($deletedUser, true, "Eliminar un usuario");
   }
 
 
@@ -156,9 +156,7 @@ class CRUDUserTest extends \PHPUnit\Framework\TestCase
   {
     $query = '
     mutation MutationDeleteUser($id: ID!){
-        user:deleteUser(id: $id) {
-          id
-        }
+        user:deleteUser(id: $id) 
       }
     
     ';
@@ -167,7 +165,7 @@ class CRUDUserTest extends \PHPUnit\Framework\TestCase
       "id" => $id,
     ];
     $result = $this->gqlClient->execute($query, $variables);
-    $name = $result["data"]["user"]["id"] ?? null;
+    $name = $result["data"]["user"] ?? null;
     return $name;
   }
 }
