@@ -24,11 +24,12 @@ class ConnectionQueryResponse
      */
     public static function get(QueryBuilder $qb, $root, array $args, IContextService $context, ResolveInfo $info, array $relations = [])
     {
+        $paginationInput = $args["input"]["pagination"] ?? [];
         $config = $context->getConfig();
         $appLimit = $config->get("query_limit");
         $total = self::getTotal($qb);
-        $limit = self::getLimit($args, $appLimit);
-        $offset = self::getOffset($args, $total);
+        $limit = self::getLimit($paginationInput, $appLimit);
+        $offset = self::getOffset($paginationInput, $total);
         $nodes = self::getNodes($qb, $limit, $offset, $relations);
         $edges = self::nodesToEdges($nodes, $offset);
         $firstCursor = self::getFirstCursor($edges);
@@ -48,10 +49,10 @@ class ConnectionQueryResponse
 
         ];
     }
-    protected static function getLimit(array $args, ?int $appLimit)
+    protected static function getLimit(array $paginationInput, ?int $appLimit)
     {
-        $first = $args['pagination']['first'] ?? null;
-        $last = $args['pagination']['last'] ?? null;
+        $first = $paginationInput['first'] ?? null;
+        $last = $paginationInput['last'] ?? null;
         if ($first === null && $last === null) {
             $first = 0;
         }
@@ -64,19 +65,19 @@ class ConnectionQueryResponse
         $limit = ($appLimit !== null) ? min($appLimit, $limitArgs) : $limitArgs;
         return $limit;
     }
-    protected static function getOffset($args, $total)
+    protected static function getOffset($paginationInput, $total)
     {
-        $before = $args['pagination']['before'] ?? '';
-        $after = $args['pagination']['after'] ?? '';
-        $cursor = !empty($args['pagination']['last']) ? $before : $after;
+        $before = $paginationInput['before'] ?? '';
+        $after = $paginationInput['after'] ?? '';
+        $cursor = !empty($paginationInput['pagination']['last']) ? $before : $after;
         $afterDecoded = decodeCursor($cursor);
 
         $offset = preg_match("/^\d+$/", "{$afterDecoded}") ? intval($afterDecoded) : 0;
-        if (isset($args['pagination']['last']) && empty($before)) {
+        if (isset($paginationInput['pagination']['last']) && empty($before)) {
             $offset = $total;
         }
-        if (!empty($args['pagination']['last'])) {
-            $offset = $offset - $args['pagination']['last'] - 1;
+        if (!empty($paginationInput['pagination']['last'])) {
+            $offset = $offset - $paginationInput['last'] - 1;
         }
         return $offset;
     }

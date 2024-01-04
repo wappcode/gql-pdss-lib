@@ -4,41 +4,35 @@ declare(strict_types=1);
 
 namespace GPDCore\Graphql\Types;
 
-use GPDCore\Graphql\Types\QueryFilterConditionTypeValue;
-use GraphQL\Type\Definition\InputObjectType;
 use GraphQL\Type\Definition\Type;
 use Laminas\ServiceManager\ServiceManager;
+use GraphQL\Type\Definition\InputObjectType;
+use GPDCore\Graphql\Types\QueryFilterConditionTypeValue;
+use GPDCore\Graphql\Types\QueryFilterConditionValueType;
 
-class QueryFilterConditionType extends InputObjectType{
+class QueryFilterConditionType extends InputObjectType
+{
     const SM_NAME = 'QueryFilterConditionInput';
     public function __construct(ServiceManager $serviceManager)
     {
         $config = [
             'name' => static::SM_NAME,
             'fields' => [
-                'type' => [
+                'filterOperator' => [
                     'type' => Type::nonNull($serviceManager->get(QueryFilterConditionTypeValue::SM_NAME)),
                 ],
                 'value' => [
-                    'type' => Type::string(),
-                ],
-                'values' => [
-                    'type' => Type::listOf(Type::string()),
+                    'type' => Type::nonNull($serviceManager->get(QueryFilterConditionValueType::SM_NAME)),
                 ],
                 'property' => [
                     'type' => Type::nonNull(Type::string()),
                 ],
-                'not' => [
-                    'type' => Type::boolean(),
-                ],
-                'joinedAlias' => [
+                'onJoinedProperty' => [
                     'type' => Type::string(),
-                    // 'description' => 'nombre de la propiedad que es una referencia de otro objeto y de la cual se va a realizar el filtro. es necesario agregar manualmente los joins'
                 ],
             ]
         ];
 
         parent::__construct($config);
     }
-
 }
