@@ -13,6 +13,10 @@ class ResolverFactory
      * NOTA cuando EntityBuffer se utiliza en varias propiedades de diferentes Objetos
      * Deferred puede ser llamado con la consulta para un objeto y omitir las consultas de los demás objetos
      * Es necesario crear un EntityBuffer para cada objeto
+     * 
+     * @param EntityBuffer $buffer
+     * @param string $property
+     * @return callable
      */
     public static function createEntityResolver(EntityBuffer $buffer, string $property)
     {
@@ -37,7 +41,7 @@ class ResolverFactory
      * @param string $property
      * @param array|null $propertyRelations
      * @param string|null $joinClass
-     * @return void
+     * @return callable
      */
     public static function createCollectionResolver(string $mainClass, string $property, ?array $propertyRelations = null, string $joinClass = null)
     {
