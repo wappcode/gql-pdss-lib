@@ -115,7 +115,7 @@ class GPDFieldFactory
             $types = $context->getTypes();
             $joins = $args["joins"] ?? [];
             $filters = $args["filter"] ?? [];
-            $sorting = $args["sorting"] ?? [];
+            $sorting = $args["sorts"] ?? [];
 
             $entityManager = $context->getEntityManager();
             if (empty($relations)) {
