@@ -23,6 +23,7 @@ use GPDCore\Graphql\Types\QueryFilterLogic;
 use GPDCore\Graphql\Types\QueryJoinTypeValue;
 use GPDCore\Graphql\Types\QuerySortDirection;
 use GPDCore\Graphql\Types\DateTimeImmutableType;
+use GPDCore\Graphql\Types\ListInput;
 use GPDCore\Graphql\Types\PageInfoType;
 use GPDCore\Graphql\Types\PaginationInput;
 use GPDCore\Graphql\Types\QueryFilterConditionType;
@@ -162,6 +163,9 @@ class ContextService implements IContextService
         $this->serviceManager->setFactory(ConnectionInput::class, function ($sm) {
             return new ConnectionInput($sm);
         });
+        $this->serviceManager->setFactory(ListInput::class, function ($sm) {
+            return new ListInput($sm);
+        });
     }
     protected function addAliasesToServiceManager()
     {
@@ -180,6 +184,7 @@ class ContextService implements IContextService
         $this->serviceManager->setAlias(QuerySortType::SM_NAME,  QuerySortType::class);
         $this->serviceManager->setAlias(QueryJoinType::SM_NAME,  QueryJoinType::class);
         $this->serviceManager->setAlias(ConnectionInput::SM_NAME,  ConnectionInput::class);
+        $this->serviceManager->setAlias(ListInput::SM_NAME,  ListInput::class);
         $this->serviceManager->setAlias(PageInfoType::SM_NAME,  PageInfoType::class);
     }
 
