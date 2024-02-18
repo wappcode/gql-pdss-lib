@@ -1,3 +1,7 @@
+# GQLPDSS-lib
+
+[detailed documentation](https://wappcode.github.io/gql-pdss-lib-docs?1) para más información.
+
 ## Intalar
 
 ## Usar Composer
