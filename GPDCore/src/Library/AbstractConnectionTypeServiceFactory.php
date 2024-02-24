@@ -17,8 +17,11 @@ class AbstractConnectionTypeServiceFactory
     const DESCRIPTION = '';
     protected static $instance = null;
 
-    public static function get(?IContextService $context = null, string $edgeTypeName): ObjectType
+    public static function get(?IContextService $context = null, ?string $edgeTypeName = null): ObjectType
     {
+        if (empty($edgeTypeName)) {
+            throw '$edgeTypeName is required';
+        }
         $name = static::NAME;
         $description = static::DESCRIPTION;
         if (static::$instance === null) {
