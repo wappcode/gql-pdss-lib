@@ -21,7 +21,7 @@ services:
       gqlpdsslib-mysql:
         condition: service_healthy
     container_name: gqlpdsslib-php7.4
-    image: jesusabarcag/php-dev:php7.4
+    image: jesusabarcag/php-dev:8.3
     volumes: 
       - ..:/var/www/html
       - ./sites-enabled:/etc/apache2/sites-enabled
