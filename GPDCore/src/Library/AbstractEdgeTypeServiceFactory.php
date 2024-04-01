@@ -20,8 +20,11 @@ class AbstractEdgeTypeServiceFactory
     const DESCRIPTION = '';
     protected static $instance = null;
 
-    public static function get(?IContextService $context = null, string $nodeClassName): ObjectType
+    public static function get(?IContextService $context = null, ?string $nodeClassName = null): ObjectType
     {
+        if (empty($nodeClassName)) {
+            throw '$nodeClassName is required';
+        }
         $name = static::NAME;
         $description = static::DESCRIPTION;
         $types = $context->getTypes();

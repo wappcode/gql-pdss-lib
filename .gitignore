@@ -14,3 +14,4 @@ public/uploads/exit-interview-upload-dir/*
 *.code-workspace
 public/test.php
 .vscode/
+composer.lock
