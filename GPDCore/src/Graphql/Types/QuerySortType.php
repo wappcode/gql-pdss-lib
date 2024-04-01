@@ -9,7 +9,8 @@ use Laminas\ServiceManager\ServiceManager;
 use GraphQL\Type\Definition\InputObjectType;
 use GPDCore\Graphql\Types\QuerySortDirection;
 
-class QuerySortType extends InputObjectType{
+class QuerySortType extends InputObjectType
+{
 
     const SM_NAME = "QuerySortInput";
     public function __construct(ServiceManager $serviceManager)
@@ -23,7 +24,7 @@ class QuerySortType extends InputObjectType{
                 'direction' => [
                     'type' => $serviceManager->get(QuerySortDirection::SM_NAME),
                 ],
-                'joinedAlias' => [
+                'onJoinedProperty' => [
                     'type' => Type::string(),
                     // 'description' => 'nombre de la propiedad que es una referencia de otro objeto y de la cual se va a realizar el filtro. es necesario agregar manualmente los joins'
                 ],
@@ -32,5 +33,4 @@ class QuerySortType extends InputObjectType{
 
         parent::__construct($config);
     }
-
 }
