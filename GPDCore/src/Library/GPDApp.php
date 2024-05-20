@@ -25,6 +25,7 @@ class GPDApp
     private $enviroment;
     protected $servicesAndGQLTypes = [];
     protected $withoutDoctrine = false;
+    protected $baseHref = "";
 
 
     public function __construct(IContextService $context, AbstractRouter $router, ?string $enviroment, bool  $withoutDoctrine = false)
@@ -175,5 +176,22 @@ class GPDApp
     public function getEnviroment()
     {
         return $this->enviroment;
+    }
+
+    /**
+     * Al establecer el valor la cadena deberá iniciar con /
+     * ejemplo /micarpeta/public
+     *
+     * @param string $baseHref
+     * @return void
+     */
+    public function setBaseHref(string $baseHref)
+    {
+        $this->baseHref = $baseHref;
+    }
+
+    public function getBaseHref()
+    {
+        return $this->baseHref;
     }
 }
