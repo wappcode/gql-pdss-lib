@@ -177,7 +177,7 @@ abstract class AbstractGQLServer
         $debug =   $productionMode ?  DebugFlag::NONE :  DebugFlag::RETHROW_UNSAFE_EXCEPTIONS;
 
         if ($productionMode) {
-            DocumentValidator::addRule(new DisableIntrospection());
+            DocumentValidator::addRule(new DisableIntrospection(1));
         }
         // @TODO agregar Query Complexity Analysis y Limiting Query Depth
         try {
@@ -258,14 +258,14 @@ abstract class AbstractGQLServer
      * Recupera el valor query de la consulta gql
      *
      * @param string $content
-     * @return void
+     * @return string
      */
     protected function getQuery($content)
     {
         if (isset($content["template"]["data"])) {
             return $this->findValueFromTemplate($content["template"]["data"], "query");
         } else {
-            return $content["query"] ?? null;
+            return $content["query"] ?? "";
         }
     }
 
