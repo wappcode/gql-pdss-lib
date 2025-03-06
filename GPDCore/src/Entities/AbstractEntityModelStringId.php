@@ -8,34 +8,27 @@ namespace GPDCore\Entities;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use GraphQL\Doctrine\Annotation as API;
+use PDSSUtilities\DoctrineUniqueIDStringGenerator;
 
 /**
  * Base class for all objects stored in database. ID type string.
- *
- * @ORM\MappedSuperclass
  */
+#[ORM\MappedSuperclass]
+
 abstract class AbstractEntityModelStringId
 {
 
-    /**
-     * @ORM\Id
-     * @ORM\Column(name="id", type="string")
-     * @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class="\PDSSUtilities\DoctrineUniqueIDStringGenerator")
-     * @var string
-     */
-    protected $id;
-    /**
-     * @var DateTimeImmutable
-     * @ORM\Column(type="datetimetz_immutable")
-     */
-    protected $created;
+    #[ORM\Id]
+    #[ORM\Column(name: "id", type: "string")]
+    #[ORM\GeneratedValue(strategy: "CUSTOM")]
+    #[ORM\CustomIdGenerator(class: DoctrineUniqueIDStringGenerator::class)]
 
-    /**
-     * @var DateTimeImmutable
-     * @ORM\Column(type="datetimetz_immutable")
-     */
-    protected $updated;
+    protected $id;
+    #[ORM\Column(type: "datetimetz_immutable")]
+    protected DateTimeImmutable $created;
+
+    #[ORM\Column(type: "datetimetz_immutable")]
+    protected DateTimeImmutable $updated;
 
     public function __construct()
     {

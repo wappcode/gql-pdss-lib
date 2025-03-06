@@ -7,27 +7,18 @@ use Doctrine\ORM\Mapping as ORM;
 use GraphQL\Doctrine\Annotation as API;
 use GPDCore\Entities\AbstractEntityModel;
 
-/**
- * @ORM\Entity()
- * @ORM\Table(name="comments")
- */
+#[ORM\Entity()]
+#[ORM\Table(name: "comments")]
 class Comment extends AbstractEntityModel
 {
 
-    /**
-     * @ORM\Column(type="text",nullable = false)
-     * @var string
-     */
+    #[ORM\Column(type: "text", nullable: false)]
 
-    private $text;
+    private string $text;
 
-    /**
-     * 
-     * @ORM\ManyToOne(targetEntity="\AppModule\Entities\Post", inversedBy="comments")
-     * @ORM\JoinColumn(name="post_id", referencedColumnName="id")
-     * @var Post
-     */
-    private $post;
+    #[ORM\ManyToOne(targetEntity: Post::class, inversedBy: "comments")]
+    #[ORM\JoinColumn(name: "post_id", referencedColumnName: "id")]
+    private  Post $post;
 
 
     /**

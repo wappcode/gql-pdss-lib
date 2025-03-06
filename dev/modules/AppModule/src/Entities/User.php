@@ -8,46 +8,26 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use GPDCore\Entities\AbstractEntityModelStringId;
 
-/**
- * @ORM\Entity()
- * @ORM\Table(name="users")
- */
+#[ORM\Entity()]
+#[ORM\Table(name: "users")]
 class User extends AbstractEntityModelStringId
 {
 
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     *
-     * @var string
-     */
-    private $name;
-    /**
-     * @ORM\Column(type="string")
-     *
-     * @var string
-     */
-    private $email;
+    #[ORM\Column(type: "string", length: 255)]
+    private string $name;
+    #[ORM\Column(type: "string", length: 255)]
+    private string $email;
 
 
-    /**
-     * @ORM\ManyToMany(targetEntity="\AppModule\Entities\Account")
-     * @ORM\JoinTable(name="users_accounts", joinColumns={
-     * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
-     * },
-     * inverseJoinColumns={@ORM\JoinColumn(name="account_code", referencedColumnName="code")}
-     * )
-     *
-     * @var Collection
-     */
-    private $accounts;
+    #[ORM\JoinTable(name: "users_accounts")]
+    #[ORM\JoinColumn(name: "user_id", referencedColumnName: "id", columnDefinition: "VARCHAR(255) NOT NULL")]
+    #[ORM\InverseJoinColumn(name: 'account_code', referencedColumnName: 'code', columnDefinition: "VARCHAR(255) NOT NULL")]
+    #[ORM\ManyToMany(targetEntity: Account::class)]
+    private Collection $accounts;
 
 
-    /**
-     * @ORM\OneToMany(targetEntity="\AppModule\Entities\Post", mappedBy="user")
-     *
-     * @var Collection
-     */
+    #[ORM\OneToMany(targetEntity: Post::class, mappedBy: "user")]
     private $posts;
 
 
@@ -57,23 +37,11 @@ class User extends AbstractEntityModelStringId
         $this->accounts = new ArrayCollection();
         $this->posts = new ArrayCollection();
     }
-    /**
-     * Get the value of name
-     *
-     * @return  string
-     */
     public function getName()
     {
         return $this->name;
     }
 
-    /**
-     * Set the value of name
-     *
-     * @param  string  $name
-     *
-     * @return  self
-     */
     public function setName(string $name)
     {
         $this->name = $name;
@@ -81,23 +49,11 @@ class User extends AbstractEntityModelStringId
         return $this;
     }
 
-    /**
-     * Get the value of email
-     *
-     * @return  string
-     */
     public function getEmail()
     {
         return $this->email;
     }
 
-    /**
-     * Set the value of email
-     *
-     * @param  string  $email
-     *
-     * @return  self
-     */
     public function setEmail(string $email)
     {
         $this->email = $email;
@@ -105,24 +61,11 @@ class User extends AbstractEntityModelStringId
         return $this;
     }
 
-    /**
-     * Get )
-     *
-     * @return  Collection
-     */
     public function getAccounts(): Collection
     {
         return $this->accounts;
     }
 
-    /**
-     * Set )
-     *
-     * @API\Input(type="id[]")
-     * @param  Collection  $accounts  )
-     *
-     * @return  self
-     */
     public function setAccounts(Collection $accounts)
     {
         $this->accounts = $accounts;
@@ -130,24 +73,11 @@ class User extends AbstractEntityModelStringId
         return $this;
     }
 
-    /**
-     * Get the value of posts
-     *
-     * @return  Collection
-     */
     public function getPosts(): Collection
     {
         return $this->posts;
     }
 
-    /**
-     * Set the value of posts
-     *
-     * @API\Exclude
-     * @param  Collection  $posts
-     *
-     * @return  self
-     */
     public function setPosts(Collection $posts)
     {
         $this->posts = $posts;

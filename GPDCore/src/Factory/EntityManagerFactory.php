@@ -32,10 +32,12 @@ class EntityManagerFactory
 
         $proxyDir = $cacheDir . "/Proxy";
         $config = ORMSetup::createAttributeMetadataConfiguration($paths, $isDevMode, $proxyDir, $cache);
-        if ($isDevMode && $writeLog) {
-            $logger = new DoctrineSQLLogger();
-            $config->setSQLLogger($logger);
-        }
+
+        //TODO: buscar nueva forma para guardar el log
+        // if ($isDevMode && $writeLog) {
+        //     $logger = new DoctrineSQLLogger();
+        //     $config->setSQLLogger($logger);
+        // }
         if (!$isDevMode && !empty($cacheDir)) {
             $cacheQueryDir = $cacheDir . '/Query';
             $cacheMetadataDir = $cacheDir . '/Metadata';
