@@ -10,6 +10,7 @@ use GraphQL\Type\Schema;
 use GPDCore\Library\GPDApp;
 use GraphQL\Doctrine\Types;
 use GraphQL\Error\DebugFlag;
+use GraphQL\Utils\BuildSchema;
 use GraphQL\Error\FormattedError;
 use GPDCore\Library\AbstractModule;
 use GPDCore\Graphql\ResolverManager;
@@ -17,8 +18,12 @@ use GPDCore\Library\GQLFormattedError;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Validator\DocumentValidator;
 use GPDCore\Graphql\DefaultArrayResolver;
-use GraphQL\Validator\Rules\DisableIntrospection;
+use GraphQL\Language\AST\StringValueNode;
 use Laminas\ServiceManager\ServiceManager;
+use GraphQL\Language\AST\TypeDefinitionNode;
+use GraphQL\Type\Definition\ScalarType;
+use GraphQL\Utils\Utils;
+use GraphQL\Validator\Rules\DisableIntrospection;
 
 abstract class AbstractGQLServer
 {
@@ -169,8 +174,7 @@ abstract class AbstractGQLServer
     public function start(array $content)
     {
         $productionMode = $this->app->getProductionMode();
-        $types = $this->context->getTypes();
-        $schema = $this->getSchema($types);
+        $schema = $this->getSchema($this->context->getServiceManager());
         $queryString = $this->getQuery($content);
         $operationName = $this->getOperationName($content);
         $variableValues = $this->getVariables($content);
@@ -181,14 +185,15 @@ abstract class AbstractGQLServer
         }
         // @TODO agregar Query Complexity Analysis y Limiting Query Depth
         try {
+            $fieldResolver = new DefaultArrayResolver();
             $result = GraphQL::executeQuery(
                 $schema,
                 $queryString,
                 $rootValue = null,
-                $context = $this->context,
+                $this->context,
                 $variableValues,
                 $operationName,
-                $fieldResolver = new DefaultArrayResolver(),
+                $fieldResolver,
                 $validationRules = null
             )
                 ->seterrorFormatter(GQLFormattedError::createFromException());
@@ -239,16 +244,61 @@ abstract class AbstractGQLServer
         ]);
     }
 
-    protected function getSchema(?Types $types)
+    protected function getSchema(?ServiceManager $serviceManager)
     {
+
+        // TODO: Agregar los ajustes correctos del módulo para el Query y tipos escalares, etc.
         $query = $this->getGQLQueriesFields();
         $mutations = $this->getGQLMutationsFields();
+        $typedefinitions =  function (array $typeConfig, TypeDefinitionNode $typeDefinitionNode) use ($serviceManager) {
+            $name = $typeConfig['name'];
+            if ($serviceManager != null && $serviceManager->has($name)) {
+                /** @var ScalarType */
+                $type = $serviceManager->get($name);
+                if ($name == "Date") {
+                    $config = [
+                        'serialize' => function ($value) use ($type) {
+                            return $type->serialize($value);
+                        },
+                        'parseValue' => function ($value) use ($type) {
+                            return $type->parseValue($value);
+                        },
+                        'parseLiteral' => function ($valueNode) use ($type) {
+                            return $type->parseLiteral($valueNode);
+                            return $date;
+                        },
+                    ];
+                    return array_merge($typeConfig, $config);
+                }
+            }
+            return $typeConfig;
+        };
+        $schema = BuildSchema::build("
+            schema {
+                query: Query
+             
+            }
+
+            type Query 
+            {
+                greetings(input: HelloInput!): String!
+                showDate: Date!
+            }
+           
+
+            input HelloInput {
+                firstName: String!
+                lastName: String
+            }
+            scalar Date
+        ", $typedefinitions);
+        return $schema;
         return new Schema([
             'query' => $query,
             'mutation' =>   $mutations,
-            'typeLoader' => function ($name) use ($types) {
-                if ($types != null) {
-                    $type = $types->get($name);
+            'typeLoader' => function ($name) use ($serviceManager) {
+                if ($serviceManager != null) {
+                    $type = $serviceManager->get($name);
                     return $type;
                 }
             }

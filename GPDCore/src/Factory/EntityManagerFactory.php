@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace GPDCore\Factory;
 
-use Doctrine\ORM\Tools\Setup;
+use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\ORMSetup;
 use Exception;
 use GPDCore\Library\DoctrineSQLLogger;
 use Symfony\Component\Cache\Adapter\PhpFilesAdapter;
@@ -18,7 +19,6 @@ class EntityManagerFactory
         $paths = $options["entities"];
         $driver = $options["driver"];
         $isDevMode = $isDevMode;
-        $useSimpleAnnotationReader = false;
         $cache = null;
         $defaultCacheDir = __DIR__ . "/../../../../../../data/DoctrineORMModule/";
 
@@ -31,7 +31,7 @@ class EntityManagerFactory
         }
 
         $proxyDir = $cacheDir . "/Proxy";
-        $config = Setup::createAnnotationMetadataConfiguration($paths, $isDevMode, $proxyDir, $cache, $useSimpleAnnotationReader);
+        $config = ORMSetup::createAttributeMetadataConfiguration($paths, $isDevMode, $proxyDir, $cache);
         if ($isDevMode && $writeLog) {
             $logger = new DoctrineSQLLogger();
             $config->setSQLLogger($logger);
@@ -44,7 +44,8 @@ class EntityManagerFactory
             $config->setQueryCache($cacheQueryDriver);
             $config->setMetadataCache($cacheMetadataDriver);
         }
-        $entityManager = EntityManager::create($driver, $config);
+        $connection = DriverManager::getConnection($driver, $config);
+        $entityManager = new EntityManager($connection, $config);
         return $entityManager;
     }
 
@@ -52,14 +53,10 @@ class EntityManagerFactory
      * is not allowed to call from outside to prevent from creating multiple instances,
      * to use the singleton, you have to obtain the instance from Singleton::getInstance() instead
      */
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 
     /**
      * prevent the instance from being cloned (which would create a second instance of it)
      */
-    private function __clone()
-    {
-    }
+    private function __clone() {}
 }

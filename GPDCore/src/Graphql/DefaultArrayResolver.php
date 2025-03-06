@@ -28,15 +28,13 @@ final class DefaultArrayResolver
     {
         /** @var string $fieldName */
         $fieldName = $info->fieldName;
-        $resolverKey = sprintf("%s::%s",$info->parentType->name,$fieldName);
+        $resolverKey = sprintf("%s::%s", $info->parentType->name, $fieldName);
         $resolver = ResolverManager::get($resolverKey);
-        if(is_callable($resolver)) {
+        if (is_callable($resolver)) {
             $result = $resolver($source, $args, $context, $info);
         } else {
             $result = $source[$fieldName] ?? null;
         }
         return $result;
     }
-
 }
-

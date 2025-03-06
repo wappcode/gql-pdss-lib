@@ -83,7 +83,6 @@ class ContextService implements IContextService
         $this->productionMode = $productionMode;
         if (!$withoutDoctrine) {
             $this->setEntityManager();
-            $this->setTypes();
             $this->addTypes();
         }
         $this->hasBeenInitialized = true;
@@ -96,10 +95,6 @@ class ContextService implements IContextService
     public function getConfig(): ConfigService
     {
         return ConfigService::getInstance();
-    }
-    public function getTypes(): ?Types
-    {
-        return $this->types;
     }
     public function getServiceManager(): ServiceManager
     {
@@ -116,11 +111,6 @@ class ContextService implements IContextService
         }
         $isDevMode = !$this->productionMode;
         $this->entityManager = EntityManagerFactory::createInstance($options, $this->doctrineCacheDir, $isDevMode);
-    }
-    protected function setTypes()
-    {
-        TypesService::init($this->entityManager, $this->serviceManager);
-        $this->types = TypesService::getInstance();
     }
 
     protected function addTypes()
