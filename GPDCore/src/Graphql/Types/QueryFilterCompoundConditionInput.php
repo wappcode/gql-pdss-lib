@@ -10,18 +10,15 @@ use GPDCore\Graphql\Types\QueryFilterLogic;
 use GraphQL\Type\Definition\InputObjectType;
 use GPDCore\Graphql\Types\QueryFilterConditionType;
 
-class QueryFilterType extends InputObjectType
+class QueryFilterCompoundConditionInput extends InputObjectType
 {
 
-    const SM_NAME = 'QueryFilterInput';
+    const SM_NAME = 'QueryFilterCompountConditionInput';
     public function __construct(ServiceManager $serviceManager)
     {
         $config = [
             'name' => static::SM_NAME,
             'fields' => [
-                'groupLogic' => [
-                    'type' => $serviceManager->get(QueryFilterLogic::SM_NAME),
-                ],
                 'conditionsLogic' => [
                     'type' => $serviceManager->get(QueryFilterLogic::SM_NAME),
                 ],
