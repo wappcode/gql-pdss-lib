@@ -9,25 +9,26 @@ use Laminas\ServiceManager\ServiceManager;
 use GraphQL\Type\Definition\InputObjectType;
 use GPDCore\Graphql\Types\QueryJoinTypeValue;
 
-class QueryJoinType extends InputObjectType{
+class QueryJoinType extends InputObjectType
+{
 
     const SM_NAME = "QueryJoinInput";
-   
+
     public function __construct(ServiceManager $serviceManager)
     {
         $config = [
             'name' => static::SM_NAME,
             'fields' => [
-                'joinProperty' => [
+                'property' => [
                     'type' => Type::nonNull(Type::string()),
                 ],
-                'type' => [
+                'joinType' => [
                     'type' => $serviceManager->get(QueryJoinTypeValue::SM_NAME),
                 ],
                 'alias' => [
                     'type' => Type::string(),
                 ],
-                'joinedAlias' => [
+                'joinedProperty' => [
                     'type' => Type::string(),
                     // 'description' => 'nombre de la propiedad que es una referencia de otro objeto y de la cual se va a realizar el filtro. es necesario agregar manualmente los joins'
                 ],
@@ -36,5 +37,4 @@ class QueryJoinType extends InputObjectType{
 
         parent::__construct($config);
     }
-
 }
