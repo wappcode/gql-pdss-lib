@@ -26,7 +26,7 @@ class QueryFilterCompoundConditionInput extends InputObjectType
                     'type' => Type::listOf($serviceManager->get(QueryFilterConditionType::SM_NAME)),
                 ],
                 'compoundConditions' => [
-                    'type' => Type::listOf($serviceManager->get(QueryFilterCompoundConditionInput::SM_NAME)),
+                    'type' => Type::listOf($this),
                 ]
             ]
         ];

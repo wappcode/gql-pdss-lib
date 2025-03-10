@@ -26,6 +26,7 @@ use GPDCore\Graphql\Types\DateTimeImmutableType;
 use GPDCore\Graphql\Types\ListInput;
 use GPDCore\Graphql\Types\PageInfoType;
 use GPDCore\Graphql\Types\PaginationInput;
+use GPDCore\Graphql\Types\QueryFilterCompoundConditionInput;
 use GPDCore\Graphql\Types\QueryFilterConditionType;
 use GPDCore\Graphql\Types\QueryFilterConditionTypeValue;
 use GPDCore\Graphql\Types\QueryFilterConditionValueType;
@@ -166,6 +167,10 @@ class ContextService implements IContextService
         $this->serviceManager->setFactory(ListInput::class, function ($sm) {
             return new ListInput($sm);
         });
+        $this->serviceManager->setFactory(QueryFilterCompoundConditionInput::class, function ($sm) {
+            $compoundConditionsType = new QueryFilterCompoundConditionInput($sm);
+            return  $compoundConditionsType;
+        });
     }
     protected function addAliasesToServiceManager()
     {
@@ -186,6 +191,7 @@ class ContextService implements IContextService
         $this->serviceManager->setAlias(ConnectionInput::SM_NAME,  ConnectionInput::class);
         $this->serviceManager->setAlias(ListInput::SM_NAME,  ListInput::class);
         $this->serviceManager->setAlias(PageInfoType::SM_NAME,  PageInfoType::class);
+        $this->serviceManager->setAlias(QueryFilterCompoundConditionInput::SM_NAME,  QueryFilterCompoundConditionInput::class);
     }
 
     /**
