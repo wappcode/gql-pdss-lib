@@ -20,7 +20,7 @@ services:
     depends_on:
       gqlpdsslib-mysql:
         condition: service_healthy
-    container_name: gqlpdsslib-php7.4
+    container_name: gqlpdsslib-php8.3
     image: jesusabarcag/php-dev:8.3
     volumes: 
       - ..:/var/www/html

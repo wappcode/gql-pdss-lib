@@ -37,6 +37,11 @@ class AppModule extends AbstractModule
     {
         return require(__DIR__ . '/../config/module.config.php');
     }
+    function getSchema(): string
+    {
+        $schema = file_get_contents(__DIR__ . '../config/schema.graphql');
+        return $schema == false ? '' : $schema;
+    }
     function getServicesAndGQLTypes(): array
     {
         return [

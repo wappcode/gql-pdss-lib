@@ -4,6 +4,9 @@
         <testsuite name="Integration">
             <directory>./dev/test/Integration</directory>
         </testsuite>
+        <testsuite name="Unit">
+            <directory>./dev/test/Unit</directory>
+        </testsuite>
     </testsuites>
 
 </phpunit>
