@@ -1,0 +1,92 @@
+type Query {
+    greetings(input: HelloInput!): String!
+    showDate: Date!
+    users(input: ConnectionInput): UserConnection!
+}
+type Mutation {
+    createUser(input: UserInput!): User!
+    updateUser(id: ID!, input: UserUpdateInput!): User!
+    deleteUser(id: ID!): User!
+    createAccount(input: AccountInput!): Account!
+    updateAccount(id: ID!, input: AccountUpdateInput!): Account!
+    deleteAccount(id: ID!): Account!
+}
+input HelloInput {
+    firstName: String!
+    lastName: String
+}
+
+type User {
+    id: ID!
+    name: String!
+    email: String!
+    accounts: [Account]
+    post: [Post]
+    created: DateTime!
+    updated: DateTime!
+}
+
+input UserInput {
+    id: ID!
+    name: String!
+    email: String!
+    accounts: [Account]
+    post: [Post]
+    created: DateTime!
+    updated: DateTime!
+}
+
+type UserEdge{
+    cursor: String!
+    node: User!
+}
+type UserConnection {
+    totalCount: Int!
+    pageInfo: PageInfo!
+    edges: [UserEdge]!
+}
+type Account {
+    id: ID!
+    title: String!
+    code: String!
+    users: [User]
+    created: DateTime!
+    updated: DateTime!
+}
+input AccountInput {
+    id: ID!
+    title: String!
+    code: String!
+    users: [User]
+    created: DateTime!
+    updated: DateTime!
+}
+
+type AccountEdge {
+    cursor: String!
+    node: Account!
+}
+type AccountConnection {
+    totalCount: Int!
+    pageInfo: PageInfo!
+    edges: [AccountEdge]!
+}
+
+
+type Post {
+    id: ID!
+    title: String!
+    body: String!
+    author: User!
+    comments: [Comment]
+    created: DateTime!
+    updated: DateTime!
+}
+
+type Comment {
+    id: ID!
+    text: String!
+    post: Post!
+    created: DateTime!
+    updated: DateTime!
+}

@@ -42,6 +42,11 @@ abstract class AbstractGQLServer
     protected $serviceManager;
 
     /**
+     * @var string[]
+     */
+    protected array $schemasModules = [];
+
+    /**
      *
      * @var GPDApp
      */
@@ -80,7 +85,7 @@ abstract class AbstractGQLServer
      */
     protected function addModule(AbstractModule $module, $omitResolvers = false, $omitQueryFields = false, $omitMutationFields = false): AbstractGQLServer
     {
-
+        $this->schemasModules[] = $module->getSchema();
         if (!$omitResolvers) {
             $resolvers = $module->getResolvers();
             $this->addResolvers($resolvers);
@@ -244,18 +249,16 @@ abstract class AbstractGQLServer
         ]);
     }
 
-    protected function getSchema(?ServiceManager $serviceManager)
+    protected function getSchema(?ServiceManager $serviceManager): Schema
     {
 
         // TODO: Agregar los ajustes correctos del módulo para el Query y tipos escalares, etc.
-        $query = $this->getGQLQueriesFields();
-        $mutations = $this->getGQLMutationsFields();
         $typedefinitions =  function (array $typeConfig, TypeDefinitionNode $typeDefinitionNode) use ($serviceManager) {
             $name = $typeConfig['name'];
             if ($serviceManager != null && $serviceManager->has($name)) {
                 /** @var ScalarType */
                 $type = $serviceManager->get($name);
-                if ($name == "Date") {
+                if ($type instanceof ScalarType) {
                     $config = [
                         'serialize' => function ($value) use ($type) {
                             return $type->serialize($value);
@@ -273,36 +276,18 @@ abstract class AbstractGQLServer
             }
             return $typeConfig;
         };
-        $schema = BuildSchema::build("
-            schema {
+        $schemaUtilities = file_get_contents(__DIR__ . "/../Assets/gql-pdss.graphqls");
+        $allSchemas = [$schemaUtilities, ...$this->schemasModules];
+        $schemasContent = GraphqlSchemaUtilities::combineSchemas($allSchemas);
+        $schemaBase = "schema {
                 query: Query
-             
-            }
+                mutation: Mutation
+             }
+        ";
+        $appSchema = $schemaBase . PHP_EOL . $schemasContent;
 
-            type Query 
-            {
-                greetings(input: HelloInput!): String!
-                showDate: Date!
-            }
-           
-
-            input HelloInput {
-                firstName: String!
-                lastName: String
-            }
-            scalar Date
-        ", $typedefinitions);
+        $schema = BuildSchema::build($appSchema, $typedefinitions);
         return $schema;
-        return new Schema([
-            'query' => $query,
-            'mutation' =>   $mutations,
-            'typeLoader' => function ($name) use ($serviceManager) {
-                if ($serviceManager != null) {
-                    $type = $serviceManager->get($name);
-                    return $type;
-                }
-            }
-        ]);
     }
     /**
      * Recupera el valor query de la consulta gql
