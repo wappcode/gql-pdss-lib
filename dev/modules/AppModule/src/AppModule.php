@@ -22,7 +22,9 @@ use GPDCore\Library\AbstractModule;
 use AppModule\Graphql\TypeCommentEdge;
 use AppModule\Graphql\TypePostConnection;
 use AppModule\Graphql\TypeUserConnection;
-use GPDCore\Graphql\GPDFieldFactory;
+use GPDCore\Graphql\GPDFieldResolveFactory;
+use GPDCore\Library\IContextService;
+use GPDCore\Library\ProxyUtilities;
 
 class AppModule extends AbstractModule
 {
@@ -36,20 +38,16 @@ class AppModule extends AbstractModule
     {
         return require(__DIR__ . '/../config/module.config.php');
     }
+    function getSchema(): string
+    {
+        $schema = file_get_contents(__DIR__ . '/../config/schema.graphql');
+        return $schema == false ? '' : $schema;
+    }
     function getServicesAndGQLTypes(): array
     {
         return [
             'invokables' => [],
-            'factories' => [
-                TypeUserEdge::NAME => TypeUserEdge::getFactory($this->context, User::class),
-                TypeUserConnection::NAME =>  TypeUserConnection::getFactory($this->context, TypeUserEdge::NAME),
-                TypePostEdge::NAME => TypePostEdge::getFactory($this->context, Post::class),
-                TypePostConnection::NAME => TypePostConnection::getFactory($this->context, TypePostEdge::NAME),
-                TypeCommentEdge::NAME => TypeCommentEdge::getFactory($this->context, Comment::class),
-                TypeCommentConnection::NAME => TypeCommentConnection::getFactory($this->context, TypeCommentEdge::NAME),
-                TypeAccountEdge::NAME => TypeAccountEdge::getFactory($this->context, Account::class),
-                TypeAccountConnection::NAME => TypeAccountConnection::getFactory($this->context, TypeAccountEdge::NAME)
-            ],
+            'factories' => [],
             'aliases' => []
         ];
     }
@@ -60,13 +58,27 @@ class AppModule extends AbstractModule
      */
     function getResolvers(): array
     {
+
+        $proxyEcho1 = fn($resolver) => fn($root, $args, $context, $info) => "Proxy 1 " . $resolver($root, $args, $context, $info);
+        $proxyEcho2 = fn($resolver) => fn($root, $args, $context, $info) => "Proxy 2 " . $resolver($root, $args, $context, $info);
+        $echoResolve = fn($root, $args, $context, $info) => $args["msg"];
         return [
+            'Query::showDate' => fn($root, $args, IContextService $context, $info) =>  new DateTime(),
             'User::accounts' => ResolversUser::getAccountsResolver(),
             'User::posts' => ResolversUser::getPostsResolver(),
             'Account::users' => ResolversAccount::getUsersResolver(),
             'Post::author' => ResolversPost::getAuthorResolver(),
             'Post::comments' => ResolversPost::getCommentsResolver(),
-            'Comment::post' => ResolversComment::getPostResolver()
+            'Comment::post' => ResolversComment::getPostResolver(),
+            'Query::echo' => $echoResolve,
+            'Query::echoProxy' => ProxyUtilities::apply($echoResolve, $proxyEcho1),
+            'Query::echoProxies' => ProxyUtilities::applyAll($echoResolve, [$proxyEcho1, $proxyEcho2]),
+            'Query::getUsers' => GPDFieldResolveFactory::buildForConnection(User::class),
+            'Query::getUser' => GPDFieldResolveFactory::buildForItem(User::class),
+            'Mutation::createUser' => GPDFieldResolveFactory::buildforCreate(User::class),
+            'Mutation::updateUser' => GPDFieldResolveFactory::buildForUpdate(User::class),
+            'Mutation::deleteUser' => GPDFieldResolveFactory::buildForDelete(User::class),
+
 
 
         ];
@@ -78,44 +90,45 @@ class AppModule extends AbstractModule
      */
     function getQueryFields(): array
     {
-        $serviceManager = $this->context->getServiceManager();
-        $userConnectionType = $serviceManager->get(TypeUserConnection::NAME);
-        $postConnectionType = $serviceManager->get(TypePostConnection::NAME);
-        $accountConnectionType = $serviceManager->get(TypeAccountConnection::NAME);
-        $commentConnectionType = $serviceManager->get(TypeCommentConnection::NAME);
-        return [
-            'echo' =>  [
-                'type' => Type::nonNull(Type::string()),
-                'args' => [
-                    'message' => Type::nonNull(Type::string())
-                ],
+        return [];
+        // $serviceManager = $this->context->getServiceManager();
+        // $userConnectionType = $serviceManager->get(TypeUserConnection::NAME);
+        // $postConnectionType = $serviceManager->get(TypePostConnection::NAME);
+        // $accountConnectionType = $serviceManager->get(TypeAccountConnection::NAME);
+        // $commentConnectionType = $serviceManager->get(TypeCommentConnection::NAME);
+        // return [
+        //     'echo' =>  [
+        //         'type' => Type::nonNull(Type::string()),
+        //         'args' => [
+        //             'message' => Type::nonNull(Type::string())
+        //         ],
 
-                'resolve' => function ($root, $args) {
-                    return $args["message"];
-                }
-            ],
-            'datetime' => [
-                'type' => Type::nonNull($this->context->getServiceManager()->get(DateTime::class)),
-                'resolve' => function ($root, $args) {
-                    return new DateTime();
-                }
-            ],
-            'date' => [
-                'type' => Type::nonNull($this->context->getServiceManager()->get(DateType::class)),
-                'resolve' => function ($root, $args) {
-                    return new DateTime();
-                }
-            ],
-            'userConnection' => GPDFieldFactory::buildFieldConnection($this->context, $userConnectionType, User::class),
-            'user' => GPDFieldFactory::buildFieldItem($this->context, User::class),
-            'postConnection' => GPDFieldFactory::buildFieldConnection($this->context, $postConnectionType, Post::class),
-            'post' => GPDFieldFactory::buildFieldItem($this->context, Post::class),
-            'accountConnection' => GPDFieldFactory::buildFieldConnection($this->context, $accountConnectionType, Account::class),
-            'account' => GPDFieldFactory::buildFieldItem($this->context, Account::class),
-            'commentConnection' => GPDFieldFactory::buildFieldConnection($this->context, $commentConnectionType, Comment::class),
-            'comment' => GPDFieldFactory::buildFieldItem($this->context, Comment::class),
+        //         'resolve' => function ($root, $args) {
+        //             return $args["message"];
+        //         }
+        //     ],
+        //     'datetime' => [
+        //         'type' => Type::nonNull($this->context->getServiceManager()->get(DateTime::class)),
+        //         'resolve' => function ($root, $args) {
+        //             return new DateTime();
+        //         }
+        //     ],
+        //     'date' => [
+        //         'type' => Type::nonNull($this->context->getServiceManager()->get(DateType::class)),
+        //         'resolve' => function ($root, $args) {
+        //             return new DateTime();
+        //         }
+        //     ],
+        //     'userConnection' => GPDFieldResolveFactory::buildFieldConnection($this->context, $userConnectionType, User::class),
+        //     'user' => GPDFieldResolveFactory::buildFieldItem($this->context, User::class),
+        //     'postConnection' => GPDFieldResolveFactory::buildFieldConnection($this->context, $postConnectionType, Post::class),
+        //     'post' => GPDFieldResolveFactory::buildFieldItem($this->context, Post::class),
+        //     'accountConnection' => GPDFieldResolveFactory::buildFieldConnection($this->context, $accountConnectionType, Account::class),
+        //     'account' => GPDFieldResolveFactory::buildFieldItem($this->context, Account::class),
+        //     'commentConnection' => GPDFieldResolveFactory::buildFieldConnection($this->context, $commentConnectionType, Comment::class),
+        //     'comment' => GPDFieldResolveFactory::buildFieldItem($this->context, Comment::class),
 
-        ];
+        // ];
     }
     /**
      * Array con los graphql mutations del módulo
@@ -124,20 +137,21 @@ class AppModule extends AbstractModule
      */
     function getMutationFields(): array
     {
-        return [
-            'createUser' => GPDFieldFactory::buildFieldCreate($this->context, User::class),
-            'updateUser' => GPDFieldFactory::buildFieldUpdate($this->context, User::class),
-            'deleteUser' => GPDFieldFactory::buildFieldDelete($this->context, User::class),
-            'createAccount' => GPDFieldFactory::buildFieldCreate($this->context, Account::class),
-            'updateAccount' => GPDFieldFactory::buildFieldUpdate($this->context, Account::class),
-            'deleteAccount' => GPDFieldFactory::buildFieldDelete($this->context, Account::class),
-            'createPost' => GPDFieldFactory::buildFieldCreate($this->context, Post::class),
-            'updatePost' => GPDFieldFactory::buildFieldUpdate($this->context, Post::class),
-            'deletePost' => GPDFieldFactory::buildFieldDelete($this->context, Post::class),
-            'createComment' => GPDFieldFactory::buildFieldCreate($this->context, Comment::class),
-            'updateComment' => GPDFieldFactory::buildFieldUpdate($this->context, Comment::class),
-            'deleteComment' => GPDFieldFactory::buildFieldDelete($this->context, Comment::class),
+        return [];
+        // return [
+        //     'createUser' => GPDFieldResolveFactory::buildFieldCreate($this->context, User::class),
+        //     'updateUser' => GPDFieldResolveFactory::buildFieldUpdate($this->context, User::class),
+        //     'deleteUser' => GPDFieldResolveFactory::buildFieldDelete($this->context, User::class),
+        //     'createAccount' => GPDFieldResolveFactory::buildFieldCreate($this->context, Account::class),
+        //     'updateAccount' => GPDFieldResolveFactory::buildFieldUpdate($this->context, Account::class),
+        //     'deleteAccount' => GPDFieldResolveFactory::buildFieldDelete($this->context, Account::class),
+        //     'createPost' => GPDFieldResolveFactory::buildFieldCreate($this->context, Post::class),
+        //     'updatePost' => GPDFieldResolveFactory::buildFieldUpdate($this->context, Post::class),
+        //     'deletePost' => GPDFieldResolveFactory::buildFieldDelete($this->context, Post::class),
+        //     'createComment' => GPDFieldResolveFactory::buildFieldCreate($this->context, Comment::class),
+        //     'updateComment' => GPDFieldResolveFactory::buildFieldUpdate($this->context, Comment::class),
+        //     'deleteComment' => GPDFieldResolveFactory::buildFieldDelete($this->context, Comment::class),
 
-        ];
+        // ];
     }
 }

@@ -8,7 +8,8 @@ use GPDCore\Library\GPDApp;
 use GraphQL\Doctrine\Types;
 
 
-abstract class AbstractModule {
+abstract class AbstractModule
+{
 
 
     /**
@@ -26,8 +27,9 @@ abstract class AbstractModule {
      * @var GPDApp
      */
     protected $app;
-    
-    public function __construct(GPDApp $app) {
+
+    public function __construct(GPDApp $app)
+    {
         $this->app = $app;
         $this->context = $this->app->getContext();
         $this->productionMode = $this->app->getProductionMode();
@@ -38,7 +40,14 @@ abstract class AbstractModule {
      * @return array
      */
     abstract function getConfig(): array;
-    
+
+    /**
+     * Array con la configuración del módulo
+     *
+     * @return string
+     */
+    abstract function getSchema(): string;
+
     /**
      * Array con los servicios y tipos graphql que se necesitan para el módulo
      * El indice se utiliza como nombre del tipo
@@ -46,7 +55,7 @@ abstract class AbstractModule {
      * @return array [invokables => [key: service], factories => [key: service], aliases => [key: service]]
      */
     abstract function getServicesAndGQLTypes(): array;
-    
+
     /**
      * Array con los resolvers del módulo
      *
@@ -65,7 +74,4 @@ abstract class AbstractModule {
      * @return array
      */
     abstract function getMutationFields(): array;
-   
-
-    
 }

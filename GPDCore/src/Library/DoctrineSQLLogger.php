@@ -4,9 +4,9 @@ namespace GPDCore\Library;
 
 use GPDCore\Services\ConfigService;
 use DateTime;
-use Doctrine\DBAL\Logging\SQLLogger;
 
-class DoctrineSQLLogger implements SQLLogger {
+class DoctrineSQLLogger implements DoctrineSQLLogger
+{
 
     private $startTime;
     /**
@@ -18,7 +18,8 @@ class DoctrineSQLLogger implements SQLLogger {
      *
      * @return void
      */
-    public function startQuery($sql, ?array $params = null, ?array $types = null) {
+    public function startQuery($sql, ?array $params = null, ?array $types = null)
+    {
         $currentDate = new DateTime();
         $strDate = $currentDate->format("Y-M-d H:i:s");
         $this->startTime = $currentDate->getTimestamp();
@@ -30,7 +31,7 @@ Query: {$sql}
 Params: {$strparams}
 
 QUERY;
-       $this->writeLog($msg);
+        $this->writeLog($msg);
     }
 
     /**
@@ -38,7 +39,8 @@ QUERY;
      *
      * @return void
      */
-    public function stopQuery() {
+    public function stopQuery()
+    {
         $currentDate = new DateTime();
         $strDate = $currentDate->format("Y-M-d H:i:s");
         $endTime = $currentDate->getTimestamp();
@@ -50,14 +52,14 @@ Tiempo: {$time} segundos
 ############## END QUERY ################### 
 
 QUERY;
-       $this->writeLog($msg);
-
+        $this->writeLog($msg);
     }
 
-    protected function writeLog(string $msg) {
+    protected function writeLog(string $msg)
+    {
         $dir = ConfigService::getInstance()->get('sql_log_dir');
         $filename = 'doctrine.log';
-        $path = $dir.DIRECTORY_SEPARATOR.$filename;
+        $path = $dir . DIRECTORY_SEPARATOR . $filename;
         @file_put_contents($path, $msg, FILE_APPEND | LOCK_EX);
     }
 }

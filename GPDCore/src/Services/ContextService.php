@@ -84,7 +84,6 @@ class ContextService implements IContextService
         $this->productionMode = $productionMode;
         if (!$withoutDoctrine) {
             $this->setEntityManager();
-            $this->setTypes();
             $this->addTypes();
         }
         $this->hasBeenInitialized = true;
@@ -97,10 +96,6 @@ class ContextService implements IContextService
     public function getConfig(): ConfigService
     {
         return ConfigService::getInstance();
-    }
-    public function getTypes(): ?Types
-    {
-        return $this->types;
     }
     public function getServiceManager(): ServiceManager
     {
@@ -118,11 +113,6 @@ class ContextService implements IContextService
         $isDevMode = !$this->productionMode;
         $this->entityManager = EntityManagerFactory::createInstance($options, $this->doctrineCacheDir, $isDevMode);
     }
-    protected function setTypes()
-    {
-        TypesService::init($this->entityManager, $this->serviceManager);
-        $this->types = TypesService::getInstance();
-    }
 
     protected function addTypes()
     {
@@ -133,107 +123,17 @@ class ContextService implements IContextService
 
     protected function addInvokablesToServiceManager()
     {
-        $this->serviceManager->setInvokableClass(DateTime::class,  DateTimeType::class);
-        $this->serviceManager->setInvokableClass(DateType::class,  DateType::class);
-        $this->serviceManager->setInvokableClass(DateTimeImmutable::class,  DateTimeImmutableType::class);
-        $this->serviceManager->setInvokableClass(QueryFilterLogic::class,  QueryFilterLogic::class);
-        $this->serviceManager->setInvokableClass(QueryFilterConditionTypeValue::class,  QueryFilterConditionTypeValue::class);
-        $this->serviceManager->setInvokableClass(QuerySortDirection::class,  QuerySortDirection::class);
-        $this->serviceManager->setInvokableClass(QueryJoinTypeValue::class,  QueryJoinTypeValue::class);
+        $this->serviceManager->setInvokableClass(static::SM_DATETIME,  DateTimeType::class);
+        $this->serviceManager->setInvokableClass(static::SM_DATE,  DateType::class);
         $this->serviceManager->setInvokableClass(JSONData::class,  JSONData::class);
-        $this->serviceManager->setInvokableClass(PaginationInput::class,  PaginationInput::class);
-        $this->serviceManager->setInvokableClass(PageInfoType::class,  PageInfoType::class);
-        $this->serviceManager->setInvokableClass(QueryFilterConditionValueType::class,  QueryFilterConditionValueType::class);
     }
 
-    protected function addFactoriesToServiceManager()
-    {
-
-        $this->serviceManager->setFactory(QueryFilterConditionType::class, function ($sm) {
-            return new QueryFilterConditionType($sm);
-        });
-        $this->serviceManager->setFactory(QueryFilterType::class, function ($sm) {
-            return new QueryFilterType($sm);
-        });
-        $this->serviceManager->setFactory(QuerySortType::class, function ($sm) {
-            return new QuerySortType($sm);
-        });
-        $this->serviceManager->setFactory(QueryJoinType::class, function ($sm) {
-            return new QueryJoinType($sm);
-        });
-        $this->serviceManager->setFactory(ConnectionInput::class, function ($sm) {
-            return new ConnectionInput($sm);
-        });
-        $this->serviceManager->setFactory(ListInput::class, function ($sm) {
-            return new ListInput($sm);
-        });
-        $this->serviceManager->setFactory(QueryFilterCompoundConditionInput::class, function ($sm) {
-            $compoundConditionsType = new QueryFilterCompoundConditionInput($sm);
-            return  $compoundConditionsType;
-        });
-    }
+    protected function addFactoriesToServiceManager() {}
     protected function addAliasesToServiceManager()
     {
         $this->serviceManager->setAlias(static::SM_DATETIME, DateTime::class); // Declare alias for Doctrine type to be used for filters
         $this->serviceManager->setAlias(static::SM_DATE, DateType::class); // Declare alias for Doctrine type to be used for filters
-        $this->serviceManager->setAlias(DateTimeInterface::class, DateTime::class);
-        $this->serviceManager->setAlias(QueryFilterLogic::SM_NAME,  QueryFilterLogic::class);
-        $this->serviceManager->setAlias(QueryFilterConditionTypeValue::SM_NAME,  QueryFilterConditionTypeValue::class);
-        $this->serviceManager->setAlias(QuerySortDirection::SM_NAME,  QuerySortDirection::class);
-        $this->serviceManager->setAlias(QueryJoinTypeValue::SM_NAME,  QueryJoinTypeValue::class);
         $this->serviceManager->setAlias(JSONData::SM_NAME,  JSONData::class);
-        $this->serviceManager->setAlias(QueryFilterConditionValueType::SM_NAME,  QueryFilterConditionValueType::class);
-        $this->serviceManager->setAlias(PaginationInput::SM_NAME,  PaginationInput::class);
-        $this->serviceManager->setAlias(QueryFilterConditionType::SM_NAME,  QueryFilterConditionType::class);
-        $this->serviceManager->setAlias(QueryFilterType::SM_NAME,  QueryFilterType::class);
-        $this->serviceManager->setAlias(QuerySortType::SM_NAME,  QuerySortType::class);
-        $this->serviceManager->setAlias(QueryJoinType::SM_NAME,  QueryJoinType::class);
-        $this->serviceManager->setAlias(ConnectionInput::SM_NAME,  ConnectionInput::class);
-        $this->serviceManager->setAlias(ListInput::SM_NAME,  ListInput::class);
-        $this->serviceManager->setAlias(PageInfoType::SM_NAME,  PageInfoType::class);
-        $this->serviceManager->setAlias(QueryFilterCompoundConditionInput::SM_NAME,  QueryFilterCompoundConditionInput::class);
-    }
-
-    /**
-     * Get the value of configFile
-     * @deprecated version 2.0.13 usar getDoctrineConfigFile
-     */
-    public function getConfigFile()
-    {
-        // @todo remover version 3
-        return $this->getDoctrineConfigFile();
-    }
-
-    /**
-     * Set the value of configFile
-     *
-     * @return  self
-     * @deprecated version 2.0.13 usar setDoctrineConfigFile
-     */
-    public function setConfigFile($configFile)
-    {
-        // @todo remover version 3
-        return $this->setDoctrineConfigFile($configFile);
-    }
-
-    /**
-     * Get the value of cacheDir
-     * @deprecated version 2.0.13 usar getDoctrineCacheDir
-     */
-    public function getCacheDir()
-    {
-        return $this->getDoctrineCacheDir();
-    }
-
-    /**
-     * Set the value of cacheDir
-     *
-     * @return  self
-     * @deprecated version 2.0.13 usar getDoctrineCacheDir
-     */
-    public function setCacheDir($cacheDir)
-    {
-        return $this->setDoctrineCacheDir($cacheDir);
     }
 
     /**

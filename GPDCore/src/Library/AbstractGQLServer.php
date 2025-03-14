@@ -10,6 +10,7 @@ use GraphQL\Type\Schema;
 use GPDCore\Library\GPDApp;
 use GraphQL\Doctrine\Types;
 use GraphQL\Error\DebugFlag;
+use GraphQL\Utils\BuildSchema;
 use GraphQL\Error\FormattedError;
 use GPDCore\Library\AbstractModule;
 use GPDCore\Graphql\ResolverManager;
@@ -17,8 +18,12 @@ use GPDCore\Library\GQLFormattedError;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Validator\DocumentValidator;
 use GPDCore\Graphql\DefaultArrayResolver;
-use GraphQL\Validator\Rules\DisableIntrospection;
+use GraphQL\Language\AST\StringValueNode;
 use Laminas\ServiceManager\ServiceManager;
+use GraphQL\Language\AST\TypeDefinitionNode;
+use GraphQL\Type\Definition\ScalarType;
+use GraphQL\Utils\Utils;
+use GraphQL\Validator\Rules\DisableIntrospection;
 
 abstract class AbstractGQLServer
 {
@@ -35,6 +40,11 @@ abstract class AbstractGQLServer
      * @var ServiceManager
      */
     protected $serviceManager;
+
+    /**
+     * @var string[]
+     */
+    protected array $schemasModules = [];
 
     /**
      *
@@ -75,7 +85,7 @@ abstract class AbstractGQLServer
      */
     protected function addModule(AbstractModule $module, $omitResolvers = false, $omitQueryFields = false, $omitMutationFields = false): AbstractGQLServer
     {
-
+        $this->schemasModules[] = $module->getSchema();
         if (!$omitResolvers) {
             $resolvers = $module->getResolvers();
             $this->addResolvers($resolvers);
@@ -169,26 +179,26 @@ abstract class AbstractGQLServer
     public function start(array $content)
     {
         $productionMode = $this->app->getProductionMode();
-        $types = $this->context->getTypes();
-        $schema = $this->getSchema($types);
+        $schema = $this->getSchema($this->context->getServiceManager());
         $queryString = $this->getQuery($content);
         $operationName = $this->getOperationName($content);
         $variableValues = $this->getVariables($content);
         $debug =   $productionMode ?  DebugFlag::NONE :  DebugFlag::RETHROW_UNSAFE_EXCEPTIONS;
 
         if ($productionMode) {
-            DocumentValidator::addRule(new DisableIntrospection());
+            DocumentValidator::addRule(new DisableIntrospection(1));
         }
         // @TODO agregar Query Complexity Analysis y Limiting Query Depth
         try {
+            $fieldResolver = new DefaultArrayResolver();
             $result = GraphQL::executeQuery(
                 $schema,
                 $queryString,
                 $rootValue = null,
-                $context = $this->context,
+                $this->context,
                 $variableValues,
                 $operationName,
-                $fieldResolver = new DefaultArrayResolver(),
+                $fieldResolver,
                 $validationRules = null
             )
                 ->seterrorFormatter(GQLFormattedError::createFromException());
@@ -239,33 +249,60 @@ abstract class AbstractGQLServer
         ]);
     }
 
-    protected function getSchema(?Types $types)
+    protected function getSchema(?ServiceManager $serviceManager): Schema
     {
-        $query = $this->getGQLQueriesFields();
-        $mutations = $this->getGQLMutationsFields();
-        return new Schema([
-            'query' => $query,
-            'mutation' =>   $mutations,
-            'typeLoader' => function ($name) use ($types) {
-                if ($types != null) {
-                    $type = $types->get($name);
-                    return $type;
+
+        // TODO: Agregar los ajustes correctos del módulo para el Query y tipos escalares, etc.
+        $typedefinitions =  function (array $typeConfig, TypeDefinitionNode $typeDefinitionNode) use ($serviceManager) {
+            $name = $typeConfig['name'];
+            if ($serviceManager != null && $serviceManager->has($name)) {
+                /** @var ScalarType */
+                $type = $serviceManager->get($name);
+                if ($type instanceof ScalarType) {
+                    $config = [
+                        'serialize' => function ($value) use ($type) {
+                            return $type->serialize($value);
+                        },
+                        'parseValue' => function ($value) use ($type) {
+                            return $type->parseValue($value);
+                        },
+                        'parseLiteral' => function ($valueNode) use ($type) {
+                            return $type->parseLiteral($valueNode);
+                            return $date;
+                        },
+                    ];
+                    return array_merge($typeConfig, $config);
                 }
             }
-        ]);
+            return $typeConfig;
+        };
+        $schemaUtilities = file_get_contents(__DIR__ . "/../Assets/gql-pdss.graphqls");
+        $allSchemas = [$schemaUtilities, ...$this->schemasModules];
+        $schemasContent = GraphqlSchemaUtilities::combineSchemas($allSchemas);
+        $queryField = preg_match("/type\sQuery/", $schemasContent) ? 'query: Query' : '';
+        $mutationField = preg_match("/type\sMutation/", $schemasContent) ? 'mutation: Mutation' : '';
+        $schemaBase = "schema {
+                {$queryField}
+                {$mutationField}
+             }
+        ";
+        $appSchema = $schemaBase . PHP_EOL . $schemasContent;
+
+        $schema = BuildSchema::build($appSchema, $typedefinitions);
+        return $schema;
     }
     /**
      * Recupera el valor query de la consulta gql
      *
      * @param string $content
-     * @return void
+     * @return string
      */
     protected function getQuery($content)
     {
         if (isset($content["template"]["data"])) {
             return $this->findValueFromTemplate($content["template"]["data"], "query");
         } else {
-            return $content["query"] ?? null;
+            return $content["query"] ?? "";
         }
     }
 

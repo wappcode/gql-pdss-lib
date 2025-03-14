@@ -6,6 +6,8 @@ use ReflectionClass;
 use ReflectionMethod;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\ManyToManyAssociationMapping;
+use Doctrine\ORM\Mapping\OneToManyAssociationMapping;
 use GPDCore\Library\EntityAssociation;
 
 class EntityUtilities
@@ -55,7 +57,8 @@ class EntityUtilities
             $joinColumns = $association["joinColumns"] ?? [];
             return count($joinColumns) === 1;
         });
-        $associations = array_map(function ($association) use ($entityManager) {
+        $associations = array_map(function ($associationObj) use ($entityManager) {
+            $association = get_object_vars($associationObj);
             return static::createAssociationValue($entityManager, $association);
         }, $associations);
 
@@ -74,14 +77,11 @@ class EntityUtilities
         $metadata = $entityManager->getClassMetadata($className);
 
         $associations = $metadata->associationMappings;
-        $associations = array_filter($associations, function ($association) use ($className) {
-
-            $refl = new ReflectionClass($className);
-            $property = $association["fieldName"];
-            $propertyDocs = $refl->getProperty($property)->getDocComment();
-            return preg_match("/(OneToMany\s*\()|(ManyToMany\s*\()/", $propertyDocs);
+        $associations = array_filter($associations, function ($associationObj) use ($className) {
+            return $associationObj instanceof OneToManyAssociationMapping || $associationObj instanceof ManyToManyAssociationMapping;
         });
-        $associations = array_map(function ($association) use ($entityManager) {
+        $associations = array_map(function ($associationObj) use ($entityManager) {
+            $association = get_object_vars($associationObj);
             return static::createAssociationValue($entityManager, $association);
         }, $associations);
 

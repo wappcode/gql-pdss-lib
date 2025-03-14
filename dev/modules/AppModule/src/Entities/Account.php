@@ -9,46 +9,33 @@ use GPDCore\Entities\AbstractEntityModel;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 
-/**
- * @ORM\Entity()
- * @ORM\Table(name="account")
- */
+
+#[ORM\Entity]
+#[ORM\Table(name: "account")]
 class Account
 {
 
-    /**
-     * @ORM\Id
-     * @ORM\Column(name="code", type="string")
-     * @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class="\PDSSUtilities\DoctrineUniqueIDStringGenerator")
-     * @var string
-     */
+
+    #[ORM\Id]
+    #[ORM\Column(name: "code", type: "string")]
+    #[ORM\GeneratedValue(strategy: "CUSTOM")]
+    #[ORM\CustomIdGenerator(class: "\PDSSUtilities\DoctrineUniqueIDStringGenerator")]
     protected $code;
-    /**
-     * @ORM\Column(type="string",nullable=false)
-     *
-     * @var string
-     */
-    private $title;
+
+    #[ORM\Column(type: "string", nullable: false)]
+    protected $title;
 
 
-    /**
-     * @ORM\ManyToMany(targetEntity="\AppModule\Entities\User", mappedBy="accounts")
-     *
-     * @var Collection
-     */
-    private $users;
 
-    /**
-     * @var DateTimeImmutable
-     * @ORM\Column(type="datetimetz_immutable")
-     */
+    #[ORM\ManyToMany(targetEntity: User::class, mappedBy: "accounts")]
+    protected $users;
+
+
+    #[ORM\Column(type: "datetimetz_immutable")]
     protected $created;
 
-    /**
-     * @var DateTimeImmutable
-     * @ORM\Column(type="datetimetz_immutable")
-     */
+
+    #[ORM\Column(type: "datetimetz_immutable")]
     protected $updated;
 
 
@@ -56,14 +43,31 @@ class Account
     {
         $this->created = new DateTimeImmutable();
         $this->updated = new DateTimeImmutable();
-        $this->users = new ArrayCollection();
+        // $this->users = new ArrayCollection();
     }
 
+    /**
+     * Get the value of code
+     */
+    public function getCode()
+    {
+        return $this->code;
+    }
+
+    /**
+     * Set the value of code
+     *
+     * @return  self
+     */
+    public function setCode($code)
+    {
+        $this->code = $code;
+
+        return $this;
+    }
 
     /**
      * Get the value of title
-     *
-     * @return  string
      */
     public function getTitle()
     {
@@ -73,45 +77,37 @@ class Account
     /**
      * Set the value of title
      *
-     * @param  string  $title
-     *
      * @return  self
      */
-    public function setTitle(string $title)
+    public function setTitle($title)
     {
         $this->title = $title;
 
         return $this;
     }
 
-    /**
-     * Get the value of users
-     *
-     * @return  Collection
-     */
-    public function getUsers(): Collection
-    {
-        return $this->users;
-    }
+    // /**
+    //  * Get the value of users
+    //  */
+    // public function getUsers()
+    // {
+    //     return $this->users;
+    // }
 
-    /**
-     * Set the value of users
-     *
-     * @API\Exclude
-     * @param  Collection  $users
-     *
-     * @return  self
-     */
-    public function setUsers(Collection $users)
-    {
-        $this->users = $users;
+    // /**
+    //  * Set the value of users
+    //  *
+    //  * @return  self
+    //  */
+    // public function setUsers($users)
+    // {
+    //     $this->users = $users;
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
     /**
      * Get the value of created
-     * @return  DateTimeImmutable
      */
     public function getCreated()
     {
@@ -120,12 +116,10 @@ class Account
 
     /**
      * Set the value of created
-     * @API\Exclude
-     * @param  DateTimeImmutable  $created
      *
      * @return  self
      */
-    public function setCreated(DateTimeImmutable $created)
+    public function setCreated($created)
     {
         $this->created = $created;
 
@@ -134,7 +128,6 @@ class Account
 
     /**
      * Get the value of updated
-     * @return  DateTimeImmutable
      */
     public function getUpdated()
     {
@@ -143,26 +136,33 @@ class Account
 
     /**
      * Set the value of updated
-     * @API\Exclude
-     * @param  DateTimeImmutable  $updated
      *
      * @return  self
      */
-    public function setUpdated()
+    public function setUpdated($updated)
     {
-        $updated = new DateTimeImmutable();
         $this->updated = $updated;
 
         return $this;
     }
 
     /**
-     * Get the value of code
-     *
-     * @return  string
+     * Get the value of users
      */
-    public function getCode()
+    public function getUsers()
     {
-        return $this->code;
+        return $this->users;
+    }
+
+    /**
+     * Set the value of users
+     *
+     * @return  self
+     */
+    public function setUsers($users)
+    {
+        $this->users = $users;
+
+        return $this;
     }
 }

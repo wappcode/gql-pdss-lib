@@ -11,31 +11,21 @@ use GraphQL\Doctrine\Annotation as API;
 
 /**
  * Base class for all objects stored in database. ID type integer
- *
- * @ORM\MappedSuperclass
  */
+#[ORM\MappedSuperclass]
+
 abstract class AbstractEntityModel
 {
-    /**
-     * @var int
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @ORM\Column(type="integer")
-     * 
-     */
-    protected $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: "AUTO")]
+    #[ORM\Column(type: "integer")]
+    protected int $id;
 
-    /**
-     * @var DateTimeImmutable
-     * @ORM\Column(type="datetimetz_immutable")
-     */
-    protected $created;
+    #[ORM\Column(type: "datetimetz_immutable")]
+    protected DateTimeImmutable $created;
 
-    /**
-     * @var DateTimeImmutable
-     * @ORM\Column(type="datetimetz_immutable")
-     */
-    protected $updated;
+    #[ORM\Column(type: "datetimetz_immutable")]
+    protected DateTimeImmutable $updated;
 
     public function __construct()
     {

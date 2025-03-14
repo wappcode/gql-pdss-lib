@@ -1,0 +1,76 @@
+input PaginationInput {
+  first: Int
+  after: String
+  last: Int
+  before: String
+}
+enum FilterLogic {
+  AND
+  OR
+}
+enum FilterOperator {
+  EQUAL
+  NOT_EQUAL
+  BETWEEN
+  GREATER_THAN
+  LESS_THAN
+  GREATER_EQUAL_THAN
+  LESS_EQUAL_THAN
+  LIKE
+  NOT_LIKE
+  IN
+  NOT_IN
+}
+enum JoinType {
+  INNER
+  LEFT
+  RIGHT
+  FULL_OUTER
+}
+
+input FilterValue {
+  single: String
+  many: [String!]
+}
+input JoinInput {
+  property: String!
+  joinType: JoinType = INNER
+  joinedProperty: String
+  alias: String
+}
+input FilterConditionInput {
+  filterOperator: FilterOperator!
+  property: String!
+  value: FilterValue!
+  onJoinedProperty: String
+}
+input FilterGroupInput {
+  groupLogic: FilterLogic = AND
+  conditionsLogic: FilterLogic = AND
+  conditions: [FilterConditionInput]!
+}
+enum SortType {
+  ASC
+  DESC
+}
+input SortGroupInput {
+  property: String!
+  direction: SortType = ASC
+  onJoinedProperty: String
+}
+
+input ConnectionInput {
+  pagination: PaginationInput!
+  filters: [FilterGroupInput!]
+  sorts: [SortGroupInput!]
+  joins: [JoinInput!]
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
+scalar Date
+scalar DateTime
