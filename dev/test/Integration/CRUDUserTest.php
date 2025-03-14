@@ -94,7 +94,7 @@ class CRUDUserTest extends \PHPUnit\Framework\TestCase
   private function updateUserName(string $id, string $nameUpdated): string
   {
     $query = '
-    mutation MutationUpdateUser($id: ID!,$input: UserPartialInput!){
+    mutation MutationUpdateUser($id: ID!,$input: UserInput!){
         user:updateUser(id: $id, input:$input) {
           id
           name
@@ -126,7 +126,7 @@ class CRUDUserTest extends \PHPUnit\Framework\TestCase
 
     $query = '
     query QueryUserConnection($input:ConnectionInput){
-      connection: userConnection(input: $input) {
+      connection: getUsers(input: $input) {
         totalCount
         edges {
           node{
@@ -143,7 +143,7 @@ class CRUDUserTest extends \PHPUnit\Framework\TestCase
   {
     $query = '
     query QueryUserItem($id: ID!){
-      user: user(id: $id) {
+      user: getUser(id: $id) {
         id
       }
     }

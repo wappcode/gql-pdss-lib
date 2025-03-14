@@ -22,8 +22,9 @@ use GPDCore\Library\AbstractModule;
 use AppModule\Graphql\TypeCommentEdge;
 use AppModule\Graphql\TypePostConnection;
 use AppModule\Graphql\TypeUserConnection;
-use GPDCore\Graphql\GPDFieldFactory;
+use GPDCore\Graphql\GPDFieldResolveFactory;
 use GPDCore\Library\IContextService;
+use GPDCore\Library\ProxyUtilities;
 
 class AppModule extends AbstractModule
 {
@@ -57,6 +58,10 @@ class AppModule extends AbstractModule
      */
     function getResolvers(): array
     {
+
+        $proxyEcho1 = fn($resolver) => fn($root, $args, $context, $info) => "Proxy 1 " . $resolver($root, $args, $context, $info);
+        $proxyEcho2 = fn($resolver) => fn($root, $args, $context, $info) => "Proxy 2 " . $resolver($root, $args, $context, $info);
+        $echoResolve = fn($root, $args, $context, $info) => $args["msg"];
         return [
             'Query::greetings' => function ($root, $args, IContextService $context, $info) {
                 $firstname = $args["input"]["firstName"];
@@ -65,14 +70,22 @@ class AppModule extends AbstractModule
             },
             'Query::showDate' => function ($root, $args, IContextService $context, $info) {
                 return new DateTime();
-            }
+            },
+            'User::accounts' => ResolversUser::getAccountsResolver(),
+            'User::posts' => ResolversUser::getPostsResolver(),
+            'Account::users' => ResolversAccount::getUsersResolver(),
+            'Post::author' => ResolversPost::getAuthorResolver(),
+            'Post::comments' => ResolversPost::getCommentsResolver(),
+            'Comment::post' => ResolversComment::getPostResolver(),
+            'Query::echo' => $echoResolve,
+            'Query::echoProxy' => ProxyUtilities::apply($echoResolve, $proxyEcho1),
+            'Query::echoProxies' => ProxyUtilities::applyAll($echoResolve, [$proxyEcho1, $proxyEcho2]),
+            'Query::getUsers' => GPDFieldResolveFactory::buildForConnection(User::class),
+            'Query::getUser' => GPDFieldResolveFactory::buildForItem(User::class),
+            'Mutation::createUser' => GPDFieldResolveFactory::buildforCreate(User::class),
+            'Mutation::updateUser' => GPDFieldResolveFactory::buildForUpdate(User::class),
+            'Mutation::deleteUser' => GPDFieldResolveFactory::buildForDelete(User::class),
 
-            // 'User::accounts' => ResolversUser::getAccountsResolver(),
-            // 'User::posts' => ResolversUser::getPostsResolver(),
-            // 'Account::users' => ResolversAccount::getUsersResolver(),
-            // 'Post::author' => ResolversPost::getAuthorResolver(),
-            // 'Post::comments' => ResolversPost::getCommentsResolver(),
-            // 'Comment::post' => ResolversComment::getPostResolver()
 
 
         ];
@@ -113,14 +126,14 @@ class AppModule extends AbstractModule
         //             return new DateTime();
         //         }
         //     ],
-        //     'userConnection' => GPDFieldFactory::buildFieldConnection($this->context, $userConnectionType, User::class),
-        //     'user' => GPDFieldFactory::buildFieldItem($this->context, User::class),
-        //     'postConnection' => GPDFieldFactory::buildFieldConnection($this->context, $postConnectionType, Post::class),
-        //     'post' => GPDFieldFactory::buildFieldItem($this->context, Post::class),
-        //     'accountConnection' => GPDFieldFactory::buildFieldConnection($this->context, $accountConnectionType, Account::class),
-        //     'account' => GPDFieldFactory::buildFieldItem($this->context, Account::class),
-        //     'commentConnection' => GPDFieldFactory::buildFieldConnection($this->context, $commentConnectionType, Comment::class),
-        //     'comment' => GPDFieldFactory::buildFieldItem($this->context, Comment::class),
+        //     'userConnection' => GPDFieldResolveFactory::buildFieldConnection($this->context, $userConnectionType, User::class),
+        //     'user' => GPDFieldResolveFactory::buildFieldItem($this->context, User::class),
+        //     'postConnection' => GPDFieldResolveFactory::buildFieldConnection($this->context, $postConnectionType, Post::class),
+        //     'post' => GPDFieldResolveFactory::buildFieldItem($this->context, Post::class),
+        //     'accountConnection' => GPDFieldResolveFactory::buildFieldConnection($this->context, $accountConnectionType, Account::class),
+        //     'account' => GPDFieldResolveFactory::buildFieldItem($this->context, Account::class),
+        //     'commentConnection' => GPDFieldResolveFactory::buildFieldConnection($this->context, $commentConnectionType, Comment::class),
+        //     'comment' => GPDFieldResolveFactory::buildFieldItem($this->context, Comment::class),
 
         // ];
     }
@@ -133,18 +146,18 @@ class AppModule extends AbstractModule
     {
         return [];
         // return [
-        //     'createUser' => GPDFieldFactory::buildFieldCreate($this->context, User::class),
-        //     'updateUser' => GPDFieldFactory::buildFieldUpdate($this->context, User::class),
-        //     'deleteUser' => GPDFieldFactory::buildFieldDelete($this->context, User::class),
-        //     'createAccount' => GPDFieldFactory::buildFieldCreate($this->context, Account::class),
-        //     'updateAccount' => GPDFieldFactory::buildFieldUpdate($this->context, Account::class),
-        //     'deleteAccount' => GPDFieldFactory::buildFieldDelete($this->context, Account::class),
-        //     'createPost' => GPDFieldFactory::buildFieldCreate($this->context, Post::class),
-        //     'updatePost' => GPDFieldFactory::buildFieldUpdate($this->context, Post::class),
-        //     'deletePost' => GPDFieldFactory::buildFieldDelete($this->context, Post::class),
-        //     'createComment' => GPDFieldFactory::buildFieldCreate($this->context, Comment::class),
-        //     'updateComment' => GPDFieldFactory::buildFieldUpdate($this->context, Comment::class),
-        //     'deleteComment' => GPDFieldFactory::buildFieldDelete($this->context, Comment::class),
+        //     'createUser' => GPDFieldResolveFactory::buildFieldCreate($this->context, User::class),
+        //     'updateUser' => GPDFieldResolveFactory::buildFieldUpdate($this->context, User::class),
+        //     'deleteUser' => GPDFieldResolveFactory::buildFieldDelete($this->context, User::class),
+        //     'createAccount' => GPDFieldResolveFactory::buildFieldCreate($this->context, Account::class),
+        //     'updateAccount' => GPDFieldResolveFactory::buildFieldUpdate($this->context, Account::class),
+        //     'deleteAccount' => GPDFieldResolveFactory::buildFieldDelete($this->context, Account::class),
+        //     'createPost' => GPDFieldResolveFactory::buildFieldCreate($this->context, Post::class),
+        //     'updatePost' => GPDFieldResolveFactory::buildFieldUpdate($this->context, Post::class),
+        //     'deletePost' => GPDFieldResolveFactory::buildFieldDelete($this->context, Post::class),
+        //     'createComment' => GPDFieldResolveFactory::buildFieldCreate($this->context, Comment::class),
+        //     'updateComment' => GPDFieldResolveFactory::buildFieldUpdate($this->context, Comment::class),
+        //     'deleteComment' => GPDFieldResolveFactory::buildFieldDelete($this->context, Comment::class),
 
         // ];
     }

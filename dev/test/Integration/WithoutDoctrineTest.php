@@ -23,16 +23,42 @@ class WithoutDoctrineTest extends \PHPUnit\Framework\TestCase
         $this->gqlClient = $gqlClient;
     }
 
-    public function testEchoUser()
+    public function testEcho()
     {
         $message = "Hola Mundo Test No Doctrine";
         $query = "
             query {
-                echo(message: \"{$message}\")
+                echo(msg: \"{$message}\")
             }
         ";
         $result = $this->gqlClient->execute($query);
 
         $this->assertEquals($result["data"]["echo"], $message, "Testing echo without Doctrine");
+    }
+    public function testEchoProxy()
+    {
+        $message = "Hola Mundo Test No Doctrine";
+        $query = "
+            query {
+                echo: echoProxy(msg: \"{$message}\")
+            }
+        ";
+        $result = $this->gqlClient->execute($query);
+        $expected = "Proxy 1 " . $message;
+
+        $this->assertEquals($result["data"]["echo"], $expected, "Testing echo without Doctrine applying one proxies");
+    }
+    public function testEchoProxies()
+    {
+        $message = "Hola Mundo Test No Doctrine";
+        $query = "
+            query {
+                echo: echoProxies(msg: \"{$message}\")
+            }
+        ";
+        $result = $this->gqlClient->execute($query);
+        $expected = "Proxy 1 Proxy 2 " . $message;
+
+        $this->assertEquals($result["data"]["echo"], $expected, "Testing echo without Doctrine applying multiple proxies");
     }
 }

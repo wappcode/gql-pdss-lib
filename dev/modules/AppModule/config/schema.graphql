@@ -1,15 +1,18 @@
 type Query {
     greetings(input: HelloInput!): String!
     showDate: Date!
-    users(input: ConnectionInput): UserConnection!
+    getUsers(input: ConnectionInput): UserConnection!
+    getUser(id: ID): User
+    echoProxy(msg: String): String!
+    echoProxies(msg: String): String!
 }
 type Mutation {
     createUser(input: UserInput!): User!
-    updateUser(id: ID!, input: UserUpdateInput!): User!
-    deleteUser(id: ID!): User!
+    updateUser(id: ID!, input: UserInput!): User!
+    deleteUser(id: ID!): Boolean
     createAccount(input: AccountInput!): Account!
-    updateAccount(id: ID!, input: AccountUpdateInput!): Account!
-    deleteAccount(id: ID!): Account!
+    updateAccount(id: ID!, input: AccountInput!): Account!
+    deleteAccount(id: ID!): Boolean
 }
 input HelloInput {
     firstName: String!
@@ -27,13 +30,10 @@ type User {
 }
 
 input UserInput {
-    id: ID!
     name: String!
     email: String!
-    accounts: [Account]
-    post: [Post]
-    created: DateTime!
-    updated: DateTime!
+    accounts: [ID]
+    post: [ID]
 }
 
 type UserEdge{
@@ -54,12 +54,9 @@ type Account {
     updated: DateTime!
 }
 input AccountInput {
-    id: ID!
     title: String!
     code: String!
-    users: [User]
-    created: DateTime!
-    updated: DateTime!
+    users: [ID]
 }
 
 type AccountEdge {

@@ -2,7 +2,7 @@ type Query {
     echo(msg: String!): String!
 }
 type Mutation {
-        echo(msg: String!): String!
+     noData: String
 }
 
 input PaginationInput {
