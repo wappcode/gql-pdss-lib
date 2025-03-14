@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e646cb1ce07356fec201925f6d8850f1",
+    "content-hash": "5b15729390eb0bc9375da8e2b6fc09a4",
     "packages": [
         {
             "name": "brick/varexporter",
@@ -2182,29 +2182,29 @@
         },
         {
             "name": "wappcode/pdss-utilities",
-            "version": "dev-master",
+            "version": "3.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/wappcode/pdss-utilities.git",
-                "reference": "b620592107fd105d9074002f84599c2b5218edeb"
+                "reference": "e8f9df0482c354301266b564b9015c914bab7849"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wappcode/pdss-utilities/zipball/b620592107fd105d9074002f84599c2b5218edeb",
-                "reference": "b620592107fd105d9074002f84599c2b5218edeb",
+                "url": "https://api.github.com/repos/wappcode/pdss-utilities/zipball/e8f9df0482c354301266b564b9015c914bab7849",
+                "reference": "e8f9df0482c354301266b564b9015c914bab7849",
                 "shasum": ""
             },
             "require": {
-                "doctrine/orm": ">=3.0",
-                "php": ">=8"
+                "doctrine/orm": ">=2.0",
+                "php": ">7.1"
             },
             "require-dev": {
-                "doctrine/dbal": "^4",
+                "doctrine/annotations": "^1.13",
+                "doctrine/dbal": "3.1.4",
                 "phpunit/phpunit": "^9",
-                "symfony/cache": "^7",
-                "symfony/yaml": "^7"
+                "symfony/cache": "^5.3",
+                "symfony/yaml": "2.*"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -2218,9 +2218,9 @@
             "description": "Utilidades para PHP Doctrine Server Side",
             "support": {
                 "issues": "https://github.com/wappcode/pdss-utilities/issues",
-                "source": "https://github.com/wappcode/pdss-utilities/tree/master"
+                "source": "https://github.com/wappcode/pdss-utilities/tree/3.4.0"
             },
-            "time": "2025-03-07T07:44:14+00:00"
+            "time": "2025-03-07T19:59:36+00:00"
         },
         {
             "name": "webonyx/graphql-php",
@@ -3944,9 +3944,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "wappcode/pdss-utilities": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

@@ -62,16 +62,4 @@ abstract class AbstractModule
      * @return array array(string $key => callable $resolver)
      */
     abstract function getResolvers(): array;
-    /**
-     * Array con los graphql Queries del módulo
-     *
-     * @return array
-     */
-    abstract function getQueryFields(): array;
-    /**
-     * Array con los graphql mutations del módulo
-     *
-     * @return array
-     */
-    abstract function getMutationFields(): array;
 }

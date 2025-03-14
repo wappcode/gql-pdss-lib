@@ -90,16 +90,6 @@ abstract class AbstractGQLServer
             $resolvers = $module->getResolvers();
             $this->addResolvers($resolvers);
         }
-        if (!$omitQueryFields) {
-            $queries = $module->getQueryFields();
-            $this->addGQLQueriesFields($queries);
-        }
-        if (!$omitMutationFields) {
-            $mutations = $module->getMutationFields();
-            $this->addGQLMutationsFields($mutations);
-        }
-
-
         return $this;
     }
 
@@ -252,7 +242,6 @@ abstract class AbstractGQLServer
     protected function getSchema(?ServiceManager $serviceManager): Schema
     {
 
-        // TODO: Agregar los ajustes correctos del módulo para el Query y tipos escalares, etc.
         $typedefinitions =  function (array $typeConfig, TypeDefinitionNode $typeDefinitionNode) use ($serviceManager) {
             $name = $typeConfig['name'];
             if ($serviceManager != null && $serviceManager->has($name)) {
