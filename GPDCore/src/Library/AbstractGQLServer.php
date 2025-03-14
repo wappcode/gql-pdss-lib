@@ -279,9 +279,11 @@ abstract class AbstractGQLServer
         $schemaUtilities = file_get_contents(__DIR__ . "/../Assets/gql-pdss.graphqls");
         $allSchemas = [$schemaUtilities, ...$this->schemasModules];
         $schemasContent = GraphqlSchemaUtilities::combineSchemas($allSchemas);
+        $queryField = preg_match("/type\sQuery/", $schemasContent) ? 'query: Query' : '';
+        $mutationField = preg_match("/type\sMutation/", $schemasContent) ? 'mutation: Mutation' : '';
         $schemaBase = "schema {
-                query: Query
-                mutation: Mutation
+                {$queryField}
+                {$mutationField}
              }
         ";
         $appSchema = $schemaBase . PHP_EOL . $schemasContent;

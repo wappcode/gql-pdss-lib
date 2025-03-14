@@ -63,14 +63,7 @@ class AppModule extends AbstractModule
         $proxyEcho2 = fn($resolver) => fn($root, $args, $context, $info) => "Proxy 2 " . $resolver($root, $args, $context, $info);
         $echoResolve = fn($root, $args, $context, $info) => $args["msg"];
         return [
-            'Query::greetings' => function ($root, $args, IContextService $context, $info) {
-                $firstname = $args["input"]["firstName"];
-                $lastname = $args["input"]["lastName"];
-                return "Hello {$firstname} {$lastname}!";
-            },
-            'Query::showDate' => function ($root, $args, IContextService $context, $info) {
-                return new DateTime();
-            },
+            'Query::showDate' => fn($root, $args, IContextService $context, $info) =>  new DateTime(),
             'User::accounts' => ResolversUser::getAccountsResolver(),
             'User::posts' => ResolversUser::getPostsResolver(),
             'Account::users' => ResolversAccount::getUsersResolver(),

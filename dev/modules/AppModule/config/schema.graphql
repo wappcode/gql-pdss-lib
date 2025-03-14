@@ -1,8 +1,8 @@
 type Query {
-    greetings(input: HelloInput!): String!
     showDate: Date!
     getUsers(input: ConnectionInput): UserConnection!
     getUser(id: ID): User
+    echo(msg: String): String!
     echoProxy(msg: String): String!
     echoProxies(msg: String): String!
 }

@@ -45,7 +45,14 @@ class GraphqlSchemaUtilities
             $type = static::extractTypes($schema);
             return $acc . PHP_EOL . $type;
         }, "");
-        $combinedSchemas = "type Query {" . PHP_EOL . $queryFields . PHP_EOL . "}" . PHP_EOL . "type Mutation {" . PHP_EOL . $mutationFields . PHP_EOL . "}" . PHP_EOL . $types;
+        $combinedSchemas = "";
+        if (!empty(trim($queryFields))) {
+            $combinedSchemas .= "type Query {" . PHP_EOL . $queryFields . PHP_EOL . "}" . PHP_EOL;
+        }
+        if (!empty(trim($mutationFields))) {
+            $combinedSchemas .= "type Mutation {" . PHP_EOL . $mutationFields . PHP_EOL . "}" . PHP_EOL;
+        }
+        $combinedSchemas .=  $types;
         return $combinedSchemas;
     }
 }
