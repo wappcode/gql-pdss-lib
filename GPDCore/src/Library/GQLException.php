@@ -20,7 +20,7 @@ class GQLException extends Exception implements ClientAware, IGQLException
         $this->errorId = $errorId;
         $this->httpcode = $httpcode;
     }
-    public function isClientSafe()
+    public function isClientSafe(): bool
     {
         return true;
     }
