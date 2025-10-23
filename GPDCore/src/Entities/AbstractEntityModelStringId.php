@@ -19,7 +19,7 @@ abstract class AbstractEntityModelStringId
 {
 
     #[ORM\Id]
-    #[ORM\Column(name: "id", type: "string")]
+    #[ORM\Column(name: "id", type: "string", length: 255)]
     #[ORM\GeneratedValue(strategy: "CUSTOM")]
     #[ORM\CustomIdGenerator(class: DoctrineUniqueIDStringGenerator::class)]
 
