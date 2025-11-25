@@ -6,7 +6,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManager;
 use GPDCore\Library\EntityAssociation;
 use GPDCore\Library\EntityUtilities;
-use GraphQL\Doctrine\Definition\EntityID;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -24,8 +23,7 @@ class ArrayToEntity
         foreach ($array as $k => $value) {
             $methodName = 'set' . ucfirst($k);
             $method = self::getMethod($class, $methodName);
-            $finalValue = ($value instanceof EntityID) ? $value->getEntity() : $value;
-            self::invokeMethod($entity, $method, $finalValue);
+            self::invokeMethod($entity, $method, $value);
         }
 
         return $entity;
@@ -47,8 +45,7 @@ class ArrayToEntity
             }
             $methodName = 'set' . ucfirst($k);
             $method = self::getMethod($class, $methodName);
-            $finalValue = ($value instanceof EntityID) ? $value->getEntity() : $value;
-            self::invokeMethod($entity, $method, $finalValue);
+            self::invokeMethod($entity, $method, $value);
         }
 
         return $entity;

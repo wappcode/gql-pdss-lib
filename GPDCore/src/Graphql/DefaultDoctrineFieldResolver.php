@@ -6,7 +6,6 @@ namespace GPDCore\Graphql;
 
 use Closure;
 use Exception;
-use GraphQL\Doctrine\Definition\EntityID;
 use GraphQL\Type\Definition\ResolveInfo;
 use ReflectionClass;
 use ReflectionMethod;
@@ -157,11 +156,6 @@ final class DefaultDoctrineFieldResolver
         foreach ($method->getParameters() as $param) {
             if (array_key_exists($param->getName(), $args)) {
                 $arg = $args[$param->getName()];
-
-                // Fetch entity from DB
-                if ($arg instanceof EntityID) {
-                    $arg = $arg->getEntity();
-                }
 
                 $result[] = $arg;
             }
