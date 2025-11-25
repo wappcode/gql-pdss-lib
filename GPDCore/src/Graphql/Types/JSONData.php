@@ -19,7 +19,7 @@ final class JSONData extends ScalarType
         $this->name = static::SM_NAME;
         $this->description = "Parse a string to an array";
     }
-    public function parseLiteral($valueNode, array $variables = null)
+    public function parseLiteral($valueNode, ?array $variables = null)
     {
         // Note: throwing GraphQL\Error\Error vs \UnexpectedValueException to benefit from GraphQL
         // error location in query:
@@ -30,7 +30,7 @@ final class JSONData extends ScalarType
         return $this->parseValue($valueNode->value);
     }
 
-    public function parseValue($value, array $variables = null)
+    public function parseValue($value, ?array $variables = null)
     {
         if (!is_string($value)) {
             throw new \UnexpectedValueException('Cannot represent value as an object: ' . Utils::printSafe($value));
