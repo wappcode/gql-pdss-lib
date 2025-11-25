@@ -20,15 +20,15 @@ services:
     depends_on:
       gqlpdsslib-mysql:
         condition: service_healthy
-    container_name: gqlpdsslib-php8.3
-    image: jesusabarcag/php-dev:8.3
+    container_name: gqlpdsslib-php8.4
+    image: jesusabarcag/php-dev:8.4
     volumes: 
       - ..:/var/www/html
       - ./sites-enabled:/etc/apache2/sites-enabled
       - ./xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
       - ./commands:/home/commands
     ports: 
-      - "${PDSSLIB_APP_PORT:-8080}:8080"
+      - "${PDSSLIB_APP_PORT:-8080}:80"
     entrypoint: sh -c "/home/commands/run.sh"
     restart: "no"
     platform: linux/x86_64
