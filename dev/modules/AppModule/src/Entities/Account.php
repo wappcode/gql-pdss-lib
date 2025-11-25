@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 class Account
 {
     #[ORM\Id]
-    #[ORM\Column(name: 'code', type: 'string')]
+    #[ORM\Column(name: 'code', type: 'string', length: 255)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: "\PDSSUtilities\DoctrineUniqueIDStringGenerator")]
     protected $code;

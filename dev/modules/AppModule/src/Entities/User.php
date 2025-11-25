@@ -18,8 +18,8 @@ class User extends AbstractEntityModelStringId
     private string $email;
 
     #[ORM\JoinTable(name: 'users_accounts')]
-    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', columnDefinition: 'VARCHAR(255) NOT NULL')]
-    #[ORM\InverseJoinColumn(name: 'account_code', referencedColumnName: 'code', columnDefinition: 'VARCHAR(255) NOT NULL')]
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
+    #[ORM\InverseJoinColumn(name: 'account_code', referencedColumnName: 'code', nullable: false)]
     #[ORM\ManyToMany(targetEntity: Account::class)]
     private Collection $accounts;
 
