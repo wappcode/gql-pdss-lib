@@ -2,26 +2,24 @@
 
 namespace GPDCore\Library;
 
-use GPDCore\Services\ConfigService;
 use DateTime;
+use GPDCore\Services\ConfigService;
 
 class DoctrineSQLLogger implements DoctrineSQLLogger
 {
-
     private $startTime;
+
     /**
      * Logs a SQL statement somewhere.
      *
-     * @param string              $sql    The SQL to be executed.
-     * @param mixed[]|null        $params The SQL parameters.
-     * @param int[]|string[]|null $types  The SQL parameter types.
-     *
-     * @return void
+     * @param string              $sql    the SQL to be executed
+     * @param mixed[]|null        $params the SQL parameters
+     * @param int[]|string[]|null $types  the SQL parameter types
      */
     public function startQuery($sql, ?array $params = null, ?array $types = null)
     {
         $currentDate = new DateTime();
-        $strDate = $currentDate->format("Y-M-d H:i:s");
+        $strDate = $currentDate->format('Y-M-d H:i:s');
         $this->startTime = $currentDate->getTimestamp();
         $strparams = var_export($params, true);
         $msg = <<<QUERY
@@ -36,13 +34,11 @@ QUERY;
 
     /**
      * Marks the last started query as stopped. This can be used for timing of queries.
-     *
-     * @return void
      */
     public function stopQuery()
     {
         $currentDate = new DateTime();
-        $strDate = $currentDate->format("Y-M-d H:i:s");
+        $strDate = $currentDate->format('Y-M-d H:i:s');
         $endTime = $currentDate->getTimestamp();
         $time = ($endTime - $this->startTime) / 1000;
 

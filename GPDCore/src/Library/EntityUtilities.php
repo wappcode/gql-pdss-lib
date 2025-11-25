@@ -2,29 +2,22 @@
 
 namespace GPDCore\Library;
 
-use ReflectionClass;
-use ReflectionMethod;
 use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\ManyToManyAssociationMapping;
 use Doctrine\ORM\Mapping\OneToManyAssociationMapping;
-use GPDCore\Library\EntityAssociation;
+use ReflectionClass;
+use ReflectionMethod;
 
 class EntityUtilities
 {
-
-
     /**
-     * Recupera el nombre de la propiedad que esta como clave primaria
-     *
-     * @param EntityManager $entityManager
-     * @param string $className
-     * @return string
+     * Recupera el nombre de la propiedad que esta como clave primaria.
      */
     public static function getFirstIdentifier(EntityManager $entityManager, string $className): string
     {
         $metadata = $entityManager->getClassMetadata($className);
         $identifier = $metadata->identifier[0];
+
         return $identifier;
     }
 
@@ -40,12 +33,14 @@ class EntityUtilities
                 return $method->invoke($entity);
             }
         }
+
         return null;
     }
+
     /**
      * Recupera un array con las  asociaciones de la entidad que estan registradas en una columna de la tabla de la entidad en la base de datos
      * Importante las claves del array son los nombres de las propiedades relacionadas.
-     *  
+     *
      * @return array [associationName => EntityAsociation,...]
      */
     public static function getColumnAssociations(EntityManager $entityManager, string $className): array
@@ -54,11 +49,13 @@ class EntityUtilities
 
         $associations = $metadata->associationMappings;
         $associations = array_filter($associations, function ($association) {
-            $joinColumns = $association["joinColumns"] ?? [];
+            $joinColumns = $association['joinColumns'] ?? [];
+
             return count($joinColumns) === 1;
         });
         $associations = array_map(function ($associationObj) use ($entityManager) {
             $association = get_object_vars($associationObj);
+
             return static::createAssociationValue($entityManager, $association);
         }, $associations);
 
@@ -66,10 +63,8 @@ class EntityUtilities
     }
 
     /**
-     * Recupera un array con las propiedades de las asociaciones relacionadas con la entidad que son de tipo collection
+     * Recupera un array con las propiedades de las asociaciones relacionadas con la entidad que son de tipo collection.
      *
-     * @param EntityManager $entityManager
-     * @param string $className
      * @return array EntityAssociation[]
      */
     public static function getCollections(EntityManager $entityManager, string $className): array
@@ -77,11 +72,12 @@ class EntityUtilities
         $metadata = $entityManager->getClassMetadata($className);
 
         $associations = $metadata->associationMappings;
-        $associations = array_filter($associations, function ($associationObj) use ($className) {
+        $associations = array_filter($associations, function ($associationObj) {
             return $associationObj instanceof OneToManyAssociationMapping || $associationObj instanceof ManyToManyAssociationMapping;
         });
         $associations = array_map(function ($associationObj) use ($entityManager) {
             $association = get_object_vars($associationObj);
+
             return static::createAssociationValue($entityManager, $association);
         }, $associations);
 
@@ -89,19 +85,18 @@ class EntityUtilities
     }
 
     /**
-     * Crea un objeto EntityAssociation
+     * Crea un objeto EntityAssociation.
      *
-     * @param EntityManager $entityManager
-     * @param array $association
      * @return array EntityAssociation[]
      */
     protected static function createAssociationValue(EntityManager $entityManager, array $association): EntityAssociation
     {
-        $fieldName = $association["fieldName"];
-        $targetEntity = $association["targetEntity"];
+        $fieldName = $association['fieldName'];
+        $targetEntity = $association['targetEntity'];
         $associationMetadata = $entityManager->getClassMetadata($targetEntity);
         $identifier = $associationMetadata->identifier[0];
         $result = new EntityAssociation($fieldName, $identifier, $targetEntity);
+
         return $result;
     }
 }

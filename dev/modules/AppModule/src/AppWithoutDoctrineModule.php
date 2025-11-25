@@ -2,66 +2,61 @@
 
 namespace AppModule;
 
-use GraphQL\Type\Definition\Type;
 use GPDCore\Library\AbstractModule;
-
+use GraphQL\Type\Definition\Type;
 
 class AppWithoutDoctrineModule extends AbstractModule
 {
-
     /**
-     * Array con la configuración del módulo
-     *
-     * @return array
+     * Array con la configuración del módulo.
      */
-    function getConfig(): array
+    public function getConfig(): array
     {
         return [];
     }
-    function getServicesAndGQLTypes(): array
+
+    public function getServicesAndGQLTypes(): array
     {
         return [
             'invokables' => [],
             'factories' => [],
-            'aliases' => []
+            'aliases' => [],
         ];
     }
+
     /**
-     * Array con los resolvers del módulo
+     * Array con los resolvers del módulo.
      *
      * @return array array(string $key => callable $resolver)
      */
-    function getResolvers(): array
+    public function getResolvers(): array
     {
         return [];
     }
+
     /**
-     * Array con los graphql Queries del módulo
-     *
-     * @return array
+     * Array con los graphql Queries del módulo.
      */
-    function getQueryFields(): array
+    public function getQueryFields(): array
     {
         return [
             'echo' =>  [
                 'type' => Type::nonNull(Type::string()),
                 'args' => [
-                    'message' => Type::nonNull(Type::string())
+                    'message' => Type::nonNull(Type::string()),
                 ],
 
                 'resolve' => function ($root, $args) {
-                    return $args["message"];
-                }
+                    return $args['message'];
+                },
             ],
-
         ];
     }
+
     /**
-     * Array con los graphql mutations del módulo
-     *
-     * @return array
+     * Array con los graphql mutations del módulo.
      */
-    function getMutationFields(): array
+    public function getMutationFields(): array
     {
         return [];
     }

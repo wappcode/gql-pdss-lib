@@ -2,27 +2,22 @@
 
 namespace AppModule\Entities;
 
-use AppModule\Entities\Post;
 use Doctrine\ORM\Mapping as ORM;
-use GraphQL\Doctrine\Annotation as API;
 use GPDCore\Entities\AbstractEntityModel;
 
 #[ORM\Entity()]
-#[ORM\Table(name: "comments")]
+#[ORM\Table(name: 'comments')]
 class Comment extends AbstractEntityModel
 {
-
-    #[ORM\Column(type: "text", nullable: false)]
-
+    #[ORM\Column(type: 'text', nullable: false)]
     private string $text;
 
-    #[ORM\ManyToOne(targetEntity: Post::class, inversedBy: "comments")]
-    #[ORM\JoinColumn(name: "post_id", referencedColumnName: "id")]
-    private  Post $post;
-
+    #[ORM\ManyToOne(targetEntity: Post::class, inversedBy: 'comments')]
+    #[ORM\JoinColumn(name: 'post_id', referencedColumnName: 'id')]
+    private Post $post;
 
     /**
-     * Get the value of text
+     * Get the value of text.
      */
     public function getText(): string
     {
@@ -30,9 +25,9 @@ class Comment extends AbstractEntityModel
     }
 
     /**
-     * Set the value of text
+     * Set the value of text.
      *
-     * @return  self
+     * @return self
      */
     public function setText(string $text)
     {
@@ -42,9 +37,9 @@ class Comment extends AbstractEntityModel
     }
 
     /**
-     * Get the value of post
+     * Get the value of post.
      *
-     * @return  Post
+     * @return Post
      */
     public function getPost()
     {
@@ -52,11 +47,9 @@ class Comment extends AbstractEntityModel
     }
 
     /**
-     * Set the value of post
+     * Set the value of post.
      *
-     * @param  Post  $post
-     *
-     * @return  self
+     * @return self
      */
     public function setPost(Post $post)
     {

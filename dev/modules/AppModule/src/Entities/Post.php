@@ -2,32 +2,27 @@
 
 namespace AppModule\Entities;
 
-use AppModule\Entities\User;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\Mapping as ORM;
-use GraphQL\Doctrine\Annotation as API;
-use GPDCore\Entities\AbstractEntityModel;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
+use GPDCore\Entities\AbstractEntityModel;
+use GraphQL\Doctrine\Annotation as API;
 
 #[ORM\Entity()]
-#[ORM\Table(name: "post")]
+#[ORM\Table(name: 'post')]
 class Post extends AbstractEntityModel
 {
-
-
-
-    #[ORM\Column(type: "string", length: 255, nullable: false)]
+    #[ORM\Column(type: 'string', length: 255, nullable: false)]
     private string $title;
 
-    #[ORM\Column(type: "text", nullable: false)]
+    #[ORM\Column(type: 'text', nullable: false)]
     private string $body;
 
-    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: "user")]
-    #[ORM\JoinColumn(name: "author_id", referencedColumnName: "id", columnDefinition: "VARCHAR(255) NOT NULL")]
-
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'user')]
+    #[ORM\JoinColumn(name: 'author_id', referencedColumnName: 'id', columnDefinition: 'VARCHAR(255) NOT NULL')]
     private User $author;
 
-    #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: "post")]
+    #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'post')]
     private Collection $comments;
 
     public function __construct()
@@ -37,9 +32,9 @@ class Post extends AbstractEntityModel
     }
 
     /**
-     * Get the value of title
+     * Get the value of title.
      *
-     * @return  string
+     * @return string
      */
     public function getTitle()
     {
@@ -47,11 +42,9 @@ class Post extends AbstractEntityModel
     }
 
     /**
-     * Set the value of title
+     * Set the value of title.
      *
-     * @param  string  $title
-     *
-     * @return  self
+     * @return self
      */
     public function setTitle(string $title)
     {
@@ -61,9 +54,9 @@ class Post extends AbstractEntityModel
     }
 
     /**
-     * Get the value of body
+     * Get the value of body.
      *
-     * @return  string
+     * @return string
      */
     public function getBody()
     {
@@ -71,11 +64,9 @@ class Post extends AbstractEntityModel
     }
 
     /**
-     * Set the value of body
+     * Set the value of body.
      *
-     * @param  string  $body
-     *
-     * @return  self
+     * @return self
      */
     public function setBody(string $body)
     {
@@ -85,9 +76,9 @@ class Post extends AbstractEntityModel
     }
 
     /**
-     * Get the value of author
+     * Get the value of author.
      *
-     * @return  User
+     * @return User
      */
     public function getAuthor()
     {
@@ -95,11 +86,9 @@ class Post extends AbstractEntityModel
     }
 
     /**
-     * Set the value of author
+     * Set the value of author.
      *
-     * @param  User  $author
-     *
-     * @return  self
+     * @return self
      */
     public function setAuthor(User $author)
     {
@@ -109,9 +98,7 @@ class Post extends AbstractEntityModel
     }
 
     /**
-     * Get the value of comments
-     *
-     * @return  Collection
+     * Get the value of comments.
      */
     public function getComments(): Collection
     {
@@ -119,12 +106,11 @@ class Post extends AbstractEntityModel
     }
 
     /**
-     * Set the value of comments
+     * Set the value of comments.
      *
      * @API\Exclude
-     * @param  Collection  $comments
      *
-     * @return  self
+     * @return self
      */
     public function setComments(Collection $comments)
     {

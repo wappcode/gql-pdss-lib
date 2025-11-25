@@ -6,7 +6,8 @@ use GPDCore\Library\AbstractConnectionTypeServiceFactory;
 
 class TypeCommentConnection extends AbstractConnectionTypeServiceFactory
 {
-    const NAME = "CommentConnection";
-    const DESCRIPTION = "";
-    protected static $instance = null;
+    public const NAME = 'CommentConnection';
+    public const DESCRIPTION = '';
+
+    protected static $instance;
 }

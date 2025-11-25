@@ -6,7 +6,8 @@ use GPDCore\Library\AbstractEdgeTypeServiceFactory;
 
 class TypeUserEdge extends AbstractEdgeTypeServiceFactory
 {
-    const NAME = 'UserEdge';
-    const DESCRIPTION = '';
-    protected static $instance = null;
+    public const NAME = 'UserEdge';
+    public const DESCRIPTION = '';
+
+    protected static $instance;
 }

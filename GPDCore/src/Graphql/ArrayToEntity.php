@@ -12,11 +12,10 @@ use ReflectionMethod;
 
 class ArrayToEntity
 {
-
-
     /**
      * Recupera el objeto entity agregándole los valores del array
-     * Solo agrega los valores que coinciden con el metodo set de una propiedad del objeto
+     * Solo agrega los valores que coinciden con el metodo set de una propiedad del objeto.
+     *
      * @deprecated version 2.0.28 usar en su lugar la funciont setValues de esta misma clase
      */
     public static function apply($entity, array $array)
@@ -28,11 +27,13 @@ class ArrayToEntity
             $finalValue = ($value instanceof EntityID) ? $value->getEntity() : $value;
             self::invokeMethod($entity, $method, $finalValue);
         }
+
         return $entity;
     }
+
     /**
      * Recupera el objeto entity agregándole los valores del array
-     * Solo agrega los valores que coinciden con el metodo set de una propiedad del objeto
+     * Solo agrega los valores que coinciden con el metodo set de una propiedad del objeto.
      */
     public static function setValues(EntityManager $entityManager, $entity, array $array)
     {
@@ -49,6 +50,7 @@ class ArrayToEntity
             $finalValue = ($value instanceof EntityID) ? $value->getEntity() : $value;
             self::invokeMethod($entity, $method, $finalValue);
         }
+
         return $entity;
     }
 
@@ -69,11 +71,8 @@ class ArrayToEntity
         }
     }
 
-
-
     protected static function updateCollectionAssociation(EntityManager $entityManager, $entity, EntityAssociation $relation, $value)
     {
-
         $property = $relation->getFieldName();
         $class = new ReflectionClass($entity);
         $methodName = 'get' . ucfirst($property);
@@ -89,10 +88,10 @@ class ArrayToEntity
             return;
         }
         $identifier = $relation->getIdentifier();
-        $qb = $entityManager->createQueryBuilder()->from($relation->getTargetEntity(), "entity")
-            ->select("entity");
-        $qb->andWhere($qb->expr()->in("entity.{$identifier}", ":ids"))
-            ->setParameter(":ids", $value);
+        $qb = $entityManager->createQueryBuilder()->from($relation->getTargetEntity(), 'entity')
+            ->select('entity');
+        $qb->andWhere($qb->expr()->in("entity.{$identifier}", ':ids'))
+            ->setParameter(':ids', $value);
         $result = $qb->getQuery()->getResult();
 
         foreach ($result as $item) {

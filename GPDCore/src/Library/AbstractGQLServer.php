@@ -5,37 +5,33 @@ declare(strict_types=1);
 namespace GPDCore\Library;
 
 use Exception;
-use GraphQL\GraphQL;
-use GraphQL\Type\Schema;
-use GPDCore\Library\GPDApp;
-use GraphQL\Doctrine\Types;
-use GraphQL\Error\DebugFlag;
-use GraphQL\Utils\BuildSchema;
-use GraphQL\Error\FormattedError;
-use GPDCore\Library\AbstractModule;
-use GPDCore\Graphql\ResolverManager;
-use GPDCore\Library\GQLFormattedError;
-use GraphQL\Type\Definition\ObjectType;
-use GraphQL\Validator\DocumentValidator;
 use GPDCore\Graphql\DefaultArrayResolver;
-use GraphQL\Language\AST\StringValueNode;
-use Laminas\ServiceManager\ServiceManager;
+use GPDCore\Graphql\ResolverManager;
+use GraphQL\Error\DebugFlag;
+use GraphQL\Error\FormattedError;
+use GraphQL\GraphQL;
 use GraphQL\Language\AST\TypeDefinitionNode;
+use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\ScalarType;
-use GraphQL\Utils\Utils;
+use GraphQL\Type\Schema;
+use GraphQL\Utils\BuildSchema;
+use GraphQL\Validator\DocumentValidator;
 use GraphQL\Validator\Rules\DisableIntrospection;
+use Laminas\ServiceManager\ServiceManager;
 
 abstract class AbstractGQLServer
 {
-
     protected $gqlQueriesFields = [];
+
     protected $gqlMutationsFields = [];
+
     protected $servicesAndGQLTypes = [];
+
     /**
-     *
      * @var IContextService
      */
     protected $context;
+
     /**
      * @var ServiceManager
      */
@@ -47,11 +43,9 @@ abstract class AbstractGQLServer
     protected array $schemasModules = [];
 
     /**
-     *
      * @var GPDApp
      */
     protected $app;
-
 
     public function __construct(GPDApp $app)
     {
@@ -62,26 +56,21 @@ abstract class AbstractGQLServer
         $this->addModules();
         $this->registerTypes();
     }
+
     /**
-     * Agregar los módulos
-     *
-     * @return void
+     * Agregar los módulos.
      */
     protected function addModules()
     {
         $modules = $this->app->getModules();
-        /** @var AbstractModule */
+        // @var AbstractModule
         foreach ($modules as $module) {
             $this->addModule($module);
         }
     }
 
-
-
     /**
-     * Agrega un módulo a la app (config, resolvers, queries y mutations)
-     *
-     * @return void
+     * Agrega un módulo a la app (config, resolvers, queries y mutations).
      */
     protected function addModule(AbstractModule $module, $omitResolvers = false, $omitQueryFields = false, $omitMutationFields = false): AbstractGQLServer
     {
@@ -90,49 +79,50 @@ abstract class AbstractGQLServer
             $resolvers = $module->getResolvers();
             $this->addResolvers($resolvers);
         }
+
         return $this;
     }
 
     /**
-     * Agrega graphql queries fields a la lista
-     *
-     * @return void
+     * Agrega graphql queries fields a la lista.
      */
     protected function addGQLQueriesFields(array $queries): AbstractGQLServer
     {
         $this->gqlQueriesFields = array_merge($this->gqlQueriesFields, $queries);
+
         return $this;
     }
+
     /**
-     * Agrega mutations a la lista
-     *
-     * @return void
+     * Agrega mutations a la lista.
      */
     protected function addGQLMutationsFields(array $mutations): AbstractGQLServer
     {
         $this->gqlMutationsFields = array_merge($this->gqlMutationsFields, $mutations);
+
         return $this;
     }
 
     protected function addServicesAndGQLTypes(array $services): AbstractGQLServer
     {
-        $factories = $services["factories"] ?? [];
-        $invokables = $services["invokables"] ?? [];
-        $aliases = $services["aliases"] ?? [];
-        $selfInvokables = $this->servicesAndGQLTypes["invokables"] ?? [];
-        $selfFactories = $this->servicesAndGQLTypes["factories"] ?? [];
-        $selfAliases = $this->servicesAndGQLTypes["aliases"] ?? [];
-        $this->servicesAndGQLTypes["invokables"] = array_merge($selfInvokables, $invokables);
-        $this->servicesAndGQLTypes["factories"] = array_merge($selfFactories, $factories);
-        $this->servicesAndGQLTypes["aliases"] = array_merge($selfAliases, $aliases);
+        $factories = $services['factories'] ?? [];
+        $invokables = $services['invokables'] ?? [];
+        $aliases = $services['aliases'] ?? [];
+        $selfInvokables = $this->servicesAndGQLTypes['invokables'] ?? [];
+        $selfFactories = $this->servicesAndGQLTypes['factories'] ?? [];
+        $selfAliases = $this->servicesAndGQLTypes['aliases'] ?? [];
+        $this->servicesAndGQLTypes['invokables'] = array_merge($selfInvokables, $invokables);
+        $this->servicesAndGQLTypes['factories'] = array_merge($selfFactories, $factories);
+        $this->servicesAndGQLTypes['aliases'] = array_merge($selfAliases, $aliases);
+
         return $this;
     }
 
     protected function registerTypes()
     {
-        $invokables = $this->servicesAndGQLTypes["invokables"] ?? [];
-        $factories = $this->servicesAndGQLTypes["factories"] ?? [];
-        $aliases = $this->servicesAndGQLTypes["aliases"] ?? [];
+        $invokables = $this->servicesAndGQLTypes['invokables'] ?? [];
+        $factories = $this->servicesAndGQLTypes['factories'] ?? [];
+        $aliases = $this->servicesAndGQLTypes['aliases'] ?? [];
         foreach ($invokables as $k => $invokable) {
             $this->serviceManager->setInvokableClass($k, $invokable);
         }
@@ -145,12 +135,8 @@ abstract class AbstractGQLServer
         }
     }
 
-
     /**
-     * Agrega los resolvers de los módulos
-     *
-     * @param array $resolvers
-     * @return void
+     * Agrega los resolvers de los módulos.
      */
     protected function addResolvers(array $resolvers)
     {
@@ -159,12 +145,8 @@ abstract class AbstractGQLServer
         }
     }
 
-
     /**
-     * Inicializa el servidor graphql
-     *
-     * @param array $content
-     * @return void
+     * Inicializa el servidor graphql.
      */
     public function start(array $content)
     {
@@ -173,11 +155,12 @@ abstract class AbstractGQLServer
         $queryString = $this->getQuery($content);
         $operationName = $this->getOperationName($content);
         $variableValues = $this->getVariables($content);
-        $debug =   $productionMode ?  DebugFlag::NONE :  DebugFlag::RETHROW_UNSAFE_EXCEPTIONS;
+        $debug = $productionMode ? DebugFlag::NONE : DebugFlag::RETHROW_UNSAFE_EXCEPTIONS;
 
         if ($productionMode) {
             DocumentValidator::addRule(new DisableIntrospection(1));
         }
+
         // @TODO agregar Query Complexity Analysis y Limiting Query Depth
         try {
             $fieldResolver = new DefaultArrayResolver();
@@ -197,19 +180,19 @@ abstract class AbstractGQLServer
         } catch (Exception $e) {
             if ($productionMode) {
                 $response = [
-                    'errors' => [FormattedError::createFromException($e)]
+                    'errors' => [FormattedError::createFromException($e)],
                 ];
                 $status = 500;
             } else {
                 throw $e;
             }
         }
-        header("Content-Type: application/json; charset=UTF-8", true, $status);
+        header('Content-Type: application/json; charset=UTF-8', true, $status);
         echo json_encode($response);
     }
 
     /**
-     * Genera un ObjectType con query schema 
+     * Genera un ObjectType con query schema.
      *
      * @return ObjectType
      */
@@ -218,13 +201,15 @@ abstract class AbstractGQLServer
         if (empty($this->gqlQueriesFields)) {
             return null;
         }
+
         return new ObjectType([
             'name' => 'Query',
-            'fields' => $this->gqlQueriesFields
+            'fields' => $this->gqlQueriesFields,
         ]);
     }
+
     /**
-     * Genera un ObjectType con query schema 
+     * Genera un ObjectType con query schema.
      *
      * @return ObjectType
      */
@@ -233,6 +218,7 @@ abstract class AbstractGQLServer
         if (empty($this->gqlMutationsFields)) {
             return null;
         }
+
         return new ObjectType([
             'name' => 'Mutation',
             'fields' => $this->gqlMutationsFields,
@@ -241,8 +227,7 @@ abstract class AbstractGQLServer
 
     protected function getSchema(?ServiceManager $serviceManager): Schema
     {
-
-        $typedefinitions =  function (array $typeConfig, TypeDefinitionNode $typeDefinitionNode) use ($serviceManager) {
+        $typedefinitions = function (array $typeConfig, TypeDefinitionNode $typeDefinitionNode) use ($serviceManager) {
             $name = $typeConfig['name'];
             if ($serviceManager != null && $serviceManager->has($name)) {
                 /** @var ScalarType */
@@ -257,15 +242,18 @@ abstract class AbstractGQLServer
                         },
                         'parseLiteral' => function ($valueNode) use ($type) {
                             return $type->parseLiteral($valueNode);
+
                             return $date;
                         },
                     ];
+
                     return array_merge($typeConfig, $config);
                 }
             }
+
             return $typeConfig;
         };
-        $schemaUtilities = file_get_contents(__DIR__ . "/../Assets/gql-pdss.graphqls");
+        $schemaUtilities = file_get_contents(__DIR__ . '/../Assets/gql-pdss.graphqls');
         $allSchemas = [$schemaUtilities, ...$this->schemasModules];
         $schemasContent = GraphqlSchemaUtilities::combineSchemas($allSchemas);
         $queryField = preg_match("/type\sQuery/", $schemasContent) ? 'query: Query' : '';
@@ -278,37 +266,41 @@ abstract class AbstractGQLServer
         $appSchema = $schemaBase . PHP_EOL . $schemasContent;
 
         $schema = BuildSchema::build($appSchema, $typedefinitions);
+
         return $schema;
     }
+
     /**
-     * Recupera el valor query de la consulta gql
+     * Recupera el valor query de la consulta gql.
      *
      * @param string $content
+     *
      * @return string
      */
     protected function getQuery($content)
     {
-        if (isset($content["template"]["data"])) {
-            return $this->findValueFromTemplate($content["template"]["data"], "query");
+        if (isset($content['template']['data'])) {
+            return $this->findValueFromTemplate($content['template']['data'], 'query');
         } else {
-            return $content["query"] ?? "";
+            return $content['query'] ?? '';
         }
     }
 
     protected function getOperationName($content)
     {
-        if (isset($content["template"]["data"])) {
-            return $this->findValueFromTemplate($content["template"]["data"], "operationName");
+        if (isset($content['template']['data'])) {
+            return $this->findValueFromTemplate($content['template']['data'], 'operationName');
         } else {
-            return $content["operationName"] ?? null;
+            return $content['operationName'] ?? null;
         }
     }
+
     protected function getVariables($content)
     {
-        if (isset($content["template"]["data"])) {
-            return $this->findValueFromTemplate($content["template"]["data"], "variables");
+        if (isset($content['template']['data'])) {
+            return $this->findValueFromTemplate($content['template']['data'], 'variables');
         } else {
-            return $content["variables"] ?? null;
+            return $content['variables'] ?? null;
         }
     }
 
@@ -316,10 +308,11 @@ abstract class AbstractGQLServer
     {
         $result = null;
         foreach ($data as $k => $item) {
-            if ($item["name"] === $value) {
-                return $item["value"];
+            if ($item['name'] === $value) {
+                return $item['value'];
             }
         }
+
         return $result;
     }
 }

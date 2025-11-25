@@ -8,11 +8,9 @@ class QueryDecorator
 {
     private $decorator;
 
-
     /**
      * Retorna una funcion con la siguiente definición
-     * function(QueryBuilder $qb, array $root, array $args, IContextService, $context, $info): QueryBuilder { ...codigo para modificar query}
-     * 
+     * function(QueryBuilder $qb, array $root, array $args, IContextService, $context, $info): QueryBuilder { ...codigo para modificar query}.
      */
     public function getDecorator(): ?callable
     {
@@ -21,9 +19,9 @@ class QueryDecorator
 
     /**
      * Establece una funcion con la siguiente definición
-     * function(QueryBuilder $qb, array $root, array $args, IContextService, $context, $info): QueryBuilder{ ...codigo para modificar query}
+     * function(QueryBuilder $qb, array $root, array $args, IContextService, $context, $info): QueryBuilder{ ...codigo para modificar query}.
      *
-     * @return  self
+     * @return self
      */
     public function setDecorator(?callable $decorator)
     {

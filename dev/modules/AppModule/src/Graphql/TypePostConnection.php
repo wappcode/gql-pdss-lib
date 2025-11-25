@@ -6,7 +6,8 @@ use GPDCore\Library\AbstractConnectionTypeServiceFactory;
 
 class TypePostConnection extends AbstractConnectionTypeServiceFactory
 {
-    const NAME = 'PostConnection';
-    const DESCRIPTION = '';
-    protected static $instance = null;
+    public const NAME = 'PostConnection';
+    public const DESCRIPTION = '';
+
+    protected static $instance;
 }

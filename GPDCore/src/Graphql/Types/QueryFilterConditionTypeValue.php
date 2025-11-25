@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace GPDCore\Graphql\Types;
 
-use PDSSUtilities\QueryFilter;
 use GraphQL\Type\Definition\EnumType;
+use PDSSUtilities\QueryFilter;
 
 class QueryFilterConditionTypeValue extends EnumType
 {
-    const SM_NAME = 'QueryFilterConditionType';
+    public const SM_NAME = 'QueryFilterConditionType';
+
     public function __construct()
     {
         $config = [
@@ -29,7 +30,6 @@ class QueryFilterConditionTypeValue extends EnumType
                 QueryFilter::CONDITION_DIFFERENT,
                 QueryFilter::CONDITION_IS_NOT_NULL,
                 QueryFilter::CONDITION_IS_NULL,
-
             ],
         ];
 

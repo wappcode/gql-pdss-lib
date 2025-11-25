@@ -5,35 +5,37 @@ namespace GPDCore\Library;
 final class EntityAssociation
 {
     /**
-     * Nombre de la relación
+     * Nombre de la relación.
      *
      * @var string
      */
     private $fieldName;
+
     /**
-     * Calse de la Entidad Relacionada 
+     * Calse de la Entidad Relacionada.
      *
      * @var string
      */
     private $targetEntity;
+
     /**
-     * Nombre de la propiedad primary key de la asociación 
+     * Nombre de la propiedad primary key de la asociación.
      *
      * @var string
      */
     private $identifier;
 
-
-    public function __construct(string $fieldName,  string $identifier, string $targetEntity)
+    public function __construct(string $fieldName, string $identifier, string $targetEntity)
     {
         $this->fieldName = $fieldName;
         $this->targetEntity = $targetEntity;
         $this->identifier = $identifier;
     }
+
     /**
-     * Get nombre de la relación
+     * Get nombre de la relación.
      *
-     * @return  string
+     * @return string
      */
     public function getFieldName()
     {
@@ -41,11 +43,11 @@ final class EntityAssociation
     }
 
     /**
-     * Set nombre de la relación
+     * Set nombre de la relación.
      *
-     * @param  string  $fieldName  Nombre de la relación
+     * @param string $fieldName Nombre de la relación
      *
-     * @return  self
+     * @return self
      */
     public function setFieldName(string $fieldName)
     {
@@ -55,9 +57,9 @@ final class EntityAssociation
     }
 
     /**
-     * Get calse de la Entidad Relacionada
+     * Get calse de la Entidad Relacionada.
      *
-     * @return  string
+     * @return string
      */
     public function getTargetEntity()
     {
@@ -65,11 +67,11 @@ final class EntityAssociation
     }
 
     /**
-     * Set calse de la Entidad Relacionada
+     * Set calse de la Entidad Relacionada.
      *
-     * @param  string  $targetEntity  Calse de la Entidad Relacionada
+     * @param string $targetEntity Calse de la Entidad Relacionada
      *
-     * @return  self
+     * @return self
      */
     public function setTargetEntity(string $targetEntity)
     {
@@ -79,9 +81,9 @@ final class EntityAssociation
     }
 
     /**
-     * Get nombre de la propiedad primary key de la asociación
+     * Get nombre de la propiedad primary key de la asociación.
      *
-     * @return  string
+     * @return string
      */
     public function getIdentifier()
     {
@@ -89,11 +91,11 @@ final class EntityAssociation
     }
 
     /**
-     * Set nombre de la propiedad primary key de la asociación
+     * Set nombre de la propiedad primary key de la asociación.
      *
-     * @param  string  $identifier  Nombre de la propiedad primary key de la asociación
+     * @param string $identifier Nombre de la propiedad primary key de la asociación
      *
-     * @return  self
+     * @return self
      */
     public function setIdentifier(string $identifier)
     {

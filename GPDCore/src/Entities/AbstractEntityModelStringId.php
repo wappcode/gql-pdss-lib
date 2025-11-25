@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace GPDCore\Entities;
@@ -17,17 +16,16 @@ use PDSSUtilities\DoctrineUniqueIDStringGenerator;
 
 abstract class AbstractEntityModelStringId
 {
-
     #[ORM\Id]
-    #[ORM\Column(name: "id", type: "string", length: 255)]
-    #[ORM\GeneratedValue(strategy: "CUSTOM")]
+    #[ORM\Column(name: 'id', type: 'string', length: 255)]
+    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: DoctrineUniqueIDStringGenerator::class)]
-
     protected $id;
-    #[ORM\Column(type: "datetimetz_immutable")]
+
+    #[ORM\Column(type: 'datetimetz_immutable')]
     protected DateTimeImmutable $created;
 
-    #[ORM\Column(type: "datetimetz_immutable")]
+    #[ORM\Column(type: 'datetimetz_immutable')]
     protected DateTimeImmutable $updated;
 
     public function __construct()
@@ -40,10 +38,11 @@ abstract class AbstractEntityModelStringId
     {
         return $this->id;
     }
+
     /**
-     * Get the value of created
+     * Get the value of created.
+     *
      * @API\Field(type="DateTime")
-     * @return  DateTimeImmutable
      */
     public function getCreated(): DateTimeImmutable
     {
@@ -51,9 +50,9 @@ abstract class AbstractEntityModelStringId
     }
 
     /**
-     * Get the value of updated
+     * Get the value of updated.
+     *
      * @API\Field(type="DateTime")
-     * @return  DateTimeImmutable
      */
     public function getUpdated(): DateTimeImmutable
     {
@@ -61,12 +60,11 @@ abstract class AbstractEntityModelStringId
     }
 
     /**
-     * Set the value of updated
+     * Set the value of updated.
      *
      * @API\Exclude
-     * 
      *
-     * @return  self
+     * @return self
      */
     public function setUpdated()
     {

@@ -4,16 +4,14 @@ declare(strict_types=1);
 
 namespace GPDCore\Graphql\Types;
 
+use GraphQL\Type\Definition\InputObjectType;
 use GraphQL\Type\Definition\Type;
 use Laminas\ServiceManager\ServiceManager;
-use GPDCore\Graphql\Types\QueryFilterLogic;
-use GraphQL\Type\Definition\InputObjectType;
-use GPDCore\Graphql\Types\QueryFilterConditionType;
 
 class QueryFilterType extends InputObjectType
 {
+    public const SM_NAME = 'QueryFilterInput';
 
-    const SM_NAME = 'QueryFilterInput';
     public function __construct(ServiceManager $serviceManager)
     {
         $config = [
@@ -30,8 +28,8 @@ class QueryFilterType extends InputObjectType
                 ],
                 'compoundConditions' => [
                     'type' => Type::listOf($serviceManager->get(QueryFilterCompoundConditionInput::SM_NAME)),
-                ]
-            ]
+                ],
+            ],
         ];
 
         parent::__construct($config);

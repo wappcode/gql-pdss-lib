@@ -1,20 +1,17 @@
-<?php 
+<?php
 
 namespace GPDCore\Library;
 
-use GPDCore\Library\GPDApp;
-use GPDCore\Library\Request;
-
-
-abstract class AbstractAppController {
-    
+abstract class AbstractAppController
+{
     protected $request;
+
     /**
      * @var IContextService
      */
     protected $context;
+
     /**
-     *
      * @var GPDApp
      */
     protected $app;
@@ -25,9 +22,6 @@ abstract class AbstractAppController {
         $this->app = $app;
         $this->context = $app->getContext();
     }
-
-   
-
 
     abstract public function dispatch();
 }

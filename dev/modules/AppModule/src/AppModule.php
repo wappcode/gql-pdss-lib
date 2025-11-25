@@ -3,67 +3,64 @@
 namespace AppModule;
 
 use AppModule\Entities\Account;
-use DateTime;
+use AppModule\Entities\Comment;
 use AppModule\Entities\Post;
 use AppModule\Entities\User;
-use AppModule\Entities\Comment;
 use AppModule\Graphql\ResolversAccount;
 use AppModule\Graphql\ResolversComment;
 use AppModule\Graphql\ResolversPost;
 use AppModule\Graphql\ResolversUser;
 use AppModule\Graphql\TypeAccountConnection;
-use AppModule\Graphql\TypeAccountEdge;
 use AppModule\Graphql\TypeCommentConnection;
-use GraphQL\Type\Definition\Type;
-use AppModule\Graphql\TypePostEdge;
-use AppModule\Graphql\TypeUserEdge;
-use GPDCore\Graphql\Types\DateType;
-use GPDCore\Library\AbstractModule;
-use AppModule\Graphql\TypeCommentEdge;
 use AppModule\Graphql\TypePostConnection;
 use AppModule\Graphql\TypeUserConnection;
+use DateTime;
 use GPDCore\Graphql\GPDFieldResolveFactory;
+use GPDCore\Graphql\Types\DateType;
+use GPDCore\Library\AbstractModule;
 use GPDCore\Library\IContextService;
 use GPDCore\Library\ProxyUtilities;
+use GraphQL\Type\Definition\Type;
 
 class AppModule extends AbstractModule
 {
-
     /**
-     * Array con la configuración del módulo
-     *
-     * @return array
+     * Array con la configuración del módulo.
      */
-    function getConfig(): array
+    public function getConfig(): array
     {
-        return require(__DIR__ . '/../config/module.config.php');
+        return require __DIR__ . '/../config/module.config.php';
     }
-    function getSchema(): string
+
+    public function getSchema(): string
     {
         $schema = file_get_contents(__DIR__ . '/../config/schema.graphql');
+
         return $schema == false ? '' : $schema;
     }
-    function getServicesAndGQLTypes(): array
+
+    public function getServicesAndGQLTypes(): array
     {
         return [
             'invokables' => [],
             'factories' => [],
-            'aliases' => []
+            'aliases' => [],
         ];
     }
+
     /**
-     * Array con los resolvers del módulo
+     * Array con los resolvers del módulo.
      *
      * @return array array(string $key => callable $resolver)
      */
-    function getResolvers(): array
+    public function getResolvers(): array
     {
+        $proxyEcho1 = fn ($resolver) => fn ($root, $args, $context, $info) => 'Proxy 1 ' . $resolver($root, $args, $context, $info);
+        $proxyEcho2 = fn ($resolver) => fn ($root, $args, $context, $info) => 'Proxy 2 ' . $resolver($root, $args, $context, $info);
+        $echoResolve = fn ($root, $args, $context, $info) => $args['msg'];
 
-        $proxyEcho1 = fn($resolver) => fn($root, $args, $context, $info) => "Proxy 1 " . $resolver($root, $args, $context, $info);
-        $proxyEcho2 = fn($resolver) => fn($root, $args, $context, $info) => "Proxy 2 " . $resolver($root, $args, $context, $info);
-        $echoResolve = fn($root, $args, $context, $info) => $args["msg"];
         return [
-            'Query::showDate' => fn($root, $args, IContextService $context, $info) =>  new DateTime(),
+            'Query::showDate' => fn ($root, $args, IContextService $context, $info) =>  new DateTime(),
             'User::accounts' => ResolversUser::getAccountsResolver(),
             'User::posts' => ResolversUser::getPostsResolver(),
             'Account::users' => ResolversAccount::getUsersResolver(),
@@ -78,17 +75,13 @@ class AppModule extends AbstractModule
             'Mutation::createUser' => GPDFieldResolveFactory::buildforCreate(User::class),
             'Mutation::updateUser' => GPDFieldResolveFactory::buildForUpdate(User::class),
             'Mutation::deleteUser' => GPDFieldResolveFactory::buildForDelete(User::class),
-
-
-
         ];
     }
+
     /**
-     * Array con los graphql Queries del módulo
-     *
-     * @return array
+     * Array con los graphql Queries del módulo.
      */
-    function getQueryFields(): array
+    public function getQueryFields(): array
     {
         return [];
         // $serviceManager = $this->context->getServiceManager();
@@ -130,12 +123,11 @@ class AppModule extends AbstractModule
 
         // ];
     }
+
     /**
-     * Array con los graphql mutations del módulo
-     *
-     * @return array
+     * Array con los graphql mutations del módulo.
      */
-    function getMutationFields(): array
+    public function getMutationFields(): array
     {
         return [];
         // return [

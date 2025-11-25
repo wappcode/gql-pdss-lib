@@ -2,34 +2,29 @@
 
 namespace AppModule\Entities;
 
-use Doctrine\ORM\Mapping as ORM;
-use GraphQL\Doctrine\Annotation as API;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
 use GPDCore\Entities\AbstractEntityModelStringId;
 
 #[ORM\Entity()]
-#[ORM\Table(name: "users")]
+#[ORM\Table(name: 'users')]
 class User extends AbstractEntityModelStringId
 {
-
-
-    #[ORM\Column(type: "string", length: 255)]
+    #[ORM\Column(type: 'string', length: 255)]
     private string $name;
-    #[ORM\Column(type: "string", length: 255)]
+
+    #[ORM\Column(type: 'string', length: 255)]
     private string $email;
 
-
-    #[ORM\JoinTable(name: "users_accounts")]
-    #[ORM\JoinColumn(name: "user_id", referencedColumnName: "id", columnDefinition: "VARCHAR(255) NOT NULL")]
-    #[ORM\InverseJoinColumn(name: 'account_code', referencedColumnName: 'code', columnDefinition: "VARCHAR(255) NOT NULL")]
+    #[ORM\JoinTable(name: 'users_accounts')]
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', columnDefinition: 'VARCHAR(255) NOT NULL')]
+    #[ORM\InverseJoinColumn(name: 'account_code', referencedColumnName: 'code', columnDefinition: 'VARCHAR(255) NOT NULL')]
     #[ORM\ManyToMany(targetEntity: Account::class)]
     private Collection $accounts;
 
-
-    #[ORM\OneToMany(targetEntity: Post::class, mappedBy: "user")]
+    #[ORM\OneToMany(targetEntity: Post::class, mappedBy: 'user')]
     private $posts;
-
 
     public function __construct()
     {
@@ -37,6 +32,7 @@ class User extends AbstractEntityModelStringId
         $this->accounts = new ArrayCollection();
         $this->posts = new ArrayCollection();
     }
+
     public function getName()
     {
         return $this->name;

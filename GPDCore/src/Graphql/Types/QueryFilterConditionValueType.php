@@ -9,7 +9,8 @@ use GraphQL\Type\Definition\Type;
 
 class QueryFilterConditionValueType extends InputObjectType
 {
-    const SM_NAME = 'QueryFilterConditionValue';
+    public const SM_NAME = 'QueryFilterConditionValue';
+
     public function __construct()
     {
         $config = [
@@ -21,8 +22,7 @@ class QueryFilterConditionValueType extends InputObjectType
                 'many' => [
                     'type' => Type::listOf(Type::string()),
                 ],
-
-            ]
+            ],
         ];
 
         parent::__construct($config);

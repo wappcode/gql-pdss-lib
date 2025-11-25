@@ -4,29 +4,26 @@ declare(strict_types=1);
 
 namespace GPDCore\Graphql;
 
-use Exception;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
+use Doctrine\ORM\Tools\Pagination\Paginator;
+use Exception;
 use GPDCore\Library\IContextService;
 use GraphQL\Type\Definition\ResolveInfo;
-use Doctrine\ORM\Tools\Pagination\Paginator;
 
 use function GPDCore\Functions\decodeCursor;
 use function GPDCore\Functions\encodeCursor;
 
 class ConnectionQueryResponse
 {
-
-
-
     /**
-     * Procesa el resultado 
+     * Procesa el resultado.
      */
     public static function get(QueryBuilder $qb, $root, array $args, IContextService $context, ResolveInfo $info, array $relations = [])
     {
-        $paginationInput = $args["input"]["pagination"] ?? [];
+        $paginationInput = $args['input']['pagination'] ?? [];
         $config = $context->getConfig();
-        $appLimit = $config->get("query_limit");
+        $appLimit = $config->get('query_limit');
         $total = self::getTotal($qb);
         $limit = self::getLimit($paginationInput, $appLimit);
         $offset = self::getOffset($paginationInput, $total);
@@ -45,10 +42,10 @@ class ConnectionQueryResponse
                 'startCursor' => $firstCursor,
                 'endCursor' => $lastCursor,
             ],
-            'edges' => $edges
-
+            'edges' => $edges,
         ];
     }
+
     protected static function getLimit(array $paginationInput, ?int $appLimit)
     {
         $first = $paginationInput['first'] ?? null;
@@ -58,13 +55,15 @@ class ConnectionQueryResponse
         }
         if ($first !== null && $first < 0) {
             throw new Exception('Valor incorrecto para first');
-        } else if ($last !== null && $last < 0) {
+        } elseif ($last !== null && $last < 0) {
             throw new Exception('Valor incorrecto para last');
         }
         $limitArgs = ($last !== null) ? $last : $first;
         $limit = ($appLimit !== null) ? min($appLimit, $limitArgs) : $limitArgs;
+
         return $limit;
     }
+
     protected static function getOffset($paginationInput, $total)
     {
         $before = $paginationInput['before'] ?? '';
@@ -79,6 +78,7 @@ class ConnectionQueryResponse
         if (!empty($paginationInput['pagination']['last'])) {
             $offset = $offset - $paginationInput['last'] - 1;
         }
+
         return $offset;
     }
 
@@ -90,6 +90,7 @@ class ConnectionQueryResponse
         $aliases = $qbList->getAllAliases();
         $query = $qbList->getQuery()->setHydrationMode(Query::HYDRATE_ARRAY);
         $paginator = new Paginator($query, $fetchJoinCollection = true);
+
         return $paginator;
     }
 
@@ -99,6 +100,7 @@ class ConnectionQueryResponse
         $qbList->setMaxResults(1);
         $paginator = new Paginator($qbList, $fetchJoinCollection = true);
         $total = count($paginator);
+
         return $total;
     }
 
@@ -109,15 +111,18 @@ class ConnectionQueryResponse
             $cursor = encodeCursor($afterCursor + $index + 1);
             array_push($edges, [
                 'cursor' => $cursor,
-                'node' => $node
+                'node' => $node,
             ]);
         }
+
         return $edges;
     }
+
     protected static function getFirstCursor($edges)
     {
         return $edges[0]['cursor'] ?? '';
     }
+
     protected static function getLastCursor($edges, $afterCursor)
     {
         return $edges[count($edges) - 1]['cursor'] ?? '';

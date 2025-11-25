@@ -2,12 +2,12 @@
 
 namespace GPDCore\Graphql\Types;
 
-use GraphQL\Type\Definition\Type;
 use GraphQL\Type\Definition\InputObjectType;
+use GraphQL\Type\Definition\Type;
 
 class PaginationInput extends InputObjectType
 {
-    const SM_NAME = 'PaginationInput';
+    public const SM_NAME = 'PaginationInput';
 
     public function __construct()
     {
@@ -19,8 +19,7 @@ class PaginationInput extends InputObjectType
                 'after' => Type::string(),
                 'last' => Type::int(),
                 'before' => Type::string(),
-
-            ]
+            ],
         ];
         parent::__construct($config);
     }

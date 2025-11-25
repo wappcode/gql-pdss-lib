@@ -1,14 +1,16 @@
-<?php 
+<?php
 
 declare(strict_types=1);
 
 namespace GPDCore\Graphql\Types;
 
-use PDSSUtilities\QueryFilter;
 use GraphQL\Type\Definition\EnumType;
+use PDSSUtilities\QueryFilter;
 
-class QueryFilterLogic extends EnumType {
-    const SM_NAME = 'QueryFilterLogic';
+class QueryFilterLogic extends EnumType
+{
+    public const SM_NAME = 'QueryFilterLogic';
+
     public function __construct()
     {
         $config = [
@@ -16,7 +18,6 @@ class QueryFilterLogic extends EnumType {
             'values' => [
                 QueryFilter::LOGIC_AND,
                 QueryFilter::LOGIC_OR,
-
             ],
         ];
 

@@ -8,18 +8,20 @@ use DateTime;
 use DateTimeInterface;
 use DateTimeZone;
 use GraphQL\Error\Error;
-use GraphQL\Utils\Utils;
-use GraphQL\Type\Definition\ScalarType;
 use GraphQL\Language\AST\StringValueNode;
+use GraphQL\Type\Definition\ScalarType;
+use GraphQL\Utils\Utils;
+use UnexpectedValueException;
 
 final class DateType extends ScalarType
 {
     public function __construct(array $config = [])
     {
-        $config["name"] = "Date";
+        $config['name'] = 'Date';
         parent::__construct($config);
     }
-    public function parseLiteral($valueNode, array $variables = null)
+
+    public function parseLiteral($valueNode, ?array $variables = null)
     {
         // Note: throwing GraphQL\Error\Error vs \UnexpectedValueException to benefit from GraphQL
         // error location in query:
@@ -30,13 +32,13 @@ final class DateType extends ScalarType
         return $this->parseValue($valueNode->value);
     }
 
-    public function parseValue($value, array $variables = null)
+    public function parseValue($value, ?array $variables = null)
     {
         if (!is_string($value)) {
-            throw new \UnexpectedValueException('Cannot represent value as DateTime date: ' . Utils::printSafe($value));
+            throw new UnexpectedValueException('Cannot represent value as DateTime date: ' . Utils::printSafe($value));
         }
         $valueTrim = trim($value);
-        if (!preg_match("/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/", $valueTrim)) {
+        if (!preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', $valueTrim)) {
             throw new Error('Invalid date format (YYYY-MM-dd)');
         }
         $date = new DateTime($valueTrim);

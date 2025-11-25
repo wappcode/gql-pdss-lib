@@ -1,9 +1,9 @@
-<?php 
+<?php
 
 namespace GPDCore\Library;
 
-interface IGQLException {
-
+interface IGQLException
+{
     /**
      * Returns true when exception message is safe to be displayed to a client.
      *
@@ -23,5 +23,4 @@ interface IGQLException {
      * @api
      */
     public function getErrorId();
-
 }

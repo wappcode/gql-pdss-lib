@@ -1,8 +1,8 @@
 
 <?php
 
-use PHPUnit\Framework\TestCase;
 use GPDCore\Library\GraphqlSchemaUtilities;
+use PHPUnit\Framework\TestCase;
 
 class GraphqlSchemaUtilitiesTest extends TestCase
 {
@@ -49,6 +49,7 @@ class GraphqlSchemaUtilitiesTest extends TestCase
         $result = GraphqlSchemaUtilities::extractMutationBody($query);
         $this->assertEquals($expected, $result);
     }
+
     public function testExtractTypes()
     {
         $schema = '
@@ -76,6 +77,7 @@ class GraphqlSchemaUtilitiesTest extends TestCase
         $result = GraphqlSchemaUtilities::extractTypes($schema);
         $this->assertEquals($expected, $result);
     }
+
     public function testCombineSchemas()
     {
         $schema1 = '
@@ -111,9 +113,9 @@ class GraphqlSchemaUtilitiesTest extends TestCase
 ';
         $schemas = [
             $schema1,
-            $schema2
+            $schema2,
         ];
-        $expected = "type Query {
+        $expected = 'type Query {
 
 getUser(id: ID!): User
             listUsers: [User]
@@ -138,7 +140,7 @@ type Account {
         id: ID!
         name: String!
         email: String!
-    }";
+    }';
         $result = GraphqlSchemaUtilities::combineSchemas($schemas);
         $this->assertEquals($expected, $result);
     }

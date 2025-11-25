@@ -2,7 +2,6 @@
 
 namespace AppModule\Graphql;
 
-use AppModule\Graphql\BufferPost;
 use GPDCore\Library\ResolverFactory;
 
 class ResolversComment
@@ -12,6 +11,7 @@ class ResolversComment
         $buffer = BufferPost::getInstance();
 
         $resolver = ResolverFactory::createEntityResolver($buffer, 'post');
+
         return is_callable($proxy) ? $proxy($resolver) : $resolver;
     }
 }

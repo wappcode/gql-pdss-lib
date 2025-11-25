@@ -6,7 +6,8 @@ use GPDCore\Library\AbstractConnectionTypeServiceFactory;
 
 class TypeUserConnection extends AbstractConnectionTypeServiceFactory
 {
-    const NAME = 'UserConnection';
-    const DESCRIPTION = '';
-    protected static $instance = null;
+    public const NAME = 'UserConnection';
+    public const DESCRIPTION = '';
+
+    protected static $instance;
 }

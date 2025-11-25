@@ -6,10 +6,10 @@ namespace GPDCore\Graphql;
 
 use Closure;
 use Exception;
+use GraphQL\Doctrine\Definition\EntityID;
+use GraphQL\Type\Definition\ResolveInfo;
 use ReflectionClass;
 use ReflectionMethod;
-use GraphQL\Type\Definition\ResolveInfo;
-use GraphQL\Doctrine\Definition\EntityID;
 
 /**
  * A field resolver that will allow access to public properties and getter.
@@ -18,12 +18,9 @@ use GraphQL\Doctrine\Definition\EntityID;
 final class DefaultDoctrineFieldResolver
 {
     /**
-     * @param mixed $source
      * @param mixed[] $args
-     * @param mixed $context
-     * @param ResolveInfo $info
      *
-     * @return null|mixed
+     * @return mixed|null
      */
     public function __invoke($source, array $args, $context, ResolveInfo $info)
     {
@@ -43,17 +40,17 @@ final class DefaultDoctrineFieldResolver
         return $property instanceof Closure ? $property($source, $args, $context) : $property;
     }
 
-
     private function resolveGQL($source, array $args, $context, ResolveInfo $info)
     {
         $fieldName = $info->fieldName;
         $resolver = $this->getResolver($source, $fieldName);
         if ($resolver) {
             $resolveClass = $this->getResolveClass($source);
-            $resolveObj = new $resolveClass;
+            $resolveObj = new $resolveClass();
             $args = [
-                $source, $args, $context, $info
+                $source, $args, $context, $info,
             ];
+
             return $resolver->invoke($resolveObj, ...$args);
         } else {
             return null;
@@ -61,19 +58,10 @@ final class DefaultDoctrineFieldResolver
     }
 
     /**
-     * Resolve for an object
-     *
-     * @param mixed $source
-     * @param array $args
-     * @param string $fieldName
-     *
-     * @return mixed
+     * Resolve for an object.
      */
     private function resolveObject($source, array $args, string $fieldName)
     {
-
-
-
         $getter = $this->getGetter($source, $fieldName);
         if ($getter) {
             $args = $this->orderArguments($getter, $args);
@@ -89,12 +77,7 @@ final class DefaultDoctrineFieldResolver
     }
 
     /**
-     * Resolve for an array
-     *
-     * @param mixed $source
-     * @param string $fieldName
-     *
-     * @return mixed
+     * Resolve for an array.
      */
     private function resolveArray($source, string $fieldName)
     {
@@ -102,12 +85,7 @@ final class DefaultDoctrineFieldResolver
     }
 
     /**
-     * Return the getter/isser method if any valid one exists
-     *
-     * @param mixed $source
-     * @param string $name
-     *
-     * @return null|ReflectionMethod
+     * Return the getter/isser method if any valid one exists.
      */
     private function getGetter($source, string $name): ?ReflectionMethod
     {
@@ -125,13 +103,9 @@ final class DefaultDoctrineFieldResolver
 
         return null;
     }
+
     /**
-     * Return the resolve  method of GQLResolve class if any valid one exists
-     *
-     * @param mixed $source
-     * @param string $name
-     *
-     * @return null|ReflectionMethod
+     * Return the resolve  method of GQLResolve class if any valid one exists.
      */
     private function getResolver($source, string $name): ?ReflectionMethod
     {
@@ -142,6 +116,7 @@ final class DefaultDoctrineFieldResolver
         if (!preg_match('~^(is|has)[A-Z]~', $name)) {
             $name = 'resolve' . ucfirst($name);
         }
+
         try {
             $class = new ReflectionClass($resolveClass);
             if ($class->hasMethod($name)) {
@@ -154,28 +129,23 @@ final class DefaultDoctrineFieldResolver
             return null;
         }
 
-
         return null;
     }
 
     private function getResolveClass($source)
     {
         $className = is_object($source) ? get_class($source) : $source;
-        $className = str_replace('DoctrineProxies\__CG__','', $className);
+        $className = str_replace('DoctrineProxies\__CG__', '', $className);
         if (!is_string($className)) {
             return null;
         }
-        $resolveClass = sprintf("%sGQLResolve", $className);
+        $resolveClass = sprintf('%sGQLResolve', $className);
+
         return $resolveClass;
     }
 
     /**
-     * Re-order associative args to ordered args
-     *
-     * @param ReflectionMethod $method
-     * @param array $args
-     *
-     * @return array
+     * Re-order associative args to ordered args.
      */
     private function orderArguments(ReflectionMethod $method, array $args): array
     {

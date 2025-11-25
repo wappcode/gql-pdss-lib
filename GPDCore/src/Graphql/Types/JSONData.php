@@ -6,19 +6,22 @@ namespace GPDCore\Graphql\Types;
 
 use Exception;
 use GraphQL\Error\Error;
-use GraphQL\Utils\Utils;
-use GraphQL\Type\Definition\ScalarType;
 use GraphQL\Language\AST\StringValueNode;
+use GraphQL\Type\Definition\ScalarType;
+use GraphQL\Utils\Utils;
+use UnexpectedValueException;
 
 final class JSONData extends ScalarType
 {
-    const SM_NAME = 'JSONData';
+    public const SM_NAME = 'JSONData';
+
     public function __construct(array $config = [])
     {
         parent::__construct($config);
         $this->name = static::SM_NAME;
-        $this->description = "Parse a string to an array";
+        $this->description = 'Parse a string to an array';
     }
+
     public function parseLiteral($valueNode, ?array $variables = null)
     {
         // Note: throwing GraphQL\Error\Error vs \UnexpectedValueException to benefit from GraphQL
@@ -33,10 +36,12 @@ final class JSONData extends ScalarType
     public function parseValue($value, ?array $variables = null)
     {
         if (!is_string($value)) {
-            throw new \UnexpectedValueException('Cannot represent value as an object: ' . Utils::printSafe($value));
+            throw new UnexpectedValueException('Cannot represent value as an object: ' . Utils::printSafe($value));
         }
+
         try {
             $json = json_decode($value, true);
+
             return $json;
         } catch (Exception $e) {
             throw new Error('Invalid JSON');

@@ -8,13 +8,14 @@ use DateTime;
 use DateTimeInterface;
 use DateTimeZone;
 use GraphQL\Error\Error;
-use GraphQL\Utils\Utils;
-use GraphQL\Type\Definition\ScalarType;
 use GraphQL\Language\AST\StringValueNode;
+use GraphQL\Type\Definition\ScalarType;
+use GraphQL\Utils\Utils;
+use UnexpectedValueException;
 
 final class DateTimeType extends ScalarType
 {
-    public function parseLiteral($valueNode, array $variables = null)
+    public function parseLiteral($valueNode, ?array $variables = null)
     {
         // Note: throwing GraphQL\Error\Error vs \UnexpectedValueException to benefit from GraphQL
         // error location in query:
@@ -25,10 +26,10 @@ final class DateTimeType extends ScalarType
         return $this->parseValue($valueNode->value);
     }
 
-    public function parseValue($value, array $variables = null)
+    public function parseValue($value, ?array $variables = null)
     {
         if (!is_string($value)) {
-            throw new \UnexpectedValueException('Cannot represent value as DateTime date: ' . Utils::printSafe($value));
+            throw new UnexpectedValueException('Cannot represent value as DateTime date: ' . Utils::printSafe($value));
         }
         $date = new DateTime($value);
         $dateZone = date_default_timezone_get();

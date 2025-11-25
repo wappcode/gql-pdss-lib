@@ -4,31 +4,33 @@ declare(strict_types=1);
 
 namespace GPDCore\Library;
 
-use GPDCore\Library\AbstractModule;
-use GPDCore\Library\AbstractRouter;
-use GPDCore\Services\ConfigService;
 use Exception;
-use GPDCore\Library\IContextService;
 
 class GPDApp
 {
-
-    const ENVIROMENT_PRODUCTION = 'production';
-    const ENVIROMENT_DEVELOPMENT = 'development';
-    const ENVIROMENT_TESTING = 'testing';
+    public const ENVIROMENT_PRODUCTION = 'production';
+    public const ENVIROMENT_DEVELOPMENT = 'development';
+    public const ENVIROMENT_TESTING = 'testing';
 
     private $modules = [];
+
     private $router;
+
     private $started = false;
+
     private $productionMode = false;
+
     private $context;
+
     private $enviroment;
+
     protected $servicesAndGQLTypes = [];
+
     protected $withoutDoctrine = false;
-    protected $baseHref = "";
 
+    protected $baseHref = '';
 
-    public function __construct(IContextService $context, AbstractRouter $router, ?string $enviroment, bool  $withoutDoctrine = false)
+    public function __construct(IContextService $context, AbstractRouter $router, ?string $enviroment, bool $withoutDoctrine = false)
     {
         $this->withoutDoctrine = $withoutDoctrine;
         $enviroment = empty($enviroment) ? GPDApp::ENVIROMENT_DEVELOPMENT : $enviroment;
@@ -39,12 +41,8 @@ class GPDApp
         $this->setRouter($router);
     }
 
-
     /**
-     * El último módulo del array debe ser el modulo de la app pricipal para que sobreescriba sobreescriba la configuración de los demás modulos
-     *
-     * @param array $modules
-     * @return GPDApp
+     * El último módulo del array debe ser el modulo de la app pricipal para que sobreescriba sobreescriba la configuración de los demás modulos.
      */
     public function addModules(array $modules): GPDApp
     {
@@ -53,7 +51,7 @@ class GPDApp
         }
         $modulesList = [];
         foreach ($modules as $moduleClass) {
-            /**@var AbstractModule */
+            /** @var AbstractModule */
             $module = new $moduleClass($this);
             array_push($modulesList, $module);
         }
@@ -61,13 +59,14 @@ class GPDApp
         $this->addConfig();
         $this->addServices();
 
-
         return $this;
     }
+
     public function getModules(): array
     {
         return $this->modules;
     }
+
     public function getContext(): IContextService
     {
         return $this->context;
@@ -77,6 +76,7 @@ class GPDApp
     {
         return $this->productionMode;
     }
+
     public function run()
     {
         $this->started = true;
@@ -90,6 +90,7 @@ class GPDApp
         }
         $this->context = $context;
         $this->context->init($this->enviroment, $this->productionMode, $this->withoutDoctrine);
+
         return $this;
     }
 
@@ -97,13 +98,15 @@ class GPDApp
     {
         $this->productionMode = $productionMode;
         if ($this->productionMode) {
-            ini_set("display_errors", '0');
+            ini_set('display_errors', '0');
             error_reporting(0);
         } else {
-            ini_set("display_errors", '1');
+            ini_set('display_errors', '1');
         }
+
         return $this;
     }
+
     protected function setRouter(AbstractRouter $router): GPDApp
     {
         if ($this->started) {
@@ -111,18 +114,16 @@ class GPDApp
         }
         $router->setApp($this);
         $this->router = $router;
+
         return $this;
     }
 
-
     /**
-     * Agrega la configuración de los módulos al servicio config
-     *
-     * @return void
+     * Agrega la configuración de los módulos al servicio config.
      */
     protected function addConfig()
     {
-        /**@var AbstractModule */
+        // @var AbstractModule
         foreach ($this->modules as $module) {
             $config = $module->getConfig();
             $configService = $this->context->getConfig();
@@ -131,13 +132,11 @@ class GPDApp
     }
 
     /**
-     * Agrega los servicios de los módulos 
-     *
-     * @return void
+     * Agrega los servicios de los módulos.
      */
     protected function addServices()
     {
-        /** @var AbstractModule */
+        // @var AbstractModule
         foreach ($this->modules as $module) {
             $services = $module->getServicesAndGQLTypes();
             $this->addServicesAndGQLTypes($services);
@@ -146,9 +145,9 @@ class GPDApp
 
     private function addServicesAndGQLTypes(array $services)
     {
-        $factories = $services["factories"] ?? [];
-        $invokables = $services["invokables"] ?? [];
-        $aliases = $services["aliases"] ?? [];
+        $factories = $services['factories'] ?? [];
+        $invokables = $services['invokables'] ?? [];
+        $aliases = $services['aliases'] ?? [];
         $serviceManager = $this->context->getServiceManager();
         foreach ($invokables as $k => $invokable) {
             $serviceManager->setInvokableClass($k, $invokable);
@@ -162,16 +161,16 @@ class GPDApp
         }
 
         // TODO: Verificar si este código es necesario y si no lo es quitarlo
-        $selfInvokables = $this->servicesAndGQLTypes["invokables"] ?? [];
-        $selfFactories = $this->servicesAndGQLTypes["factories"] ?? [];
-        $selfAliases = $this->servicesAndGQLTypes["aliases"] ?? [];
-        $this->servicesAndGQLTypes["invokables"] = array_merge($selfInvokables, $invokables);
-        $this->servicesAndGQLTypes["factories"] = array_merge($selfFactories, $factories);
-        $this->servicesAndGQLTypes["aliases"] = array_merge($selfAliases, $aliases);
+        $selfInvokables = $this->servicesAndGQLTypes['invokables'] ?? [];
+        $selfFactories = $this->servicesAndGQLTypes['factories'] ?? [];
+        $selfAliases = $this->servicesAndGQLTypes['aliases'] ?? [];
+        $this->servicesAndGQLTypes['invokables'] = array_merge($selfInvokables, $invokables);
+        $this->servicesAndGQLTypes['factories'] = array_merge($selfFactories, $factories);
+        $this->servicesAndGQLTypes['aliases'] = array_merge($selfAliases, $aliases);
     }
 
     /**
-     * Posibles valores (production, development, testing)
+     * Posibles valores (production, development, testing).
      */
     public function getEnviroment()
     {
@@ -180,10 +179,7 @@ class GPDApp
 
     /**
      * Al establecer el valor la cadena deberá iniciar con /
-     * ejemplo /micarpeta/public
-     *
-     * @param string $baseHref
-     * @return void
+     * ejemplo /micarpeta/public.
      */
     public function setBaseHref(string $baseHref)
     {

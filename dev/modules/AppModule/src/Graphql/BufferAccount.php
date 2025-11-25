@@ -11,10 +11,10 @@ class BufferAccount
 
     public static function getInstance(): EntityBuffer
     {
-
         if (static::$instance === null) {
             static::$instance = new EntityBuffer(Account::class);
         }
+
         return static::$instance;
     }
 }

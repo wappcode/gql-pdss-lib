@@ -3,41 +3,30 @@
 namespace AppModule\Entities;
 
 use DateTimeImmutable;
-use Doctrine\ORM\Mapping as ORM;
-use GraphQL\Doctrine\Annotation as API;
-use GPDCore\Entities\AbstractEntityModel;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
-
+use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
-#[ORM\Table(name: "account")]
+#[ORM\Table(name: 'account')]
 class Account
 {
-
-
     #[ORM\Id]
-    #[ORM\Column(name: "code", type: "string")]
-    #[ORM\GeneratedValue(strategy: "CUSTOM")]
+    #[ORM\Column(name: 'code', type: 'string')]
+    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: "\PDSSUtilities\DoctrineUniqueIDStringGenerator")]
     protected $code;
 
-    #[ORM\Column(type: "string", nullable: false)]
+    #[ORM\Column(type: 'string', nullable: false)]
     protected $title;
 
-
-
-    #[ORM\ManyToMany(targetEntity: User::class, mappedBy: "accounts")]
+    #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'accounts')]
     protected $users;
 
-
-    #[ORM\Column(type: "datetimetz_immutable")]
+    #[ORM\Column(type: 'datetimetz_immutable')]
     protected $created;
 
-
-    #[ORM\Column(type: "datetimetz_immutable")]
+    #[ORM\Column(type: 'datetimetz_immutable')]
     protected $updated;
-
 
     public function __construct()
     {
@@ -47,7 +36,7 @@ class Account
     }
 
     /**
-     * Get the value of code
+     * Get the value of code.
      */
     public function getCode()
     {
@@ -55,9 +44,9 @@ class Account
     }
 
     /**
-     * Set the value of code
+     * Set the value of code.
      *
-     * @return  self
+     * @return self
      */
     public function setCode($code)
     {
@@ -67,7 +56,7 @@ class Account
     }
 
     /**
-     * Get the value of title
+     * Get the value of title.
      */
     public function getTitle()
     {
@@ -75,9 +64,9 @@ class Account
     }
 
     /**
-     * Set the value of title
+     * Set the value of title.
      *
-     * @return  self
+     * @return self
      */
     public function setTitle($title)
     {
@@ -107,7 +96,7 @@ class Account
     // }
 
     /**
-     * Get the value of created
+     * Get the value of created.
      */
     public function getCreated()
     {
@@ -115,9 +104,9 @@ class Account
     }
 
     /**
-     * Set the value of created
+     * Set the value of created.
      *
-     * @return  self
+     * @return self
      */
     public function setCreated($created)
     {
@@ -127,7 +116,7 @@ class Account
     }
 
     /**
-     * Get the value of updated
+     * Get the value of updated.
      */
     public function getUpdated()
     {
@@ -135,9 +124,9 @@ class Account
     }
 
     /**
-     * Set the value of updated
+     * Set the value of updated.
      *
-     * @return  self
+     * @return self
      */
     public function setUpdated($updated)
     {
@@ -147,7 +136,7 @@ class Account
     }
 
     /**
-     * Get the value of users
+     * Get the value of users.
      */
     public function getUsers()
     {
@@ -155,9 +144,9 @@ class Account
     }
 
     /**
-     * Set the value of users
+     * Set the value of users.
      *
-     * @return  self
+     * @return self
      */
     public function setUsers($users)
     {
