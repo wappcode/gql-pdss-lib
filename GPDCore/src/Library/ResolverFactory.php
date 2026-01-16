@@ -40,11 +40,11 @@ class ResolverFactory
      *
      * @return callable
      */
-    public static function createCollectionResolver(string $mainClass, string $property, ?array $propertyRelations = null, ?string $joinClass = null)
+    public static function createCollectionResolver(string $mainClass, string $property, ?string $joinClass = null)
     {
         $key = sprintf('%s::%s', $mainClass, $property);
         if (!isset(static::$buffers[$key])) {
-            static::$buffers[$key] = new CollectionBuffer($mainClass, $property, $propertyRelations, $joinClass);
+            static::$buffers[$key] = new CollectionBuffer($mainClass, $property, $joinClass);
         }
         $buffer = static::$buffers[$key];
 

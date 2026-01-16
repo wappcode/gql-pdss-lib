@@ -16,8 +16,6 @@ class CollectionBuffer
 
     protected $joinProperty;
 
-    protected $joinRelations = [];
-
     protected $processedIds = [];
 
     protected $joinClass;
@@ -30,11 +28,10 @@ class CollectionBuffer
      * @param array               $joinRelations  string[] | EntityAssociation[] nombres de las propiedades que son a su vez relaciones de la entidad relacionada
      * @param QueryDecorator|null $queryDecorator Acceso a función para modificar el query
      */
-    public function __construct(string $class, string $joinProperty, ?array $joinRelations = null, ?string $joinClass = null, ?QueryDecorator $queryDecorator = null)
+    public function __construct(string $class, string $joinProperty,  ?string $joinClass = null, ?QueryDecorator $queryDecorator = null)
     {
         $this->class = $class;
         $this->joinProperty = $joinProperty;
-        $this->joinRelations = $joinRelations;
         $this->joinClass = $joinClass;
         $this->queryDecorator = $queryDecorator;
     }
@@ -73,7 +70,7 @@ class CollectionBuffer
         $this->processedIds = array_merge($this->processedIds, $ids);
         $entityManager = $context->getEntityManager();
         $entityColumnAssociations = !empty($this->joinClass) ? EntityUtilities::getColumnAssociations($entityManager, $this->joinClass) : [];
-        $finalRelations = !empty($this->joinRelations) ? $this->joinRelations : $entityColumnAssociations;
+        $finalRelations =  $entityColumnAssociations;
         $idPropertyName = EntityUtilities::getFirstIdentifier($entityManager, $this->class);
         $qb = $entityManager->createQueryBuilder()->from($this->class, 'entity')
             ->leftJoin("entity.{$this->joinProperty}", $this->joinProperty)
