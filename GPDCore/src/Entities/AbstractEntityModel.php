@@ -6,7 +6,6 @@ namespace GPDCore\Entities;
 
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
-use GraphQL\Doctrine\Annotation as API;
 
 /**
  * Base class for all objects stored in database. ID type integer.

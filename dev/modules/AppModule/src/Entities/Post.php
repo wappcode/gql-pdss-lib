@@ -6,7 +6,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use GPDCore\Entities\AbstractEntityModel;
-use GraphQL\Doctrine\Annotation as API;
 
 #[ORM\Entity()]
 #[ORM\Table(name: 'post')]
@@ -108,7 +107,6 @@ class Post extends AbstractEntityModel
     /**
      * Set the value of comments.
      *
-     * @API\Exclude
      *
      * @return self
      */

@@ -6,7 +6,6 @@ namespace GPDCore\Entities;
 
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
-use GraphQL\Doctrine\Annotation as API;
 use PDSSUtilities\DoctrineUniqueIDStringGenerator;
 
 /**
@@ -42,7 +41,6 @@ abstract class AbstractEntityModelStringId
     /**
      * Get the value of created.
      *
-     * @API\Field(type="DateTime")
      */
     public function getCreated(): DateTimeImmutable
     {
@@ -52,7 +50,6 @@ abstract class AbstractEntityModelStringId
     /**
      * Get the value of updated.
      *
-     * @API\Field(type="DateTime")
      */
     public function getUpdated(): DateTimeImmutable
     {
@@ -62,7 +59,6 @@ abstract class AbstractEntityModelStringId
     /**
      * Set the value of updated.
      *
-     * @API\Exclude
      *
      * @return self
      */
