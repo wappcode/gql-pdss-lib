@@ -63,7 +63,7 @@ class AppModule extends AbstractModule
             'Query::echoProxies' => ProxyUtilities::applyAll($echoResolve, [$proxyEcho1, $proxyEcho2]),
             'Query::getUsers' => GPDFieldResolveFactory::buildForConnection(User::class),
             'Query::getUser' => GPDFieldResolveFactory::buildForItem(User::class),
-            'Mutation::createUser' => GPDFieldResolveFactory::buildforCreate(User::class),
+            'Mutation::createUser' => GPDFieldResolveFactory::buildForCreate(User::class),
             'Mutation::updateUser' => GPDFieldResolveFactory::buildForUpdate(User::class),
             'Mutation::deleteUser' => GPDFieldResolveFactory::buildForDelete(User::class),
         ];

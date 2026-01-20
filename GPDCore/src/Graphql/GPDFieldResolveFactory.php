@@ -112,7 +112,7 @@ class GPDFieldResolveFactory
     /**
      * Recupera un resolver tipo mutation create.
      */
-    public static function buildforCreate(string $class): callable
+    public static function buildForCreate(string $class): callable
     {
         return function ($root, array $args, IContextService $context, ResolveInfo $info) use ($class) {
             $entityManager = $context->getEntityManager();
