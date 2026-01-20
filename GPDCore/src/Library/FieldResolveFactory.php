@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GPDCore\Graphql;
+namespace GPDCore\Library;
 
 use Doctrine\ORM\Query;
 use Exception;
@@ -16,7 +16,7 @@ use PDSSUtilities\QueryFilter;
 use PDSSUtilities\QueryJoins;
 use PDSSUtilities\QuerySort;
 
-class GPDFieldResolveFactory
+class FieldResolveFactory
 {
     /**
      * Recupera un resolver tipo query connection
@@ -188,23 +188,20 @@ class GPDFieldResolveFactory
     {
         return function ($root, array $args, IContextService $context, ResolveInfo $info) use ($class) {
             $entityManager = $context->getEntityManager();
-            $relations = EntityUtilities::getColumnAssociations($entityManager, $class);
-            $idPropertyName = EntityUtilities::getFirstIdentifier($entityManager, $class);
             $id = $args['id'];
             if (empty($id)) {
                 throw new Exception('Id Inválido');
             }
-            $entity = GeneralDoctrineUtilities::getArrayEntityById($entityManager, $class, $id, $relations);
-
-            if (empty($entity)) {
+            $entity = $entityManager->find($class, $id);
+            
+            if (empty($entity) || !($entity instanceof $class)) {
                 throw new Exception('Registro no encontrado');
             }
             $entityManager->beginTransaction();
 
             try {
-                $entityManager->createQueryBuilder()->delete($class, 'entity')->andWhere("entity.{$idPropertyName} = :id")
-                    ->setMaxResults(1)
-                    ->setParameter(':id', $id)->getQuery()->execute();
+
+                $entityManager->remove($entity);
                 $entityManager->flush();
                 $entityManager->commit();
 

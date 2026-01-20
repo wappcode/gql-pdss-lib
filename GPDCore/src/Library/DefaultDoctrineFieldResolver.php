@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GPDCore\Graphql;
+namespace GPDCore\Library;
 
 use Closure;
 use Exception;

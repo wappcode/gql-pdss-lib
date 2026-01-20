@@ -34,6 +34,7 @@
   "scripts": {
     "cs-fix": "php-cs-fixer fix",
     "cs-fix-dry": "php-cs-fixer fix --dry-run --diff",
-    "cs-check": "php-cs-fixer fix --dry-run --diff --verbose"
+    "cs-check": "php-cs-fixer fix --dry-run --diff --verbose",
+    "test": "phpunit --colors=always"
   }
 }

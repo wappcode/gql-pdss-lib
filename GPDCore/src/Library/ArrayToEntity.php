@@ -1,6 +1,6 @@
 <?php
 
-namespace GPDCore\Graphql;
+namespace GPDCore\Library;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManager;

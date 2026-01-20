@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace GPDCore\Library;
 
 use Exception;
-use GPDCore\Graphql\DefaultArrayResolver;
-use GPDCore\Graphql\ResolverManager;
+use GPDCore\Library\DefaultArrayResolver;
+use GPDCore\Library\ResolverManager;
 use GraphQL\Error\DebugFlag;
 use GraphQL\Error\FormattedError;
 use GraphQL\GraphQL;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GPDCore\Graphql;
+namespace GPDCore\Library;
 
 /**
  * Registra todos los resolvers de Doctrine Entities para ser usados por el resolver predeterminado del servidor.

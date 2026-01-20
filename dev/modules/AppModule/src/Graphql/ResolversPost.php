@@ -20,7 +20,7 @@ class ResolversPost
 
     public static function getCommentsResolver(?callable $proxy = null, ?QueryDecorator $queryDecorator = null): callable
     {
-        $resolver = ResolverFactory::createCollectionResolver(Post::class, 'comments', [], Comment::class, $queryDecorator);
+        $resolver = ResolverFactory::createCollectionResolver(Post::class, 'comments', Comment::class, $queryDecorator);
 
         return is_callable($proxy) ? $proxy($resolver) : $resolver;
     }

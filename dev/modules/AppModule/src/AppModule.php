@@ -8,7 +8,7 @@ use AppModule\Graphql\ResolversComment;
 use AppModule\Graphql\ResolversPost;
 use AppModule\Graphql\ResolversUser;
 use DateTime;
-use GPDCore\Graphql\GPDFieldResolveFactory;
+use GPDCore\Library\FieldResolveFactory;
 use GPDCore\Library\AbstractModule;
 use GPDCore\Library\IContextService;
 use GPDCore\Library\ProxyUtilities;
@@ -61,11 +61,11 @@ class AppModule extends AbstractModule
             'Query::echo' => $echoResolve,
             'Query::echoProxy' => ProxyUtilities::apply($echoResolve, $proxyEcho1),
             'Query::echoProxies' => ProxyUtilities::applyAll($echoResolve, [$proxyEcho1, $proxyEcho2]),
-            'Query::getUsers' => GPDFieldResolveFactory::buildForConnection(User::class),
-            'Query::getUser' => GPDFieldResolveFactory::buildForItem(User::class),
-            'Mutation::createUser' => GPDFieldResolveFactory::buildForCreate(User::class),
-            'Mutation::updateUser' => GPDFieldResolveFactory::buildForUpdate(User::class),
-            'Mutation::deleteUser' => GPDFieldResolveFactory::buildForDelete(User::class),
+            'Query::getUsers' => FieldResolveFactory::buildForConnection(User::class),
+            'Query::getUser' => FieldResolveFactory::buildForItem(User::class),
+            'Mutation::createUser' => FieldResolveFactory::buildForCreate(User::class),
+            'Mutation::updateUser' => FieldResolveFactory::buildForUpdate(User::class),
+            'Mutation::deleteUser' => FieldResolveFactory::buildForDelete(User::class),
         ];
     }
 
