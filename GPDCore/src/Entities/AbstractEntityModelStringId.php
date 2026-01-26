@@ -33,6 +33,11 @@ abstract class AbstractEntityModelStringId
         $this->updated = new DateTimeImmutable();
     }
 
+    #[ORM\PreUpdate]
+    public function preUpdate(): void
+    {
+        $this->setUpdated();
+    }
     public function getId(): ?string
     {
         return $this->id;
