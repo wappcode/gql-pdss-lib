@@ -3,7 +3,7 @@
 use AppModule\AppModule;
 use AppModule\Services\AppRouter;
 use GPDCore\Library\GPDApp;
-use GPDCore\Services\ContextService;
+use GPDCore\Library\AppContext;
 use Laminas\Diactoros\ServerRequestFactory;
 use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
 use Laminas\ServiceManager\ServiceManager;
@@ -13,7 +13,7 @@ $configFile = __DIR__ . '/../config/doctrine.local.php';
 $cacheDir = __DIR__ . '/../data/DoctrineORMModule';
 $enviroment = getenv('APP_ENV');
 $serviceManager = new ServiceManager();
-$context = new ContextService($serviceManager);
+$context = AppContext::create(serviceManager: $serviceManager);
 $context->setDoctrineConfigFile($configFile);
 $context->setDoctrineCacheDir($cacheDir);
 $router = new AppRouter();

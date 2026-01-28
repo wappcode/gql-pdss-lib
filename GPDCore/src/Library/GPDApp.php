@@ -35,7 +35,7 @@ class GPDApp
 
     protected MiddlewareQueue $middlewareQueue;
 
-    public function __construct(IContextService $context, AbstractRouter $router, ?string $enviroment, bool $withoutDoctrine = false)
+    public function __construct(AppContextInterface $context, AbstractRouter $router, ?string $enviroment, bool $withoutDoctrine = false)
     {
         $this->withoutDoctrine = $withoutDoctrine;
         $enviroment = empty($enviroment) ? GPDApp::ENVIROMENT_DEVELOPMENT : $enviroment;
@@ -68,7 +68,7 @@ class GPDApp
         return $this->modules;
     }
 
-    public function getContext(): IContextService
+    public function getContext(): AppContextInterface
     {
         return $this->context;
     }
@@ -86,7 +86,7 @@ class GPDApp
                 $module->registerMiddleware($this->middlewareQueue, $this->context);
             }
         }
-        $request = $request->withAttribute(IContextService::class, $this->context);
+        $request = $request->withAttribute(AppContextInterface::class, $this->context);
 
         $response = $this->middlewareQueue->handle($request);
         return $response;
@@ -104,7 +104,7 @@ class GPDApp
         return $this->router->dispatch();
     }
 
-    protected function setContext(IContextService $context)
+    protected function setContext(AppContextInterface $context)
     {
         if ($this->started) {
             throw new Exception('Solo se puede asignar el contexto antes de que la aplicación inicie');
