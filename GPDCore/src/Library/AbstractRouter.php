@@ -4,6 +4,12 @@ namespace GPDCore\Library;
 
 use Exception;
 use FastRoute;
+use Laminas\Diactoros\ResponseFactory;
+use Laminas\Diactoros\ServerRequestFactory;
+use Laminas\Diactoros\StreamFactory;
+use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 use function FastRoute\simpleDispatcher;
 
@@ -22,6 +28,15 @@ abstract class AbstractRouter
      * @var GPDApp
      */
     protected $app;
+
+    protected ResponseFactory $responseFactory;
+    protected StreamFactory $streamFactory;
+
+    public function __construct()
+    {
+        $this->responseFactory = new ResponseFactory();
+        $this->streamFactory = new StreamFactory();
+    }
 
     public function setApp(GPDApp $app)
     {
@@ -42,45 +57,61 @@ abstract class AbstractRouter
 
     public function dispatch()
     {
-        // Fetch method and URI from somewhere
-        $httpMethod = $this->getMethod();
-        $uri = $this->getUriBase();
+        $request = ServerRequestFactory::fromGlobals();
 
-        if ($httpMethod === 'OPTIONS') {
-            header('Content-Type: application/json; charset=UTF-8');
-            echo '{}';
-            exit;
+        if ($request->getMethod() === 'OPTIONS') {
+            $response = $this->responseFactory->createResponse(200)
+                ->withHeader('Content-Type', 'application/json; charset=UTF-8');
+            $response->getBody()->write('{}');
+            $this->emit($response);
+            return;
         }
+
         $dispatcher = $this->createDispatcher();
+        $httpMethod = $request->getMethod();
+        $uri = $this->getUriFromRequest($request);
+
         $routeInfo = $dispatcher->dispatch($httpMethod, $uri);
+
         switch ($routeInfo[0]) {
-            case FastRoute\dispatcher::NOT_FOUND:
-                header('HTTP/1.0 404 Not Found');
-                exit;
+            case FastRoute\Dispatcher::NOT_FOUND:
+                $response = $this->responseFactory->createResponse(404);
+                $this->emit($response);
                 break;
+
             case FastRoute\Dispatcher::METHOD_NOT_ALLOWED:
                 $allowedMethods = $routeInfo[1];
-                header('HTTP/1.0 404 Method not allowed');
-                exit;
+                $response = $this->responseFactory->createResponse(405)
+                    ->withHeader('Allow', implode(', ', $allowedMethods));
+                $this->emit($response);
                 break;
+
             case FastRoute\Dispatcher::FOUND:
                 try {
                     $handler = $routeInfo[1];
                     $vars = $routeInfo[2];
-                    $request = $this->getRequest($vars);
-                    if (is_callable($handler)) {
-                        $controler = $handler();
-                    } else {
-                        $controler = new $handler($request, $this->app);
-                    }
-                    $controler->dispatch();
-                } catch (Exception $e) {
-                    $code = $e->getCode() ?? 500;
-                    $msg = $e->getMessage();
-                    header("HTTP/1.0 {$code} {$msg}");
-                    echo $msg;
-                }
 
+                    // Añadir variables de ruta a los atributos del request
+                    foreach ($vars as $key => $value) {
+                        $request = $request->withAttribute($key, $value);
+                    }
+
+                    $controllerRequest = $this->createControllerRequest($request, $vars);
+
+                    if (is_callable($handler)) {
+                        $controller = $handler();
+                    } else {
+                        $controller = new $handler($controllerRequest, $this->app);
+                    }
+
+                    $controller->dispatch();
+                } catch (Exception $e) {
+                    $code = $e->getCode() ?: 500;
+                    $msg = $e->getMessage();
+                    $response = $this->responseFactory->createResponse($code);
+                    $response->getBody()->write($msg);
+                    $this->emit($response);
+                }
                 break;
         }
     }
@@ -89,7 +120,6 @@ abstract class AbstractRouter
     {
         $this->addRoutes();
         $dispatcher = simpleDispatcher(function (FastRoute\RouteCollector $router) {
-            // @var RouteModel
             foreach ($this->routes as $route) {
                 $router->addRoute($route->getMethod(), $route->getRoute(), $route->getContoller());
             }
@@ -98,67 +128,40 @@ abstract class AbstractRouter
         return $dispatcher;
     }
 
-    protected function getRequest($routeParams)
+    protected function createControllerRequest(ServerRequestInterface $request, array $routeParams): Request
     {
-        $content = $this->getRequestData();
-        $queryParams = $this->getQueryParams();
-        $queryParams = $this->getQueryParams();
+        $content = $this->getRequestData($request);
+        $queryParams = $request->getQueryParams();
         $decodedQueryParams = $this->decodeParams($queryParams);
-        $method = $this->getMethod();
-        $request = new Request($method, $routeParams, $content, $decodedQueryParams);
+        $method = $request->getMethod();
 
-        return $request;
+        return new Request($method, $routeParams, $content, $decodedQueryParams);
     }
 
-    protected function getMethod()
+    protected function getRequestData(ServerRequestInterface $request): ?array
     {
-        return $_SERVER['REQUEST_METHOD'];
+        $body = (string) $request->getBody();
+
+        if (empty($body)) {
+            return null;
+        }
+
+        return json_decode($body, true);
     }
 
-    protected function getRequestData()
+    protected function getUriFromRequest(ServerRequestInterface $request): string
     {
-        $rawInput = file_get_contents('php://input');
-
-        return json_decode($rawInput, true);
-    }
-
-    protected function getUriBase()
-    {
-        $uri = $_SERVER['REQUEST_URI'];
+        $uri = $request->getUri()->getPath();
         $scriptName = $this->getScriptName();
         $uri = str_replace($scriptName, '', $uri);
-        if (false !== $pos = strpos($uri, '?')) {
-            $uri = substr($uri, 0, $pos);
-        }
+
         $baseHref = $this->app->getBaseHref();
         $uri = str_replace($baseHref, '', $uri);
 
-        return rawurldecode($uri);
+        return $uri;
     }
 
-    protected function getQueryParams()
-    {
-        $uri = $_SERVER['REQUEST_URI'];
-        $scriptName = $_SERVER['SCRIPT_NAME'];
-        $uri = str_replace($scriptName, '', $uri);
-        if (false !== $pos = strpos($uri, '?')) {
-            $uri = substr($uri, ($pos + 1));
-            $params = explode('&', $uri);
-            $result = [];
-            foreach ($params as $item) {
-                $itemData = explode('=', $item);
-                if (!empty($itemData[0])) {
-                    $result[$itemData[0]] = isset($itemData[1]) ? $itemData[1] : '';
-                }
-            }
-        } else {
-            $result = [];
-        }
-
-        return $result;
-    }
-
-    protected function decodeParams(array $params)
+    protected function decodeParams(array $params): array
     {
         $decoded = [];
         foreach ($params as $k => $v) {
@@ -168,12 +171,18 @@ abstract class AbstractRouter
         return $decoded;
     }
 
-    protected function getScriptName()
+    protected function getScriptName(): string
     {
         $fileScript = $_SERVER['SCRIPT_FILENAME'];
         $start = strrpos($fileScript, '/');
         $scriptName = substr($fileScript, $start);
 
         return $scriptName;
+    }
+
+    protected function emit(ResponseInterface $response): void
+    {
+        $emitter = new SapiEmitter();
+        $emitter->emit($response);
     }
 }
