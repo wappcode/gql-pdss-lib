@@ -9,11 +9,11 @@ use GPDCore\Factory\EntityManagerFactory;
 use GPDCore\Graphql\Types\DateTimeType;
 use GPDCore\Graphql\Types\DateType;
 use GPDCore\Graphql\Types\JSONData;
-use GPDCore\Library\IContextService;
+use GPDCore\Library\AppContextInterface;
 use GraphQL\Doctrine\Types;
 use Laminas\ServiceManager\ServiceManager;
 
-class ContextService implements IContextService
+class ContextService implements AppContextInterface
 {
     public const SM_DATETIME = 'DateTime';
     public const SM_DATE = 'Date';

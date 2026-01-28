@@ -9,7 +9,7 @@ use Exception;
 use GPDCore\Library\EntityUtilities;
 use GPDCore\Library\GeneralDoctrineUtilities;
 use GPDCore\Library\GQLException;
-use GPDCore\Library\IContextService;
+use GPDCore\Library\AppContextInterface;
 use GPDCore\Library\QueryDecorator;
 use GraphQL\Type\Definition\ResolveInfo;
 use PDSSUtilities\QueryFilter;
@@ -26,7 +26,7 @@ class FieldResolveFactory
      */
     public static function buildForConnection(string $class, callable|QueryDecorator|null $queryDecorator = null): callable
     {
-        return function ($root, array $args, IContextService $context, ResolveInfo $info) use ($class, $queryDecorator) {
+        return function ($root, array $args, AppContextInterface $context, ResolveInfo $info) use ($class, $queryDecorator) {
             $joins = $args['input']['joins'] ?? [];
             $filters = $args['input']['filters'] ?? [];
             $sorting = $args['input']['sorts'] ?? [];
@@ -55,7 +55,7 @@ class FieldResolveFactory
      */
     public static function buildForList(string $class, QueryDecorator|callable|null $queryDecorator = null): callable
     {
-        return function ($root, array $args, IContextService $context, ResolveInfo $info) use ($class, $queryDecorator) {
+        return function ($root, array $args, AppContextInterface $context, ResolveInfo $info) use ($class, $queryDecorator) {
             $joins = $args['input']['joins'] ?? [];
             $filters = $args['input']['filters'] ?? [];
             $sorting = $args['input']['sorts'] ?? [];
@@ -88,7 +88,7 @@ class FieldResolveFactory
      */
     public static function buildForItem(string $class, QueryDecorator|callable|null $queryDecorator = null): callable
     {
-        return function ($root, array $args, IContextService $context, ResolveInfo $info) use ($class, $queryDecorator) {
+        return function ($root, array $args, AppContextInterface $context, ResolveInfo $info) use ($class, $queryDecorator) {
             $entityManager = $context->getEntityManager();
             if (empty($relations)) {
                 $relations = EntityUtilities::getColumnAssociations($entityManager, $class);
@@ -114,7 +114,7 @@ class FieldResolveFactory
      */
     public static function buildForCreate(string $class): callable
     {
-        return function ($root, array $args, IContextService $context, ResolveInfo $info) use ($class) {
+        return function ($root, array $args, AppContextInterface $context, ResolveInfo $info) use ($class) {
             $entityManager = $context->getEntityManager();
             $relations = EntityUtilities::getColumnAssociations($entityManager, $class);
             $entity = new $class();
@@ -147,7 +147,7 @@ class FieldResolveFactory
      */
     public static function buildForUpdate(string $class): callable
     {
-        return function ($root, array $args, IContextService $context, ResolveInfo $info) use ($class) {
+        return function ($root, array $args, AppContextInterface $context, ResolveInfo $info) use ($class) {
             $entityManager = $context->getEntityManager();
             $relations = EntityUtilities::getColumnAssociations($entityManager, $class);
             $id = $args['id'];
@@ -186,14 +186,14 @@ class FieldResolveFactory
      */
     public static function buildForDelete(string $class): callable
     {
-        return function ($root, array $args, IContextService $context, ResolveInfo $info) use ($class) {
+        return function ($root, array $args, AppContextInterface $context, ResolveInfo $info) use ($class) {
             $entityManager = $context->getEntityManager();
             $id = $args['id'];
             if (empty($id)) {
                 throw new Exception('Id Inválido');
             }
             $entity = $entityManager->find($class, $id);
-            
+
             if (empty($entity) || !($entity instanceof $class)) {
                 throw new Exception('Registro no encontrado');
             }

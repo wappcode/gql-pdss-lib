@@ -7,7 +7,7 @@ namespace GPDCore\Library;
 abstract class AbstractModule
 {
     /**
-     * @var IContextService
+     * @var AppContextInterface
      */
     protected $context;
 

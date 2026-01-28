@@ -6,10 +6,8 @@ use Doctrine\ORM\EntityManager;
 use GPDCore\Services\ConfigService;
 use Laminas\ServiceManager\ServiceManager;
 
-interface IContextService
+interface AppContextInterface
 {
-    public function init(string $enviroment, bool $productionMode, bool $withoutDoctrine = false): void;
-
     public function getEntityManager(): ?EntityManager;
 
     public function getConfig(): ConfigService;
@@ -17,4 +15,9 @@ interface IContextService
     public function getServiceManager(): ServiceManager;
 
     public function isProductionMode(): bool;
+
+    public function getAttribute(string $name);
+
+    /** Solo util en resolvers */
+    public  function withAttribute(string $name, $value): AppContextInterface;
 }

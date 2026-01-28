@@ -47,7 +47,7 @@ class EntityBuffer
      * registros que se van a incluir en el buffer
      * Ejemplo: function(QueryBuilder $qb): array{return $qb->getQuery()->getArrayResult()}
      */
-    public function loadBuffered($source, array $args, IContextService $context, ResolveInfo $info)
+    public function loadBuffered($source, array $args, AppContextInterface $context, ResolveInfo $info)
     {
         $processedIds = $this->processedIds;
         $uniqueIds = array_unique($this->ids);

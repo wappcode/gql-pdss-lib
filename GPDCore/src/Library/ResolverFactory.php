@@ -48,7 +48,7 @@ class ResolverFactory
         }
         $buffer = static::$buffers[$key];
 
-        return function ($source, $args, IContextService $context, $info) use ($buffer, $mainClass) {
+        return function ($source, $args, AppContextInterface $context, $info) use ($buffer, $mainClass) {
             $entityManager = $context->getEntityManager();
             $idPropertyName = EntityUtilities::getFirstIdentifier($entityManager, $mainClass);
             $id = $source[$idPropertyName] ?? '0';

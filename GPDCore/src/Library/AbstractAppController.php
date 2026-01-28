@@ -13,7 +13,7 @@ abstract class AbstractAppController
     protected ServerRequestInterface $request;
 
     /**
-     * @var IContextService
+     * @var AppContextInterface
      */
     protected $context;
 

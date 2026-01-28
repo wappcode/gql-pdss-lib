@@ -6,7 +6,7 @@ namespace GPDCore\Library;
 
 use GPDCore\Graphql\Types\PageInfoType;
 use GPDCore\Graphql\Types\PaginationInput;
-use GPDCore\Library\IContextService;
+use GPDCore\Library\AppContextInterface;
 use GraphQL\Type\Definition\InputObjectType;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
@@ -23,7 +23,7 @@ class ConnectionTypeFactory
      * @param $name        El nombre que se va a utilizar para generar el nombre del tipo
      * @param $description La descripción que se va a mostrar en la documentación
      */
-    public static function createConnectionType(IContextService $context, ObjectType $edgeType, string $name, string $description): ObjectType
+    public static function createConnectionType(AppContextInterface $context, ObjectType $edgeType, string $name, string $description): ObjectType
     {
         $serviceManager = $context->getServiceManager();
 

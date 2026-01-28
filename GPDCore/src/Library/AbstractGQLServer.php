@@ -32,7 +32,7 @@ abstract class AbstractGQLServer
     protected $servicesAndGQLTypes = [];
 
     /**
-     * @var IContextService
+     * @var AppContextInterface
      */
     protected $context;
 

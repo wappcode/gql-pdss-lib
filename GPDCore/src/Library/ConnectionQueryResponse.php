@@ -8,7 +8,7 @@ use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Exception;
-use GPDCore\Library\IContextService;
+use GPDCore\Library\AppContextInterface;
 use GraphQL\Type\Definition\ResolveInfo;
 
 use function GPDCore\Functions\decodeCursor;
@@ -19,7 +19,7 @@ class ConnectionQueryResponse
     /**
      * Procesa el resultado.
      */
-    public static function get(QueryBuilder $qb, $root, array $args, IContextService $context, ResolveInfo $info, array $relations = [])
+    public static function get(QueryBuilder $qb, $root, array $args, AppContextInterface $context, ResolveInfo $info, array $relations = [])
     {
         $paginationInput = $args['input']['pagination'] ?? [];
         $config = $context->getConfig();

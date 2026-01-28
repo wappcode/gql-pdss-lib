@@ -19,7 +19,7 @@ abstract class AbstractRouter
     protected $isProductionMode;
 
     /**
-     * @var IContextService
+     * @var AppContextInterface
      */
     protected $context;
 
