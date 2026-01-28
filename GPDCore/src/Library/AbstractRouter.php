@@ -127,33 +127,21 @@ abstract class AbstractRouter
 
     protected function getUriFromRequest(ServerRequestInterface $request): string
     {
-        $uri = $request->getUri()->getPath();
-        $scriptName = $this->getScriptName();
-        $uri = str_replace($scriptName, '', $uri);
+        $path = $request->getUri()->getPath();
 
+        // Usar SCRIPT_NAME (más estándar que SCRIPT_FILENAME)
+        $scriptName = $_SERVER['SCRIPT_NAME'] ?? '';
+        if ($scriptName && $scriptName !== '/') {
+            // Remover el script name del inicio de la ruta (solo la primera ocurrencia)
+            $path = preg_replace('~^' . preg_quote($scriptName) . '~', '', $path);
+        }
+        // Remueve el base href si existe
         $baseHref = $this->app->getBaseHref();
-        $uri = str_replace($baseHref, '', $uri);
-
-        return $uri;
-    }
-
-    protected function decodeParams(array $params): array
-    {
-        $decoded = [];
-        foreach ($params as $k => $v) {
-            $decoded[$k] = urldecode($v);
+        if ($baseHref && $baseHref !== '/') {
+            $path = preg_replace('~^' . preg_quote($baseHref) . '~', '', $path);
         }
 
-        return $decoded;
-    }
-
-    protected function getScriptName(): string
-    {
-        $fileScript = $_SERVER['SCRIPT_FILENAME'];
-        $start = strrpos($fileScript, '/');
-        $scriptName = substr($fileScript, $start);
-
-        return $scriptName;
+        return $path ?: '/';
     }
 
     protected function emit(ResponseInterface $response): void
