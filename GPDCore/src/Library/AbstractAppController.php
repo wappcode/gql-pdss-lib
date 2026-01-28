@@ -33,7 +33,7 @@ abstract class AbstractAppController
         $this->streamFactory = new StreamFactory();
     }
 
-    abstract public function dispatch();
+    abstract public function dispatch(): ResponseInterface;
 
     protected function createJsonResponse(array $data, int $status = 200): ResponseInterface
     {
@@ -44,12 +44,6 @@ abstract class AbstractAppController
         $response = $response->withBody($body);
 
         return $response;
-    }
-
-    protected function emit(ResponseInterface $response): void
-    {
-        $emitter = new SapiEmitter();
-        $emitter->emit($response);
     }
     /**
      * Recupera un array con el payload JSON de la request

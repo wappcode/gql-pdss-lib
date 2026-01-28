@@ -46,12 +46,12 @@ class AppModule extends AbstractModule
      */
     public function getResolvers(): array
     {
-        $proxyEcho1 = fn ($resolver) => fn ($root, $args, $context, $info) => 'Proxy 1 ' . $resolver($root, $args, $context, $info);
-        $proxyEcho2 = fn ($resolver) => fn ($root, $args, $context, $info) => 'Proxy 2 ' . $resolver($root, $args, $context, $info);
-        $echoResolve = fn ($root, $args, $context, $info) => $args['msg'];
+        $proxyEcho1 = fn($resolver) => fn($root, $args, $context, $info) => 'Proxy 1 ' . $resolver($root, $args, $context, $info);
+        $proxyEcho2 = fn($resolver) => fn($root, $args, $context, $info) => 'Proxy 2 ' . $resolver($root, $args, $context, $info);
+        $echoResolve = fn($root, $args, $context, $info) => $args['msg'];
 
         return [
-            'Query::showDate' => fn ($root, $args, IContextService $context, $info) =>  new DateTime(),
+            'Query::showDate' => fn($root, $args, IContextService $context, $info) =>  new DateTime(),
             'User::accounts' => ResolversUser::getAccountsResolver(),
             'User::posts' => ResolversUser::getPostsResolver(),
             'Account::users' => ResolversAccount::getUsersResolver(),
@@ -75,7 +75,6 @@ class AppModule extends AbstractModule
     public function getQueryFields(): array
     {
         return [];
-   
     }
 
     /**
@@ -84,6 +83,5 @@ class AppModule extends AbstractModule
     public function getMutationFields(): array
     {
         return [];
-      
     }
 }

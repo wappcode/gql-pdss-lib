@@ -37,7 +37,7 @@ class ContextService implements IContextService
      */
     protected $productionMode;
 
-    protected $enviroment;
+    protected string $enviroment;
 
     protected $doctrineConfigFile = __DIR__ . '/../../../../../../config/doctrine.local.php';
 
@@ -52,9 +52,10 @@ class ContextService implements IContextService
      */
     protected $serviceManager;
 
-    public function __construct(ServiceManager $serviceManager)
+    public function __construct(ServiceManager $serviceManager, string $enviroment = 'development')
     {
         $this->serviceManager = $serviceManager;
+        $this->enviroment = $enviroment;
     }
 
     public function init(string $enviroment, bool $productionMode, bool $withoutDoctrine = false): void
@@ -112,9 +113,7 @@ class ContextService implements IContextService
         $this->serviceManager->setInvokableClass(JSONData::class, JSONData::class);
     }
 
-    protected function addFactoriesToServiceManager()
-    {
-    }
+    protected function addFactoriesToServiceManager() {}
 
     protected function addAliasesToServiceManager()
     {

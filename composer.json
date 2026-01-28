@@ -4,7 +4,7 @@
   "description": "Utilidades para crear una api GraphQL",
   "type": "library",
   "require": {
-    "php": ">=8 ",
+    "php": ">=8.2",
     "doctrine/orm": "^3",
     "doctrine/dbal": "^4",
     "symfony/yaml": "^7",

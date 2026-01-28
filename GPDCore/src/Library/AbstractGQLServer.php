@@ -157,7 +157,7 @@ abstract class AbstractGQLServer
     /**
      * Inicializa el servidor graphql.
      */
-    public function start(array $content)
+    public function start(array $content): ResponseInterface
     {
         $productionMode = $this->app->getProductionMode();
         $schema = $this->getSchema($this->context->getServiceManager());
@@ -198,7 +198,7 @@ abstract class AbstractGQLServer
         }
 
         $response = $this->createJsonResponse($responseData, $status);
-        $this->emit($response);
+        return $response;
     }
 
     /**
@@ -335,11 +335,5 @@ abstract class AbstractGQLServer
         $response = $response->withBody($body);
 
         return $response;
-    }
-
-    protected function emit(ResponseInterface $response): void
-    {
-        $emitter = new SapiEmitter();
-        $emitter->emit($response);
     }
 }

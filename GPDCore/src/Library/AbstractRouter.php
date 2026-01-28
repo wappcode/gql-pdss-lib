@@ -7,7 +7,6 @@ use FastRoute;
 use Laminas\Diactoros\ResponseFactory;
 use Laminas\Diactoros\ServerRequestFactory;
 use Laminas\Diactoros\StreamFactory;
-use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -55,7 +54,7 @@ abstract class AbstractRouter
         array_push($this->routes, $route);
     }
 
-    public function dispatch()
+    public function dispatch(): ResponseInterface
     {
         $request = ServerRequestFactory::fromGlobals();
 
@@ -63,8 +62,7 @@ abstract class AbstractRouter
             $response = $this->responseFactory->createResponse(200)
                 ->withHeader('Content-Type', 'application/json; charset=UTF-8');
             $response->getBody()->write('{}');
-            $this->emit($response);
-            return;
+            return $response;
         }
 
         $dispatcher = $this->createDispatcher();
@@ -76,40 +74,44 @@ abstract class AbstractRouter
         switch ($routeInfo[0]) {
             case FastRoute\Dispatcher::NOT_FOUND:
                 $response = $this->responseFactory->createResponse(404);
-                $this->emit($response);
-                break;
+                return $response;
 
             case FastRoute\Dispatcher::METHOD_NOT_ALLOWED:
                 $allowedMethods = $routeInfo[1];
                 $response = $this->responseFactory->createResponse(405)
                     ->withHeader('Allow', implode(', ', $allowedMethods));
-                $this->emit($response);
-                break;
+                return $response;
 
             case FastRoute\Dispatcher::FOUND:
+                $handler = $routeInfo[1];
+                $vars = $routeInfo[2];
+
+                // Añadir variables de ruta a los atributos del request
+                foreach ($vars as $key => $value) {
+                    $request = $request->withAttribute($key, $value);
+                }
+
                 try {
-                    $handler = $routeInfo[1];
-                    $vars = $routeInfo[2];
-
-                    // Añadir variables de ruta a los atributos del request
-                    foreach ($vars as $key => $value) {
-                        $request = $request->withAttribute($key, $value);
-                    }
                     if (is_callable($handler)) {
-                        $controller = $handler();
+                        $response = $handler($request);
                     } else {
+                        /** @var AbstractAppController */
                         $controller = new $handler($request, $this->app);
+                        $response = $controller->dispatch();
                     }
-
-                    $controller->dispatch();
+                    return $response;
                 } catch (Exception $e) {
                     $code = $e->getCode() ?: 500;
                     $msg = $e->getMessage();
                     $response = $this->responseFactory->createResponse($code);
                     $response->getBody()->write($msg);
-                    $this->emit($response);
+                    return $response;
                 }
-                break;
+
+            default:
+                $response = $this->responseFactory->createResponse(500);
+                $response->getBody()->write('Routing error');
+                return $response;
         }
     }
 
@@ -142,11 +144,5 @@ abstract class AbstractRouter
         }
 
         return $path ?: '/';
-    }
-
-    protected function emit(ResponseInterface $response): void
-    {
-        $emitter = new SapiEmitter();
-        $emitter->emit($response);
     }
 }

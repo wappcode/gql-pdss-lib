@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace GPDCore\Library;
 
 use Exception;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
 
 class GPDApp
 {
@@ -30,6 +33,8 @@ class GPDApp
 
     protected $baseHref = '';
 
+    protected MiddlewareQueue $middlewareQueue;
+
     public function __construct(IContextService $context, AbstractRouter $router, ?string $enviroment, bool $withoutDoctrine = false)
     {
         $this->withoutDoctrine = $withoutDoctrine;
@@ -39,25 +44,21 @@ class GPDApp
         $this->setProductionMode($productionMode);
         $this->setContext($context);
         $this->setRouter($router);
+        $this->createMiddlewareQueue();
     }
-
     /**
-     * El último módulo del array debe ser el modulo de la app pricipal para que sobreescriba sobreescriba la configuración de los demás modulos.
+     * El último módulo agregado debe ser el modulo de la app pricipal para que sobreescriba la configuración de los demás modulos.
      */
-    public function addModules(array $modules): GPDApp
+    public function addModule(string | AbstractModule $module): GPDApp
     {
         if ($this->started) {
             throw new Exception('Solo se puede asignar los módulos antes de que la aplicación inicie');
         }
-        $modulesList = [];
-        foreach ($modules as $moduleClass) {
+        if (is_string($module)) {
             /** @var AbstractModule */
-            $module = new $moduleClass($this);
-            array_push($modulesList, $module);
+            $module = new $module($this);
         }
-        $this->modules = $modulesList;
-        $this->addConfig();
-        $this->addServices();
+        array_push($this->modules, $module);
 
         return $this;
     }
@@ -77,10 +78,30 @@ class GPDApp
         return $this->productionMode;
     }
 
-    public function run()
+    public function run(ServerRequestInterface $request)
     {
+
+        foreach ($this->modules as $module) {
+            if ($module instanceof MiddlewareProviderInterface) {
+                $module->registerMiddleware($this->middlewareQueue, $this->context);
+            }
+        }
+        $request = $request->withAttribute(IContextService::class, $this->context);
+
+        $response = $this->middlewareQueue->handle($request);
+        return $response;
+    }
+    public function dispatch(): ResponseInterface
+    {
+        $this->addConfig();
+        $this->addServices();
         $this->started = true;
-        $this->router->dispatch();
+
+        //TODO: 
+        // [ ] Agregar request al context 
+        // [ ] Agregar app al context  ?
+
+        return $this->router->dispatch();
     }
 
     protected function setContext(IContextService $context)
@@ -189,5 +210,21 @@ class GPDApp
     public function getBaseHref()
     {
         return $this->baseHref;
+    }
+
+    /**
+     * Get the value of middlewareQueue
+     */
+    private function createMiddlewareQueue()
+    {
+        $frameworkHandler = new FrameworkHandler($this);
+        $this->middlewareQueue = new MiddlewareQueue($frameworkHandler);
+        return $this->middlewareQueue;
+    }
+
+    public function adMiddleware(MiddlewareInterface $middleware): GPDApp
+    {
+        $this->middlewareQueue->add($middleware);
+        return $this;
     }
 }

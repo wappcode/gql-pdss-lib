@@ -4,6 +4,8 @@ use AppModule\AppModule;
 use AppModule\Services\AppRouter;
 use GPDCore\Library\GPDApp;
 use GPDCore\Services\ContextService;
+use Laminas\Diactoros\ServerRequestFactory;
+use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
 use Laminas\ServiceManager\ServiceManager;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
@@ -16,9 +18,12 @@ $context->setDoctrineConfigFile($configFile);
 $context->setDoctrineCacheDir($cacheDir);
 $router = new AppRouter();
 $app = new GPDApp($context, $router, $enviroment);
-$app->addModules([
-    AppModule::class,
-]);
+$app->addModule(
+    AppModule::class
+);
 $localConfig = require __DIR__ . '/../config/local.config.php';
 $context->getConfig()->add($localConfig);
-$app->run();
+$request = ServerRequestFactory::fromGlobals();
+$response = $app->run($request);
+$emitter = new SapiEmitter();
+$emitter->emit($response);
