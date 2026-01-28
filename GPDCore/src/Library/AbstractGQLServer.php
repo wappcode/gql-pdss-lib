@@ -17,7 +17,11 @@ use GraphQL\Type\Schema;
 use GraphQL\Utils\BuildSchema;
 use GraphQL\Validator\DocumentValidator;
 use GraphQL\Validator\Rules\DisableIntrospection;
+use Laminas\Diactoros\ResponseFactory;
+use Laminas\Diactoros\StreamFactory;
+use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
 use Laminas\ServiceManager\ServiceManager;
+use Psr\Http\Message\ResponseInterface;
 
 abstract class AbstractGQLServer
 {
@@ -47,12 +51,17 @@ abstract class AbstractGQLServer
      */
     protected $app;
 
+    protected ResponseFactory $responseFactory;
+    protected StreamFactory $streamFactory;
+
     public function __construct(GPDApp $app)
     {
         // Agrega el contexto (acceso a servicios y configuración compartidos a traves de toda la app)
         $this->app = $app;
         $this->context = $app->getContext();
         $this->serviceManager = $this->context->getServiceManager();
+        $this->responseFactory = new ResponseFactory();
+        $this->streamFactory = new StreamFactory();
         $this->addModules();
         $this->registerTypes();
     }
@@ -175,11 +184,11 @@ abstract class AbstractGQLServer
                 $validationRules = null
             )
                 ->seterrorFormatter(GQLFormattedError::createFromException());
-            $response = $result->toArray($debug); // cambiar para mostrar errores (debug)
+            $responseData = $result->toArray($debug); // cambiar para mostrar errores (debug)
             $status = 200;
         } catch (Exception $e) {
             if ($productionMode) {
-                $response = [
+                $responseData = [
                     'errors' => [FormattedError::createFromException($e)],
                 ];
                 $status = 500;
@@ -187,8 +196,9 @@ abstract class AbstractGQLServer
                 throw $e;
             }
         }
-        header('Content-Type: application/json; charset=UTF-8', true, $status);
-        echo json_encode($response);
+
+        $response = $this->createJsonResponse($responseData, $status);
+        $this->emit($response);
     }
 
     /**
@@ -314,5 +324,22 @@ abstract class AbstractGQLServer
         }
 
         return $result;
+    }
+
+    protected function createJsonResponse(array $data, int $status = 200): ResponseInterface
+    {
+        $response = $this->responseFactory->createResponse($status)
+            ->withHeader('Content-Type', 'application/json; charset=UTF-8');
+
+        $body = $this->streamFactory->createStream(json_encode($data));
+        $response = $response->withBody($body);
+
+        return $response;
+    }
+
+    protected function emit(ResponseInterface $response): void
+    {
+        $emitter = new SapiEmitter();
+        $emitter->emit($response);
     }
 }

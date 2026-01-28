@@ -95,13 +95,10 @@ abstract class AbstractRouter
                     foreach ($vars as $key => $value) {
                         $request = $request->withAttribute($key, $value);
                     }
-
-                    $controllerRequest = $this->createControllerRequest($request, $vars);
-
                     if (is_callable($handler)) {
                         $controller = $handler();
                     } else {
-                        $controller = new $handler($controllerRequest, $this->app);
+                        $controller = new $handler($request, $this->app);
                     }
 
                     $controller->dispatch();
@@ -126,27 +123,6 @@ abstract class AbstractRouter
         });
 
         return $dispatcher;
-    }
-
-    protected function createControllerRequest(ServerRequestInterface $request, array $routeParams): Request
-    {
-        $content = $this->getRequestData($request);
-        $queryParams = $request->getQueryParams();
-        $decodedQueryParams = $this->decodeParams($queryParams);
-        $method = $request->getMethod();
-
-        return new Request($method, $routeParams, $content, $decodedQueryParams);
-    }
-
-    protected function getRequestData(ServerRequestInterface $request): ?array
-    {
-        $body = (string) $request->getBody();
-
-        if (empty($body)) {
-            return null;
-        }
-
-        return json_decode($body, true);
     }
 
     protected function getUriFromRequest(ServerRequestInterface $request): string
