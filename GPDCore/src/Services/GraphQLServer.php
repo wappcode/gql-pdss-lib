@@ -28,9 +28,9 @@ class GraphQLServer
     private const HTTP_INTERNAL_SERVER_ERROR = 500;
     private const CONTENT_TYPE_JSON = 'application/json; charset=UTF-8';
 
-    // Límites de seguridad para queries
-    private const MAX_QUERY_DEPTH = 15;
-    private const MAX_QUERY_COMPLEXITY = 1000;
+    // Límites de seguridad por defecto para queries
+    private const DEFAULT_MAX_QUERY_DEPTH = 15;
+    private const DEFAULT_MAX_QUERY_COMPLEXITY = 1000;
 
     protected GPDApp $app;
     protected AppContextInterface $context;
@@ -38,22 +38,39 @@ class GraphQLServer
     protected StreamFactory $streamFactory;
     private ?Schema $cachedSchema = null;
 
+    // Configuración de seguridad
+    private bool $introspectionEnabled;
+    private int $maxQueryDepth;
+    private int $maxQueryComplexity;
+
     /**
      * Constructor del servidor GraphQL.
      *
      * @param GPDApp $app La aplicación GPD
      * @param ResponseFactory|null $responseFactory Factory para respuestas PSR-7
      * @param StreamFactory|null $streamFactory Factory para streams PSR-7
+     * @param bool|null $introspectionEnabled Si null, se deshabilita solo en producción
+     * @param int|null $maxQueryDepth Profundidad máxima de queries (null = usar default)
+     * @param int|null $maxQueryComplexity Complejidad máxima de queries (null = usar default)
      */
     public function __construct(
         GPDApp $app,
         ?ResponseFactory $responseFactory = null,
-        ?StreamFactory $streamFactory = null
+        ?StreamFactory $streamFactory = null,
+        ?bool $introspectionEnabled = null,
+        ?int $maxQueryDepth = null,
+        ?int $maxQueryComplexity = null
     ) {
         $this->app = $app;
         $this->context = $app->getContext();
         $this->responseFactory = $responseFactory ?? new ResponseFactory();
         $this->streamFactory = $streamFactory ?? new StreamFactory();
+
+        // Configuración de seguridad con valores por defecto
+        // Si introspectionEnabled es null, se determina automáticamente según el modo
+        $this->introspectionEnabled = $introspectionEnabled ?? !$app->isProductionMode();
+        $this->maxQueryDepth = $maxQueryDepth ?? self::DEFAULT_MAX_QUERY_DEPTH;
+        $this->maxQueryComplexity = $maxQueryComplexity ?? self::DEFAULT_MAX_QUERY_COMPLEXITY;
     }
 
     /**
@@ -143,45 +160,82 @@ class GraphQLServer
      */
     private function configureSecurityRules(bool $productionMode): void
     {
-        // Deshabilitar introspection en producción (evita que descubran el schema)
-        if ($productionMode) {
+        // Deshabilitar introspection si está configurado
+        if (!$this->introspectionEnabled) {
             DocumentValidator::addRule(new DisableIntrospection(1));
         }
 
         // Limitar profundidad de queries (previene queries anidadas infinitas)
-        $maxDepth = $this->getMaxQueryDepth();
-        DocumentValidator::addRule(new QueryDepth($maxDepth));
+        DocumentValidator::addRule(new QueryDepth($this->maxQueryDepth));
 
         // Limitar complejidad de queries (previene queries costosas)
-        $maxComplexity = $this->getMaxQueryComplexity();
-        $queryComplexity = new QueryComplexity($maxComplexity);
-        DocumentValidator::addRule($queryComplexity);
+        DocumentValidator::addRule(new QueryComplexity($this->maxQueryComplexity));
+    }
+
+    /**
+     * Obtiene si la introspección está habilitada.
+     *
+     * @return bool True si está habilitada
+     */
+    public function isIntrospectionEnabled(): bool
+    {
+        return $this->introspectionEnabled;
+    }
+
+    /**
+     * Establece si la introspección está habilitada.
+     *
+     * @param bool $enabled True para habilitar, false para deshabilitar
+     * @return self Para method chaining
+     */
+    public function setIntrospectionEnabled(bool $enabled): self
+    {
+        $this->introspectionEnabled = $enabled;
+        return $this;
     }
 
     /**
      * Obtiene el límite máximo de profundidad de queries.
-     * Puede ser sobrescrito para obtener desde configuración.
      *
      * @return int Profundidad máxima permitida
      */
-    protected function getMaxQueryDepth(): int
+    public function getMaxQueryDepth(): int
     {
-        // Opcionalmente puedes obtenerlo desde la configuración:
-        // return $this->app->getConfig()->get('graphql.max_depth', self::MAX_QUERY_DEPTH);
-        return self::MAX_QUERY_DEPTH;
+        return $this->maxQueryDepth;
+    }
+
+    /**
+     * Establece el límite máximo de profundidad de queries.
+     *
+     * @param int $maxDepth Profundidad máxima permitida
+     * @return self Para method chaining
+     */
+    public function setMaxQueryDepth(int $maxDepth): self
+    {
+        $this->maxQueryDepth = $maxDepth;
+        return $this;
     }
 
     /**
      * Obtiene el límite máximo de complejidad de queries.
-     * Puede ser sobrescrito para obtener desde configuración.
      *
      * @return int Complejidad máxima permitida
      */
-    protected function getMaxQueryComplexity(): int
+    public function getMaxQueryComplexity(): int
     {
-        // Opcionalmente puedes obtenerlo desde la configuración:
-        // return $this->app->getConfig()->get('graphql.max_complexity', self::MAX_QUERY_COMPLEXITY);
-        return self::MAX_QUERY_COMPLEXITY;
+        return $this->maxQueryComplexity;
+    }
+
+    /**
+     * Establece el límite máximo de complejidad de queries.
+     *
+     * @param int $maxComplexity Complejidad máxima permitida
+     * @return self Para method chaining
+     */
+    public function setMaxQueryComplexity(int $maxComplexity): self
+    {
+        $this->maxQueryComplexity = $maxComplexity;
+        return $this;
     }
 
     /**
