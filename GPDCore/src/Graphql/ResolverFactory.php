@@ -1,15 +1,27 @@
 <?php
 
+declare(strict_types=1);
+
 namespace GPDCore\Graphql;
 
-
 use GPDCore\Contracts\AppContextInterface;
+use GPDCore\Doctrine\ArrayToEntity;
 use GPDCore\Doctrine\EntityBuffer;
 use GPDCore\Doctrine\EntityUtilities;
+use GPDCore\Doctrine\GeneralDoctrineUtilities;
+use GPDCore\Doctrine\QueryDecorator;
+use GPDCore\Exceptions\DuplicateKeyException;
+use GPDCore\Exceptions\EntityNotFoundException;
+use GPDCore\Exceptions\InvalidIdException;
+use GPDCore\Exceptions\RelatedEntitiesExistException;
 use GPDCore\Utilities\CollectionBuffer;
-
+use Doctrine\ORM\Query;
+use Exception;
 use GraphQL\Deferred;
 use GraphQL\Type\Definition\ResolveInfo;
+use PDSSUtilities\QueryFilter;
+use PDSSUtilities\QueryJoins;
+use PDSSUtilities\QuerySort;
 
 class ResolverFactory
 {
@@ -22,7 +34,7 @@ class ResolverFactory
      *
      * @return callable
      */
-    public static function createEntityResolver(EntityBuffer $buffer, string $property)
+    public static function forEntity(EntityBuffer $buffer, string $property): callable
     {
         return function ($source, array $args, $context, ResolveInfo $info) use ($buffer, $property) {
             $entityManager = $context->getEntityManager();
@@ -46,7 +58,7 @@ class ResolverFactory
      *
      * @return callable
      */
-    public static function createCollectionResolver(string $mainClass, string $property, ?string $joinClass = null)
+    public static function forCollection(string $mainClass, string $property, ?string $joinClass = null): callable
     {
         $key = sprintf('%s::%s', $mainClass, $property);
         if (!isset(static::$buffers[$key])) {
@@ -67,5 +79,218 @@ class ResolverFactory
                 return $result;
             });
         };
+    }
+
+    /**
+     * Crea un resolver tipo query connection
+     * $queryDecorator es una funcion que modifica el query acepta como parámetro un QueryBuilder y retorna una copia modificada function(QueryBuilder $qb);.
+     *
+     * @param callable|QueryDecorator|null $queryDecorator Acceso a función para modificar el query
+     */
+    public static function forConnection(string $class, callable|QueryDecorator|null $queryDecorator = null): callable
+    {
+        return function ($root, array $args, AppContextInterface $context, ResolveInfo $info) use ($class, $queryDecorator) {
+            $joins = $args['input']['joins'] ?? [];
+            $filters = $args['input']['filters'] ?? [];
+            $sorting = $args['input']['sorts'] ?? [];
+
+            $entityManager = $context->getEntityManager();
+            $relations = EntityUtilities::getColumnAssociations($entityManager, $class);
+            $qb = $entityManager->createQueryBuilder()->from($class, 'entity')->select('entity');
+            $qb = QueryJoins::addJoins($qb, $joins); // se agregan primero los joins para que puedan ser utilizados por filters y orderby
+            $qb = QueryFilter::addFilters($qb, $filters);
+            $qb = QuerySort::addOrderBy($qb, $sorting);
+            $qb = GeneralDoctrineUtilities::addColumnAssociationToQuery($entityManager, $qb, $class, $relations);
+            $finalQueryDecorator = ($queryDecorator instanceof QueryDecorator) ? $queryDecorator->getDecorator() : $queryDecorator;
+            if (is_callable($finalQueryDecorator)) {
+                $qb = $finalQueryDecorator($qb, $root, $args, $context, $info);
+            }
+
+            return ConnectionQueryResponse::get($qb, $root, $args, $context, $info, $relations);
+        };
+    }
+
+    /**
+     * Crea un resolver tipo query lista
+     * $queryDecorator es una funcion que modifica el query acepta como parámetro un QueryBuilder y retorna una copia modificada function(QueryBuilder $qb);.
+     *
+     * @param QueryDecorator|callable|null $queryDecorator Acceso a función para modificar el query
+     */
+    public static function forList(string $class, QueryDecorator|callable|null $queryDecorator = null): callable
+    {
+        return function ($root, array $args, AppContextInterface $context, ResolveInfo $info) use ($class, $queryDecorator) {
+            $joins = $args['input']['joins'] ?? [];
+            $filters = $args['input']['filters'] ?? [];
+            $sorting = $args['input']['sorts'] ?? [];
+
+            $entityManager = $context->getEntityManager();
+            $relations = EntityUtilities::getColumnAssociations($entityManager, $class);
+            $qb = $entityManager->createQueryBuilder()->from($class, 'entity')->select('entity');
+            $qb = QueryJoins::addJoins($qb, $joins); // se agregan primero los joins para que puedan ser utilizados por filters y orderby
+            $qb = QueryFilter::addFilters($qb, $filters);
+            $qb = QuerySort::addOrderBy($qb, $sorting);
+            $limit = $context->getConfig()->get('query_limit');
+            if ($limit !== null) {
+                $qb->setMaxResults($limit);
+            }
+            $qb = GeneralDoctrineUtilities::addColumnAssociationToQuery($entityManager, $qb, $class, $relations);
+            $finalQueryDecorator = ($queryDecorator instanceof QueryDecorator) ? $queryDecorator->getDecorator() : $queryDecorator;
+            if (is_callable($finalQueryDecorator)) {
+                $qb = $finalQueryDecorator($qb, $root, $args, $context, $info);
+            }
+
+            return $qb->getQuery()->getArrayResult();
+        };
+    }
+
+    /**
+     * Crea un resolver tipo query item
+     * $queryDecorator es una funcion que modifica el query acepta como parámetro un QueryBuilder y retorna una copia modificada function(QueryBuilder $qb);.
+     *
+     * @param QueryDecorator|callable|null $queryDecorator Acceso a función para modificar el query
+     */
+    public static function forItem(string $class, QueryDecorator|callable|null $queryDecorator = null): callable
+    {
+        return function ($root, array $args, AppContextInterface $context, ResolveInfo $info) use ($class, $queryDecorator) {
+            $entityManager = $context->getEntityManager();
+            $relations = EntityUtilities::getColumnAssociations($entityManager, $class);
+            $qb = $entityManager->createQueryBuilder()->from($class, 'entity')->select('entity');
+            $idPropertyName = EntityUtilities::getFirstIdentifier($entityManager, $class);
+            $id = $args['id'];
+            $alias = $qb->getRootAliases()[0];
+            $qb->andWhere("{$alias}.{$idPropertyName} = :id")
+                ->setParameter(':id', $id);
+            $qb = GeneralDoctrineUtilities::addColumnAssociationToQuery($entityManager, $qb, $class, $relations);
+            $finalQueryDecorator = ($queryDecorator instanceof QueryDecorator) ? $queryDecorator->getDecorator() : $queryDecorator;
+            if (is_callable($finalQueryDecorator)) {
+                $qb = $finalQueryDecorator($qb, $root, $args, $context, $info);
+            }
+
+            return $qb->getQuery()->getOneOrNullResult(Query::HYDRATE_ARRAY);
+        };
+    }
+
+    /**
+     * Crea un resolver tipo mutation create.
+     */
+    public static function forCreate(string $class): callable
+    {
+        return function ($root, array $args, AppContextInterface $context, ResolveInfo $info) use ($class) {
+            $entityManager = $context->getEntityManager();
+            $relations = EntityUtilities::getColumnAssociations($entityManager, $class);
+            $entity = new $class();
+            $input = $args['input'];
+            ArrayToEntity::setValues($entityManager, $entity, $input); // carga los valores del array a la entidad
+
+            $entityManager->beginTransaction();
+            try {
+                $entityManager->persist($entity);
+                $entityManager->flush();
+                $entityManager->commit();
+                $id = EntityUtilities::getFirstIdentifierValue($entityManager, $entity);
+                $result = GeneralDoctrineUtilities::getArrayEntityById($entityManager, $class, $id, $relations);
+
+                return $result;
+            } catch (Exception $e) {
+                $entityManager->rollback();
+                self::handleDatabaseException($e);
+            }
+        };
+    }
+
+    /**
+     * Crea un resolver tipo mutation update.
+     */
+    public static function forUpdate(string $class): callable
+    {
+        return function ($root, array $args, AppContextInterface $context, ResolveInfo $info) use ($class) {
+            $entityManager = $context->getEntityManager();
+            $relations = EntityUtilities::getColumnAssociations($entityManager, $class);
+            $id = $args['id'];
+            $input = $args['input'];
+            $entity = $entityManager->getRepository($class)->find($id);
+
+            if (empty($entity) || !($entity instanceof $class)) {
+                throw new EntityNotFoundException();
+            }
+
+            ArrayToEntity::setValues($entityManager, $entity, $input); // carga los valores del array a la entidad
+            if (method_exists($entity, 'setUpdated')) {
+                $entity->setUpdated();
+            }
+            $entityManager->beginTransaction();
+
+            try {
+                $entityManager->persist($entity);
+                $entityManager->flush();
+                $entityManager->commit();
+                $id = EntityUtilities::getFirstIdentifierValue($entityManager, $entity);
+                $result = GeneralDoctrineUtilities::getArrayEntityById($entityManager, $class, $id, $relations);
+
+                return $result;
+            } catch (Exception $e) {
+                $entityManager->rollback();
+                self::handleDatabaseException($e);
+            }
+        };
+    }
+
+    /**
+     * Crea un resolver tipo mutation delete.
+     */
+    public static function forDelete(string $class): callable
+    {
+        return function ($root, array $args, AppContextInterface $context, ResolveInfo $info) use ($class) {
+            $entityManager = $context->getEntityManager();
+            $id = $args['id'];
+            if (empty($id)) {
+                throw new InvalidIdException();
+            }
+            $entity = $entityManager->find($class, $id);
+
+            if (empty($entity) || !($entity instanceof $class)) {
+                throw new EntityNotFoundException();
+            }
+            $entityManager->beginTransaction();
+
+            try {
+                $entityManager->remove($entity);
+                $entityManager->flush();
+                $entityManager->commit();
+
+                return true;
+            } catch (Exception $e) {
+                $entityManager->rollback();
+                self::handleDeleteException($e);
+            }
+        };
+    }
+
+    /**
+     * Maneja excepciones de base de datos relacionadas con claves duplicadas.
+     *
+     * @throws DuplicateKeyException|Exception
+     */
+    private static function handleDatabaseException(Exception $e): void
+    {
+        $message = $e->getMessage();
+        if (str_contains($message, 'SQLSTATE') && str_contains($message, 'Duplicate')) {
+            throw new DuplicateKeyException(previous: $e);
+        }
+        throw $e;
+    }
+
+    /**
+     * Maneja excepciones de base de datos relacionadas con eliminaciones.
+     *
+     * @throws RelatedEntitiesExistException|Exception
+     */
+    private static function handleDeleteException(Exception $e): void
+    {
+        $message = $e->getMessage();
+        if (str_contains($message, 'SQLSTATE') && str_contains($message, 'Cannot delete or update a parent row')) {
+            throw new RelatedEntitiesExistException(previous: $e);
+        }
+        throw $e;
     }
 }

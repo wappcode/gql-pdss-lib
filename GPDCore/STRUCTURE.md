@@ -51,7 +51,7 @@ Componentes específicos para GraphQL:
 - **ConnectionTypeFactory.php** - Fábrica para tipos de conexión
 - **DefaultArrayResolver.php** - Resolver por defecto para arrays
 - **DefaultDoctrineFieldResolver.php** - Resolver por defecto para campos Doctrine
-- **FieldResolveFactory.php** - Fábrica para resolvers de campos
+- **FieldResolveFactory.php** - (Deprecado: Fusionado con ResolverFactory.php)
 - **GraphqlSchemaUtilities.php** - Utilidades para schemas GraphQL
 - **ResolverFactory.php** - Fábrica para resolvers
 
