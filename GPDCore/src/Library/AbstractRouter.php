@@ -18,16 +18,6 @@ abstract class AbstractRouter
 
     protected $isProductionMode;
 
-    /**
-     * @var AppContextInterface
-     */
-    protected $context;
-
-    /**
-     * @var GPDApp
-     */
-    protected $app;
-
     protected ResponseFactory $responseFactory;
     protected StreamFactory $streamFactory;
 
@@ -37,16 +27,6 @@ abstract class AbstractRouter
         $this->streamFactory = new StreamFactory();
     }
 
-    public function setApp(GPDApp $app)
-    {
-        if ($this->app instanceof GPDApp) {
-            throw new Exception('Solo se puede establecer el valor de app una vez');
-        }
-        $this->app = $app;
-        $this->isProductionMode = $this->app->getProductionMode();
-        $this->context = $this->app->getContext();
-    }
-
     abstract protected function addRoutes();
 
     protected function addRoute(RouteModel $route)
@@ -54,10 +34,8 @@ abstract class AbstractRouter
         array_push($this->routes, $route);
     }
 
-    public function dispatch(): ResponseInterface
+    public function dispatch(ServerRequestInterface $request): ResponseInterface
     {
-        $request = ServerRequestFactory::fromGlobals();
-
         if ($request->getMethod() === 'OPTIONS') {
             $response = $this->responseFactory->createResponse(200)
                 ->withHeader('Content-Type', 'application/json; charset=UTF-8');
@@ -84,20 +62,28 @@ abstract class AbstractRouter
 
             case FastRoute\Dispatcher::FOUND:
                 $handler = $routeInfo[1];
-                $vars = $routeInfo[2];
+                $routeParams = $routeInfo[2];
 
-                // Añadir variables de ruta a los atributos del request
-                foreach ($vars as $key => $value) {
-                    $request = $request->withAttribute($key, $value);
-                }
 
                 try {
-                    if (is_callable($handler)) {
+                    if ($handler instanceof AppControllerInterface) {
+                        $response = $handler->dispatch($request);
+                        $handler->setRouteParams($routeParams);
+                    } elseif (is_callable($handler)) {
                         $response = $handler($request);
+                    } elseif (is_string($handler) && class_exists($handler)) {
+                        /** @var AppControllerInterface */
+                        $controller = new $handler();
+                        if (!$controller instanceof AppControllerInterface) {
+                            throw new Exception("El controlador de la ruta debe implementar AppControllerInterface");
+                        }
+                        $response = $controller->dispatch($request);
+                        $controller->setRouteParams($routeParams);
                     } else {
-                        /** @var AbstractAppController */
-                        $controller = new $handler($request, $this->app);
-                        $response = $controller->dispatch();
+                        throw new Exception("Controlador de ruta no válido");
+                    }
+                    if (!($response instanceof ResponseInterface)) {
+                        throw new Exception("El controlador de la ruta debe retornar una instancia de ResponseInterface");
                     }
                     return $response;
                 } catch (Exception $e) {
@@ -131,6 +117,8 @@ abstract class AbstractRouter
     {
         $path = $request->getUri()->getPath();
 
+        $app = $request->getAttribute(GPDApp::class);
+
         // Usar SCRIPT_NAME (más estándar que SCRIPT_FILENAME)
         $scriptName = $_SERVER['SCRIPT_NAME'] ?? '';
         if ($scriptName && $scriptName !== '/') {
@@ -138,7 +126,7 @@ abstract class AbstractRouter
             $path = preg_replace('~^' . preg_quote($scriptName) . '~', '', $path);
         }
         // Remueve el base href si existe
-        $baseHref = $this->app->getBaseHref();
+        $baseHref = $app->getBaseHref() ?? '';
         if ($baseHref && $baseHref !== '/') {
             $path = preg_replace('~^' . preg_quote($baseHref) . '~', '', $path);
         }

@@ -73,6 +73,4 @@ interface AppContextInterface
      * @return static Nueva instancia con el atributo agregado
      */
     public function withContextAttribute(string $name, mixed $value): AppContextInterface;
-
-    public function getRequest(): ServerRequestInterface;
 }

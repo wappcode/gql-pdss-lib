@@ -4,47 +4,54 @@ declare(strict_types=1);
 
 namespace GPDCore\Library;
 
+use Doctrine\ORM\EntityManager;
 use Exception;
+use Laminas\ServiceManager\ServiceManager;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 
 class GPDApp
 {
-    public const ENVIROMENT_PRODUCTION = 'production';
-    public const ENVIROMENT_DEVELOPMENT = 'development';
-    public const ENVIROMENT_TESTING = 'testing';
-
-    private $modules = [];
-
-    private $router;
-
-    private $started = false;
-
-    private $productionMode = false;
-
-    private $context;
-
-    private $enviroment;
-
+    /**
+     * Modulos de la aplicación
+     *
+     * @var array<AbstractModule>
+     */
+    protected $modules = [];
+    protected AbstractRouter $router;
+    protected $started = false;
+    protected $productionMode = false;
+    protected AppConfigInterface $config;
+    protected AppContextInterface $context;
+    protected SchemaManager $schemaManager;
+    protected TypesManager $typesManager;
+    protected ResolverManagerInterface $resolverManager;
+    protected $enviroment;
     protected $servicesAndGQLTypes = [];
-
-    protected $withoutDoctrine = false;
-
-    protected $baseHref = '';
-
+    protected ?EntityManager $entityManager;
+    /**
+     * Al establecer el valor la cadena deberá iniciar con /
+     * ejemplo /micarpeta/public.
+     * @var string
+     */
+    protected string $baseHref = '';
+    protected ?ServiceManager $serviceManager = null;
+    protected ?ServerRequestInterface $request = null;
     protected MiddlewareQueue $middlewareQueue;
 
-    public function __construct(AppContextInterface $context, AbstractRouter $router, ?string $enviroment, bool $withoutDoctrine = false)
+    public function __construct(AppConfigInterface $config, ?EntityManager $entityManager, string $enviroment = 'development', string $baseHref = '')
     {
-        $this->withoutDoctrine = $withoutDoctrine;
-        $enviroment = empty($enviroment) ? GPDApp::ENVIROMENT_DEVELOPMENT : $enviroment;
-        $this->enviroment = trim(strtolower($enviroment));
-        $productionMode = $this->enviroment === trim(strtolower(GPDApp::ENVIROMENT_PRODUCTION));
-        $this->setProductionMode($productionMode);
-        $this->setContext($context);
-        $this->setRouter($router);
-        $this->createMiddlewareQueue();
+        $this->config = $config;
+        $this->entityManager = $entityManager;
+        $this->enviroment = $enviroment;
+        $this->baseHref = $baseHref;
+        $this->serviceManager = new ServiceManager();
+        $this->resolverManager = new ResolverManager();
+        $this->typesManager = new TypesManager();
+        $this->schemaManager = new SchemaManager();
+        $this->middlewareQueue = $this->createMiddlewareQueue();
+        $this->productionMode = $enviroment === AppContextInterface::ENV_PRODUCTION;
     }
     /**
      * El último módulo agregado debe ser el modulo de la app pricipal para que sobreescriba la configuración de los demás modulos.
@@ -63,61 +70,46 @@ class GPDApp
         return $this;
     }
 
-    public function getModules(): array
-    {
-        return $this->modules;
-    }
-
     public function getContext(): AppContextInterface
     {
+        if (!$this->context) {
+            throw new Exception('El contexto de la aplicación no ha sido creado aún. Ejecuta el método run() de la aplicación primero.');
+        }
         return $this->context;
     }
 
-    public function getProductionMode(): bool
-    {
-        return $this->productionMode;
-    }
+
 
     public function run(ServerRequestInterface $request)
     {
 
-        foreach ($this->modules as $module) {
-            if ($module instanceof MiddlewareProviderInterface) {
-                $module->registerMiddleware($this->middlewareQueue, $this->context);
-            }
-        }
-        $request = $request->withAttribute(AppContextInterface::class, $this->context);
-
-        $response = $this->middlewareQueue->handle($request);
+        $this->applyProductionMode();
+        $this->context = $this->createContext();
+        $this->registerModules();
+        $this->context = $this->context->withContextAttribute(GPDApp::class, $this);
+        $this->request = $request->withAttribute(AppContextInterface::class, $this->context);
+        $this->request = $request->withAttribute(GPDApp::class, $this);
+        // Ejecuta la cola de middlewares FrameworkHandler y ese a su vez ejecuta $app->dispatch() de la aplicación
+        $response = $this->middlewareQueue->handle($this->request);
         return $response;
     }
     public function dispatch(): ResponseInterface
     {
-        $this->addConfig();
-        $this->addServices();
         $this->started = true;
-
-        //TODO: 
-        // [ ] Agregar request al context 
-        // [ ] Agregar app al context  ?
-
-        return $this->router->dispatch();
+        return $this->router->dispatch($this->request);
     }
 
-    protected function setContext(AppContextInterface $context)
+    public function isProductionMode(): bool
     {
-        if ($this->started) {
-            throw new Exception('Solo se puede asignar el contexto antes de que la aplicación inicie');
+        return $this->productionMode;
+    }
+
+    protected function applyProductionMode(): void
+    {
+        if (!$this->productionMode) {
+            return;
         }
-        $this->context = $context;
-        $this->context->init($this->enviroment, $this->productionMode, $this->withoutDoctrine);
 
-        return $this;
-    }
-
-    protected function setProductionMode(bool $productionMode)
-    {
-        $this->productionMode = $productionMode;
         if ($this->productionMode) {
             ini_set('display_errors', '0');
             error_reporting(0);
@@ -125,69 +117,7 @@ class GPDApp
             ini_set('display_errors', '1');
         }
 
-        return $this;
-    }
-
-    protected function setRouter(AbstractRouter $router): GPDApp
-    {
-        if ($this->started) {
-            throw new Exception('Solo se puede asignar el router antes de que la aplicación inicie');
-        }
-        $router->setApp($this);
-        $this->router = $router;
-
-        return $this;
-    }
-
-    /**
-     * Agrega la configuración de los módulos al servicio config.
-     */
-    protected function addConfig()
-    {
-        // @var AbstractModule
-        foreach ($this->modules as $module) {
-            $config = $module->getConfig();
-            $configService = $this->context->getConfig();
-            $configService->add($config);
-        }
-    }
-
-    /**
-     * Agrega los servicios de los módulos.
-     */
-    protected function addServices()
-    {
-        // @var AbstractModule
-        foreach ($this->modules as $module) {
-            $services = $module->getServicesAndGQLTypes();
-            $this->addServicesAndGQLTypes($services);
-        }
-    }
-
-    private function addServicesAndGQLTypes(array $services)
-    {
-        $factories = $services['factories'] ?? [];
-        $invokables = $services['invokables'] ?? [];
-        $aliases = $services['aliases'] ?? [];
-        $serviceManager = $this->context->getServiceManager();
-        foreach ($invokables as $k => $invokable) {
-            $serviceManager->setInvokableClass($k, $invokable);
-        }
-        foreach ($factories as $k => $factory) {
-            $serviceManager->setFactory($k, $factory);
-        }
-
-        foreach ($aliases as $k => $alias) {
-            $serviceManager->setAlias($k, $alias);
-        }
-
-        // TODO: Verificar si este código es necesario y si no lo es quitarlo
-        $selfInvokables = $this->servicesAndGQLTypes['invokables'] ?? [];
-        $selfFactories = $this->servicesAndGQLTypes['factories'] ?? [];
-        $selfAliases = $this->servicesAndGQLTypes['aliases'] ?? [];
-        $this->servicesAndGQLTypes['invokables'] = array_merge($selfInvokables, $invokables);
-        $this->servicesAndGQLTypes['factories'] = array_merge($selfFactories, $factories);
-        $this->servicesAndGQLTypes['aliases'] = array_merge($selfAliases, $aliases);
+        return;
     }
 
     /**
@@ -198,14 +128,6 @@ class GPDApp
         return $this->enviroment;
     }
 
-    /**
-     * Al establecer el valor la cadena deberá iniciar con /
-     * ejemplo /micarpeta/public.
-     */
-    public function setBaseHref(string $baseHref)
-    {
-        $this->baseHref = $baseHref;
-    }
 
     public function getBaseHref()
     {
@@ -215,16 +137,58 @@ class GPDApp
     /**
      * Get the value of middlewareQueue
      */
-    private function createMiddlewareQueue()
+    protected function createMiddlewareQueue(): MiddlewareQueue
     {
         $frameworkHandler = new FrameworkHandler($this);
-        $this->middlewareQueue = new MiddlewareQueue($frameworkHandler);
-        return $this->middlewareQueue;
+        $middlewareQueue = new MiddlewareQueue($frameworkHandler);
+        return $middlewareQueue;
     }
 
     public function adMiddleware(MiddlewareInterface $middleware): GPDApp
     {
         $this->middlewareQueue->add($middleware);
         return $this;
+    }
+
+    protected function  createContext(): AppContextInterface
+    {
+        $context = AppContext::create(
+            $this->config,
+            $this->entityManager,
+            $this->serviceManager,
+            $this->enviroment
+        );
+        return $context;
+    }
+
+    public function getSchemaManager(): SchemaManager
+    {
+        return $this->schemaManager;
+    }
+
+
+    public function getTypesManager(): TypesManager
+    {
+        return $this->typesManager;
+    }
+
+    public function getResolverManager(): ResolverManagerInterface
+    {
+        return $this->resolverManager;
+    }
+
+    private function registerModules()
+    {
+        foreach ($this->modules as $module) {
+            $module->registerModule(
+                $this->schemaManager,
+                $this->resolverManager,
+                $this->middlewareQueue,
+                $this->typesManager,
+                $this->config,
+                $this->context,
+                $this->serviceManager,
+            );
+        }
     }
 }

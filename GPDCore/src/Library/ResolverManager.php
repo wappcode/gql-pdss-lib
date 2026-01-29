@@ -6,33 +6,62 @@ namespace GPDCore\Library;
 
 /**
  * Registra todos los resolvers de Doctrine Entities para ser usados por el resolver predeterminado del servidor.
+ * 
+ * @implements ResolverManagerInterface
  */
-class ResolverManager
+class ResolverManager implements ResolverManagerInterface
 {
-    private static $resolvers = [];
+    /**
+     * @var array<string, callable>
+     */
+    private array $resolvers = [];
 
-    public static function add(string $key, callable $resolver)
-    {
-        self::$resolvers[$key] = $resolver;
-    }
+    /**
+     * Constructor público para crear instancias del gestor de resolvers.
+     */
+    public function __construct() {}
 
-    public static function get(string $key)
+    /**
+     * {@inheritDoc}
+     */
+    public function add(string $key, callable $resolver): void
     {
-        return self::$resolvers[$key] ?? null;
+        $this->resolvers[$key] = $resolver;
     }
 
     /**
-     * is not allowed to call from outside to prevent from creating multiple instances,
-     * to use the singleton, you have to obtain the instance from Singleton::getInstance() instead.
+     * {@inheritDoc}
      */
-    private function __construct()
+    public function get(string $key): ?callable
     {
+        return $this->resolvers[$key] ?? null;
     }
 
     /**
-     * prevent the instance from being cloned (which would create a second instance of it).
+     * {@inheritDoc}
      */
-    private function __clone()
+    public function has(string $key): bool
     {
+        return isset($this->resolvers[$key]);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function remove(string $key): bool
+    {
+        if (isset($this->resolvers[$key])) {
+            unset($this->resolvers[$key]);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getKeys(): array
+    {
+        return array_keys($this->resolvers);
     }
 }

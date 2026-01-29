@@ -22,14 +22,14 @@ $entityManagerOptions = $options = file_exists($configFile) ? require $configFil
 $isEntityManagerDevMode = $enviroment !== AppContextInterface::ENV_PRODUCTION;
 $entityManager = EntityManagerFactory::createInstance($options, $cacheDir, $isEntityManagerDevMode);
 $request = ServerRequestFactory::fromGlobals();
-$context = AppContext::create($config, $request, $entityManager, $serviceManager,  $enviroment);
+$context = AppContext::create($config, $entityManager, $serviceManager,  $enviroment);
 $router = new AppRouter();
-$app = new GPDApp($context, $router, $enviroment);
+$app = new GPDApp($context, $enviroment);
 $app->addModule(
     AppModule::class
 );
 //Poner la instancia de la app en el contexto para que los controladores y servicios puedan acceder a ella
-$context = $context->withContextAttribute(GPDApp::class, $app);
+
 
 $response = $app->run($request);
 $emitter = new SapiEmitter();

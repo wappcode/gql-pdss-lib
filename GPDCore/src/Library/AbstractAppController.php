@@ -8,32 +8,20 @@ use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-abstract class AbstractAppController
+abstract class AbstractAppController implements AppControllerInterface
 {
-    protected ServerRequestInterface $request;
-
-    /**
-     * @var AppContextInterface
-     */
-    protected $context;
-
-    /**
-     * @var GPDApp
-     */
-    protected $app;
 
     protected ResponseFactory $responseFactory;
     protected StreamFactory $streamFactory;
-    public function __construct(ServerRequestInterface $request, GPDApp $app)
+
+    protected ?array $routeParams = null;
+    public function __construct()
     {
-        $this->request = $request;
-        $this->app = $app;
-        $this->context = $app->getContext();
         $this->responseFactory = new ResponseFactory();
         $this->streamFactory = new StreamFactory();
     }
 
-    abstract public function dispatch(): ResponseInterface;
+    abstract public function dispatch(ServerRequestInterface $request): ResponseInterface;
 
     protected function createJsonResponse(array $data, int $status = 200): ResponseInterface
     {
@@ -49,14 +37,26 @@ abstract class AbstractAppController
      * Recupera un array con el payload JSON de la request
      * @return void
      */
-    protected function getJsonPayload(): ?array
+    protected function getJsonPayload(ServerRequestInterface $request): ?array
     {
-        $body = (string) $this->request->getBody();
+        $body = (string) $request->getBody();
 
         if (empty($body)) {
             return null;
         }
 
         return json_decode($body, true);
+    }
+    public function setRouteParams(?array $params): void
+    {
+        $this->routeParams = $params;
+    }
+    public function getRouteParam(string $name): ?mixed
+    {
+        return $this->routeParams[$name] ?? null;
+    }
+    public function getRouteParams(): ?array
+    {
+        return $this->routeParams;
     }
 }

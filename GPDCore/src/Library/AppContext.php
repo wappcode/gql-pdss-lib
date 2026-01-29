@@ -21,7 +21,6 @@ final class AppContext implements AppContextInterface
      */
     private function __construct(
         protected readonly AppConfigInterface $config,
-        protected readonly ServerRequestInterface $request,
         protected readonly ?EntityManager $entityManager = null,
         protected readonly ?ServiceManager $serviceManager = null,
         protected readonly string $enviroment = AppContextInterface::ENV_DEVELOPMENT,
@@ -32,7 +31,6 @@ final class AppContext implements AppContextInterface
      * Crea una nueva instancia de AppContext.
      * 
      * @param AppConfigInterface $config
-     * @param ServerRequestInterface $request
      * @param EntityManager|null $entityManager
      * @param ServiceManager|null $serviceManager
      * @param string $enviroment Entorno de la aplicación (ej: 'production', 'development')
@@ -40,12 +38,11 @@ final class AppContext implements AppContextInterface
      */
     public static function create(
         AppConfigInterface $config,
-        ServerRequestInterface $request,
         ?EntityManager $entityManager = null,
         ?ServiceManager $serviceManager = null,
         string $enviroment = AppContextInterface::ENV_DEVELOPMENT
     ): self {
-        return new self($config, $request, $entityManager, $serviceManager, $enviroment);
+        return new self($config,  $entityManager, $serviceManager, $enviroment);
     }
 
     public function getConfig(): AppConfigInterface
@@ -63,10 +60,6 @@ final class AppContext implements AppContextInterface
         return $this->serviceManager;
     }
 
-    public function getRequest(): ServerRequestInterface
-    {
-        return $this->request;
-    }
 
     public function isProductionMode(): bool
     {
