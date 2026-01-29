@@ -10,6 +10,7 @@ use AppModule\Graphql\ResolversUser;
 use DateTime;
 use GPDCore\Library\FieldResolveFactory;
 use GPDCore\Library\AbstractModule;
+use GPDCore\Library\AppContextInterface;
 use GPDCore\Library\IContextService;
 use GPDCore\Library\ProxyUtilities;
 
@@ -30,7 +31,7 @@ class AppModule extends AbstractModule
         return $schema == false ? '' : $schema;
     }
 
-    public function getServicesAndGQLTypes(): array
+    public function getServices(): array
     {
         return [
             'invokables' => [],
@@ -39,6 +40,15 @@ class AppModule extends AbstractModule
         ];
     }
 
+    public function getTypes(): array
+    {
+        return [];
+    }
+
+    public function getMiddlewares(): array
+    {
+        return [];
+    }
     /**
      * Array con los resolvers del módulo.
      *
@@ -51,7 +61,7 @@ class AppModule extends AbstractModule
         $echoResolve = fn($root, $args, $context, $info) => $args['msg'];
 
         return [
-            'Query::showDate' => fn($root, $args, IContextService $context, $info) =>  new DateTime(),
+            'Query::showDate' => fn($root, $args, AppContextInterface $context, $info) =>  new DateTime(),
             'User::accounts' => ResolversUser::getAccountsResolver(),
             'User::posts' => ResolversUser::getPostsResolver(),
             'Account::users' => ResolversAccount::getUsersResolver(),

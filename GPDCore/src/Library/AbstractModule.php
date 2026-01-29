@@ -5,27 +5,13 @@ declare(strict_types=1);
 namespace GPDCore\Library;
 
 use Laminas\ServiceManager\ServiceManager;
+use Psr\Http\Message\ServerRequestInterface;
 
 abstract class AbstractModule implements
     ModuleProviderInterface
 {
-    /**
-     * @var AppContextInterface
-     */
-    protected $context;
 
-
-    /**
-     * @var GPDApp
-     */
-    protected $app;
-
-    public function __construct(GPDApp $app)
-    {
-        $this->app = $app;
-        $this->context = $this->app->getContext();
-    }
-
+    protected AppContextInterface $context;
     /**
      * Array con la configuración del módulo.
      */
@@ -120,6 +106,7 @@ abstract class AbstractModule implements
         AppContextInterface $context,
         ?ServiceManager $serviceManager,
     ): void {
+        $this->context = $context;
         $this->registerMiddleware($middlewareQueue, $context);
         $this->registerResolvers($resolverManager, $context);
         $this->registerType($typesManager, $context);

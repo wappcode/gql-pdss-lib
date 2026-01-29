@@ -51,7 +51,7 @@ abstract class AbstractAppController implements AppControllerInterface
     {
         $this->routeParams = $params;
     }
-    public function getRouteParam(string $name): ?mixed
+    public function getRouteParam(string $name): mixed
     {
         return $this->routeParams[$name] ?? null;
     }

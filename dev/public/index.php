@@ -24,7 +24,7 @@ $entityManager = EntityManagerFactory::createInstance($options, $cacheDir, $isEn
 $request = ServerRequestFactory::fromGlobals();
 $context = AppContext::create($config, $entityManager, $serviceManager,  $enviroment);
 $router = new AppRouter();
-$app = new GPDApp($context, $enviroment);
+$app = new GPDApp($config, $entityManager, $enviroment);
 $app->addModule(
     AppModule::class
 );

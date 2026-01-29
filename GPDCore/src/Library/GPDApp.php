@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GPDCore\Library;
 
+use AppModule\Services\AppRouter;
 use Doctrine\ORM\EntityManager;
 use Exception;
 use Laminas\ServiceManager\ServiceManager;
@@ -50,6 +51,7 @@ class GPDApp
         $this->resolverManager = new ResolverManager();
         $this->typesManager = new TypesManager();
         $this->schemaManager = new SchemaManager();
+        $this->router = new AppRouter();
         $this->middlewareQueue = $this->createMiddlewareQueue();
         $this->productionMode = $enviroment === AppContextInterface::ENV_PRODUCTION;
     }
