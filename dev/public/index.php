@@ -22,8 +22,6 @@ $entityManagerOptions = $options = file_exists($configFile) ? require $configFil
 $isEntityManagerDevMode = $enviroment !== AppContextInterface::ENV_PRODUCTION;
 $entityManager = EntityManagerFactory::createInstance($options, $cacheDir, $isEntityManagerDevMode);
 $request = ServerRequestFactory::fromGlobals();
-$context = AppContext::create($config, $entityManager, $serviceManager,  $enviroment);
-$router = new AppRouter();
 $app = new GPDApp($config, $entityManager, $enviroment);
 $app->addModule(
     AppModule::class
