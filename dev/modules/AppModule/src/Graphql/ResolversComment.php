@@ -2,7 +2,7 @@
 
 namespace AppModule\Graphql;
 
-use GPDCore\Library\ResolverFactory;
+use GPDCore\Graphql\ResolverFactory;
 
 class ResolversComment
 {

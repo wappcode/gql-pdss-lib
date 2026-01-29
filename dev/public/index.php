@@ -3,10 +3,10 @@
 use AppModule\AppModule;
 use AppModule\Services\AppRouter;
 use GPDCore\Factory\EntityManagerFactory;
-use GPDCore\Library\AppConfig;
-use GPDCore\Library\GPDApp;
-use GPDCore\Library\AppContext;
-use GPDCore\Library\AppContextInterface;
+use GPDCore\Core\AppConfig;
+use GPDCore\Core\GPDApp;
+use GPDCore\Core\AppContext;
+use GPDCore\Contracts\AppContextInterface;
 use Laminas\Diactoros\ServerRequestFactory;
 use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
 use Laminas\ServiceManager\ServiceManager;

@@ -3,8 +3,8 @@
 namespace AppModule\Services;
 
 use GPDCore\Controllers\GraphqlController;
-use GPDCore\Library\AbstractRouter;
-use GPDCore\Library\RouteModel;
+use GPDCore\Routing\AbstractRouter;
+use GPDCore\Routing\RouteModel;
 
 class AppRouter extends AbstractRouter
 {

@@ -2,8 +2,8 @@
 
 use AppModule\Entities\Post;
 use AppModule\Entities\User;
-use GPDCore\Library\EntityAssociation;
-use GPDCore\Library\EntityUtilities;
+use GPDCore\Doctrine\EntityAssociation;
+use GPDCore\Doctrine\EntityUtilities;
 
 class EntityUtilitiesTest extends PHPUnit\Framework\TestCase
 {

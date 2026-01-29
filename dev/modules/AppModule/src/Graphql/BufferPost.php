@@ -3,7 +3,7 @@
 namespace AppModule\Graphql;
 
 use AppModule\Entities\Post;
-use GPDCore\Library\EntityBuffer;
+use GPDCore\Doctrine\EntityBuffer;
 
 class BufferPost
 {

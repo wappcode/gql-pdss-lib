@@ -1,7 +1,7 @@
 <?php
 
-use GPDCore\Library\AppConfig;
-use GPDCore\Library\AppConfigInterface;
+use GPDCore\Core\AppConfig;
+use GPDCore\Contracts\AppConfigInterface;
 use PHPUnit\Framework\TestCase;
 
 class AppConfigTest extends TestCase

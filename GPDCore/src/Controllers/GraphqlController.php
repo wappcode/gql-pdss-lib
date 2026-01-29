@@ -2,8 +2,8 @@
 
 namespace GPDCore\Controllers;
 
-use GPDCore\Library\AbstractAppController;
-use GPDCore\Library\GPDApp;
+use GPDCore\Routing\AbstractAppController;
+use GPDCore\Core\GPDApp;
 use GPDCore\Services\GQLServer;
 use Laminas\Diactoros\ServerRequest;
 use Psr\Http\Message\ResponseInterface;

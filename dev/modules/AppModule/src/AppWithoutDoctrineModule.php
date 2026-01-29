@@ -2,7 +2,7 @@
 
 namespace AppModule;
 
-use GPDCore\Library\AbstractModule;
+use GPDCore\Core\AbstractModule;
 use GraphQL\Type\Definition\Type;
 
 class AppWithoutDoctrineModule extends AbstractModule

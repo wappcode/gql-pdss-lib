@@ -3,7 +3,7 @@
 namespace AppModule\Graphql;
 
 use AppModule\Entities\Account;
-use GPDCore\Library\EntityBuffer;
+use GPDCore\Doctrine\EntityBuffer;
 
 class BufferAccount
 {

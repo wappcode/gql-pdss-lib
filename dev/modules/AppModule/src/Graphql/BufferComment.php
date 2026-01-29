@@ -3,7 +3,7 @@
 namespace AppModule\Graphql;
 
 use AppModule\Entities\Comment;
-use GPDCore\Library\EntityBuffer;
+use GPDCore\Doctrine\EntityBuffer;
 
 class BufferComment
 {

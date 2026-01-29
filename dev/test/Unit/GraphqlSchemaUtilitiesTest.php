@@ -1,7 +1,7 @@
 
 <?php
 
-use GPDCore\Library\GraphqlSchemaUtilities;
+use GPDCore\Graphql\GraphqlSchemaUtilities;
 use PHPUnit\Framework\TestCase;
 
 class GraphqlSchemaUtilitiesTest extends TestCase

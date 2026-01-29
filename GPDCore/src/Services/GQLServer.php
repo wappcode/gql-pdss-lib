@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace GPDCore\Services;
 
 use Exception;
-use GPDCore\Library\AppContextInterface;
-use GPDCore\Library\DefaultArrayResolver;
-use GPDCore\Library\GPDApp;
-use GPDCore\Library\GQLFormattedError;
+use GPDCore\Contracts\AppContextInterface;
+use GPDCore\Graphql\DefaultArrayResolver;
+use GPDCore\Core\GPDApp;
+use GPDCore\Exceptions\GQLFormattedError;
 use GraphQL\Error\DebugFlag;
 use GraphQL\Error\FormattedError;
 use GraphQL\GraphQL;

@@ -8,11 +8,11 @@ use AppModule\Graphql\ResolversComment;
 use AppModule\Graphql\ResolversPost;
 use AppModule\Graphql\ResolversUser;
 use DateTime;
-use GPDCore\Library\FieldResolveFactory;
-use GPDCore\Library\AbstractModule;
-use GPDCore\Library\AppContextInterface;
+use GPDCore\Graphql\FieldResolveFactory;
+use GPDCore\Core\AbstractModule;
+use GPDCore\Contracts\AppContextInterface;
 use GPDCore\Library\IContextService;
-use GPDCore\Library\ProxyUtilities;
+use GPDCore\Doctrine\ProxyUtilities;
 
 class AppModule extends AbstractModule
 {

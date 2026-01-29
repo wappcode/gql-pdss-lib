@@ -4,8 +4,8 @@ namespace AppModule\Graphql;
 
 use AppModule\Entities\Account;
 use AppModule\Entities\User;
-use GPDCore\Library\QueryDecorator;
-use GPDCore\Library\ResolverFactory;
+use GPDCore\Doctrine\QueryDecorator;
+use GPDCore\Graphql\ResolverFactory;
 
 class ResolversAccount
 {

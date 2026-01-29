@@ -8,7 +8,7 @@ use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\ORMSetup;
 use Exception;
-use GPDCore\Library\DoctrineSQLLogger;
+use GPDCore\Doctrine\DoctrineSQLLogger;
 use Symfony\Component\Cache\Adapter\PhpFilesAdapter;
 
 class EntityManagerFactory
