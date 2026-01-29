@@ -19,7 +19,7 @@ use Laminas\Diactoros\ResponseFactory;
 use Laminas\Diactoros\StreamFactory;
 use Psr\Http\Message\ResponseInterface;
 
-class GQLServer
+class GraphQLServer
 {
 
     protected GPDApp $app;
