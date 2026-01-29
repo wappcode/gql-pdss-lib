@@ -18,27 +18,30 @@ use GraphQL\Type\Definition\ResolveInfo;
  */
 class CollectionDataLoader
 {
-    protected $ids = [];
+    /** @var array<int|string> */
+    protected array $ids = [];
 
-    protected $result = [];
+    /** @var array<int|string, array> */
+    protected array $result = [];
 
-    protected $class;
+    protected string $class;
 
-    protected $joinProperty;
+    protected string $joinProperty;
 
-    protected $processedIds = [];
+    /** @var array<int|string> */
+    protected array $processedIds = [];
 
-    protected $joinClass;
+    protected ?string $joinClass;
 
-    protected $queryDecorator;
+    protected ?QueryModifierInterface $queryDecorator;
 
     /**
-     * @param string              $class          Clase de la entidad que tiene relación con otra
-     * @param string              $joinProperty   nombre de la propiedad de la relación
-     * @param array               $joinRelations  string[] | EntityAssociation[] nombres de las propiedades que son a su vez relaciones de la entidad relacionada
-     * @param QueryModifierInterface|null $queryDecorator Acceso a función para modificar el query
+     * @param string $class Clase de la entidad que tiene relación con otra
+     * @param string $joinProperty Nombre de la propiedad de la relación
+     * @param string|null $joinClass Clase de la entidad relacionada
+     * @param QueryModifierInterface|null $queryDecorator Modificador para personalizar el query
      */
-    public function __construct(string $class, string $joinProperty,  string $joinClass = null, ?QueryModifierInterface $queryDecorator = null)
+    public function __construct(string $class, string $joinProperty, ?string $joinClass = null, ?QueryModifierInterface $queryDecorator = null)
     {
         $this->class = $class;
         $this->joinProperty = $joinProperty;
@@ -46,55 +49,66 @@ class CollectionDataLoader
         $this->queryDecorator = $queryDecorator;
     }
 
-    public function add($id)
+    /**
+     * Agrega un ID al buffer para carga posterior.
+     */
+    public function add(int|string $id): void
     {
         $this->ids[] = $id;
     }
 
-    public function get($id)
+    /**
+     * Obtiene una colección previamente cargada del buffer.
+     * 
+     * @return array Array con los elementos de la colección o array vacío si no existe
+     */
+    public function get(int|string $id): array
     {
-        return $this->result[$id] ?? null;
+        return $this->result[$id] ?? [];
     }
 
     /**
-     * @TODO Modificar para que dependa de los argumentos o datos de la consulta agregar opciones de filtros y orden
-     *
-     * Carga en el buffer los datos de todos los registros relacionados con los ids
-     * El parametro decorator es una funcion que se le pasa como parametro un objeto QueryBuilder y
-     * retorna un array con los registros solicitados, su utilidad consiste en poder validar, filtrar o transformar los
-     * registros que se van a incluir en el buffer
-     * Ejemplo: function(QueryBuilder $qb): array{return $qb->getQuery()->getArrayResult()}
+     * Carga en batch todas las colecciones relacionadas pendientes del buffer.
+     * 
+     * Este método carga de manera eficiente múltiples colecciones en una sola consulta,
+     * evitando el problema N+1. Solo carga los IDs que aún no han sido procesados.
      */
-    public function loadBuffered($source, array $args, AppContextInterface $context, ResolveInfo $info)
+    public function loadBuffered(mixed $source, array $args, AppContextInterface $context, ResolveInfo $info): void
     {
-        $processedIds = $this->processedIds;
         $uniqueIds = array_unique($this->ids);
         // Convierte los ids en tipo string para no tener problemas al ejecutar un query con id = 0 cuando la columna es un string
         $uniqueIds = array_map('strval', $uniqueIds);
-        $ids = array_filter($uniqueIds, function ($id) use ($processedIds) {
-            return !in_array($id, $processedIds);
-        });
+
+        // Obtener solo los IDs que no han sido procesados
+        $ids = array_diff($uniqueIds, $this->processedIds);
+
         if (empty($ids)) {
             return;
         }
+
         $this->processedIds = array_merge($this->processedIds, $ids);
         $entityManager = $context->getEntityManager();
         $idPropertyName = EntityUtilities::getFirstIdentifier($entityManager, $this->class);
-        $qb = $entityManager->createQueryBuilder()->from($this->class, 'entity')
+
+        $qb = $entityManager->createQueryBuilder()
+            ->from($this->class, 'entity')
             ->leftJoin("entity.{$this->joinProperty}", $this->joinProperty)
             ->select(["partial entity.{{$idPropertyName}}", $this->joinProperty]);
 
-        $qb = QueryBuilderHelper::withAssociations($entityManager, $qb, $this->joinClass, $this->joinProperty);
+        if ($this->joinClass !== null) {
+            $qb = QueryBuilderHelper::withAssociations($entityManager, $qb, $this->joinClass, $this->joinProperty);
+        }
 
         if ($this->queryDecorator instanceof QueryModifierInterface) {
-            $decorator = $this->queryDecorator;
-            $qb = $decorator($qb, $source, $args, $context, $info);
+            $qb = ($this->queryDecorator)($qb, $source, $args, $context, $info);
         }
-        $items = $qb->andWhere($qb->expr()->in("entity.{$idPropertyName}", ':ids'))
+
+        $qb->andWhere($qb->expr()->in("entity.{$idPropertyName}", ':ids'))
             ->setParameter(':ids', $ids);
 
-        $items = $qb->getQuery()->getArrayResult();
-        foreach ($items as $k => $item) {
+        $results = $qb->getQuery()->getArrayResult();
+
+        foreach ($results as $item) {
             $this->result[$item[$idPropertyName]] = $item[$this->joinProperty] ?? [];
         }
     }
