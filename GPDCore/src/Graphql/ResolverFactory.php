@@ -100,13 +100,13 @@ class ResolverFactory
             $qb = QueryJoins::addJoins($qb, $joins); // se agregan primero los joins para que puedan ser utilizados por filters y orderby
             $qb = QueryFilter::addFilters($qb, $filters);
             $qb = QuerySort::addOrderBy($qb, $sorting);
-            $qb = QueryBuilderHelper::withAssociations($entityManager, $qb, $class, $relations);
+            $qb = QueryBuilderHelper::withAssociations($entityManager, $qb, $class);
             $finalQueryDecorator = ($queryDecorator instanceof QueryDecorator) ? $queryDecorator->getDecorator() : $queryDecorator;
             if (is_callable($finalQueryDecorator)) {
                 $qb = $finalQueryDecorator($qb, $root, $args, $context, $info);
             }
 
-            return ConnectionQueryResponse::get($qb, $root, $args, $context, $info, $relations);
+            return RelayConnectionBuilder::build($qb, $root, $args, $context, $info);
         };
     }
 
@@ -124,7 +124,6 @@ class ResolverFactory
             $sorting = $args['input']['sorts'] ?? [];
 
             $entityManager = $context->getEntityManager();
-            $relations = EntityUtilities::getColumnAssociations($entityManager, $class);
             $qb = $entityManager->createQueryBuilder()->from($class, 'entity')->select('entity');
             $qb = QueryJoins::addJoins($qb, $joins); // se agregan primero los joins para que puedan ser utilizados por filters y orderby
             $qb = QueryFilter::addFilters($qb, $filters);
@@ -133,7 +132,7 @@ class ResolverFactory
             if ($limit !== null) {
                 $qb->setMaxResults($limit);
             }
-            $qb = QueryBuilderHelper::withAssociations($entityManager, $qb, $class, $relations);
+            $qb = QueryBuilderHelper::withAssociations($entityManager, $qb, $class);
             $finalQueryDecorator = ($queryDecorator instanceof QueryDecorator) ? $queryDecorator->getDecorator() : $queryDecorator;
             if (is_callable($finalQueryDecorator)) {
                 $qb = $finalQueryDecorator($qb, $root, $args, $context, $info);
@@ -153,14 +152,13 @@ class ResolverFactory
     {
         return function ($root, array $args, AppContextInterface $context, ResolveInfo $info) use ($class, $queryDecorator) {
             $entityManager = $context->getEntityManager();
-            $relations = EntityUtilities::getColumnAssociations($entityManager, $class);
             $qb = $entityManager->createQueryBuilder()->from($class, 'entity')->select('entity');
             $idPropertyName = EntityUtilities::getFirstIdentifier($entityManager, $class);
             $id = $args['id'];
             $alias = $qb->getRootAliases()[0];
             $qb->andWhere("{$alias}.{$idPropertyName} = :id")
                 ->setParameter(':id', $id);
-            $qb = QueryBuilderHelper::withAssociations($entityManager, $qb, $class, $relations);
+            $qb = QueryBuilderHelper::withAssociations($entityManager, $qb, $class);
             $finalQueryDecorator = ($queryDecorator instanceof QueryDecorator) ? $queryDecorator->getDecorator() : $queryDecorator;
             if (is_callable($finalQueryDecorator)) {
                 $qb = $finalQueryDecorator($qb, $root, $args, $context, $info);

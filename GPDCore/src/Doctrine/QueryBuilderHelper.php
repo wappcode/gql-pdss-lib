@@ -12,30 +12,7 @@ use GPDCore\Exceptions\InvalidIdException;
 
 class QueryBuilderHelper
 {
-    /**
-     * Agrega relaciones a un query con sus IDs (versión simplificada).
-     * Crea una copia del QueryBuilder para no modificar el original.
-     *
-     * @warning Solo debe utilizarse para agregar relaciones de una entidad.
-     *          Para múltiples entidades, los alias pueden confundirse si hay propiedades con el mismo nombre.
-     *
-     * @param QueryBuilder $qb QueryBuilder a copiar y modificar
-     * @param array $relations Array de nombres de relaciones a agregar
-     * @param string|null $alias Alias alternativo para agregar asociaciones desde un join específico
-     * @return QueryBuilder Copia del QueryBuilder con las relaciones agregadas
-     */
-    public static function withRelations(QueryBuilder $qb, array $relations, ?string $alias = null): QueryBuilder
-    {
-        $qbCopy = clone $qb;
-        $rootAlias = $alias ?? $qbCopy->getRootAliases()[0];
-        $aliases = $qbCopy->getAllAliases();
 
-        foreach ($relations as $relation) {
-            self::addAssociationToQueryBuilder($qbCopy, $rootAlias, $relation, 'id', $aliases);
-        }
-
-        return $qbCopy;
-    }
 
     /**
      * Agrega asociaciones a un query con sus claves primarias correspondientes.
@@ -51,11 +28,11 @@ class QueryBuilderHelper
      * @param string|null $alias Alias alternativo para agregar asociaciones desde un join específico
      * @return QueryBuilder Copia del QueryBuilder con las asociaciones agregadas
      */
-    public static function withAssociations(EntityManager $entityManager, QueryBuilder $qb, string $className, ?array $associations = null, ?string $alias = null): QueryBuilder
+    public static function withAssociations(EntityManager $entityManager, QueryBuilder $qb, string $className, ?string $alias = null): QueryBuilder
     {
         $qbCopy = clone $qb;
         $rootAlias = $alias ?? $qbCopy->getRootAliases()[0];
-        $associations = !empty($associations) ? $associations : EntityUtilities::getColumnAssociations($entityManager, $className);
+        $associations = EntityUtilities::getColumnAssociations($entityManager, $className);
 
         $aliases = $qbCopy->getAllAliases();
 

@@ -47,7 +47,7 @@ Contiene las clases principales del framework y la lógica central:
 Componentes específicos para GraphQL:
 
 - **AbstractCustomTypeFactory.php** - Fábrica base para tipos personalizados
-- **ConnectionQueryResponse.php** - Respuestas de consultas con conexiones
+- **RelayConnectionBuilder.php** - Constructor de conexiones paginadas siguiendo estándar Relay de GraphQL
 - **ConnectionTypeFactory.php** - Fábrica para tipos de conexión
 - **DefaultArrayResolver.php** - Resolver por defecto para arrays
 - **DefaultDoctrineFieldResolver.php** - Resolver por defecto para campos Doctrine
