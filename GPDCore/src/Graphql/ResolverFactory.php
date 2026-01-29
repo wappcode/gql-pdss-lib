@@ -8,8 +8,8 @@ use GPDCore\Contracts\AppContextInterface;
 use GPDCore\Doctrine\ArrayToEntity;
 use GPDCore\Doctrine\EntityBuffer;
 use GPDCore\Doctrine\EntityUtilities;
+use GPDCore\Contracts\QueryModifierInterface;
 use GPDCore\Doctrine\QueryBuilderHelper;
-use GPDCore\Doctrine\QueryDecorator;
 use GPDCore\Exceptions\DuplicateKeyException;
 use GPDCore\Exceptions\EntityNotFoundException;
 use GPDCore\Exceptions\InvalidIdException;
@@ -85,9 +85,9 @@ class ResolverFactory
      * Crea un resolver tipo query connection
      * $queryDecorator es una funcion que modifica el query acepta como parámetro un QueryBuilder y retorna una copia modificada function(QueryBuilder $qb);.
      *
-     * @param callable|QueryDecorator|null $queryDecorator Acceso a función para modificar el query
+     * @param callable|QueryModifierInterface|null $queryDecorator Acceso a función para modificar el query
      */
-    public static function forConnection(string $class, callable|QueryDecorator|null $queryDecorator = null): callable
+    public static function forConnection(string $class, callable|QueryModifierInterface|null $queryDecorator = null): callable
     {
         return function ($root, array $args, AppContextInterface $context, ResolveInfo $info) use ($class, $queryDecorator) {
             $joins = $args['input']['joins'] ?? [];
@@ -101,9 +101,11 @@ class ResolverFactory
             $qb = QueryFilter::addFilters($qb, $filters);
             $qb = QuerySort::addOrderBy($qb, $sorting);
             $qb = QueryBuilderHelper::withAssociations($entityManager, $qb, $class);
-            $finalQueryDecorator = ($queryDecorator instanceof QueryDecorator) ? $queryDecorator->getDecorator() : $queryDecorator;
-            if (is_callable($finalQueryDecorator)) {
-                $qb = $finalQueryDecorator($qb, $root, $args, $context, $info);
+            
+            if ($queryDecorator !== null) {
+                $qb = is_callable($queryDecorator) 
+                    ? $queryDecorator($qb, $root, $args, $context, $info)
+                    : $qb;
             }
 
             return RelayConnectionBuilder::build($qb, $root, $args, $context, $info);
@@ -114,9 +116,9 @@ class ResolverFactory
      * Crea un resolver tipo query lista
      * $queryDecorator es una funcion que modifica el query acepta como parámetro un QueryBuilder y retorna una copia modificada function(QueryBuilder $qb);.
      *
-     * @param QueryDecorator|callable|null $queryDecorator Acceso a función para modificar el query
+     * @param QueryModifierInterface|callable|null $queryDecorator Acceso a función para modificar el query
      */
-    public static function forList(string $class, QueryDecorator|callable|null $queryDecorator = null): callable
+    public static function forList(string $class, QueryModifierInterface|callable|null $queryDecorator = null): callable
     {
         return function ($root, array $args, AppContextInterface $context, ResolveInfo $info) use ($class, $queryDecorator) {
             $joins = $args['input']['joins'] ?? [];
@@ -133,9 +135,11 @@ class ResolverFactory
                 $qb->setMaxResults($limit);
             }
             $qb = QueryBuilderHelper::withAssociations($entityManager, $qb, $class);
-            $finalQueryDecorator = ($queryDecorator instanceof QueryDecorator) ? $queryDecorator->getDecorator() : $queryDecorator;
-            if (is_callable($finalQueryDecorator)) {
-                $qb = $finalQueryDecorator($qb, $root, $args, $context, $info);
+            
+            if ($queryDecorator !== null) {
+                $qb = is_callable($queryDecorator)
+                    ? $queryDecorator($qb, $root, $args, $context, $info)
+                    : $qb;
             }
 
             return $qb->getQuery()->getArrayResult();
@@ -146,9 +150,9 @@ class ResolverFactory
      * Crea un resolver tipo query item
      * $queryDecorator es una funcion que modifica el query acepta como parámetro un QueryBuilder y retorna una copia modificada function(QueryBuilder $qb);.
      *
-     * @param QueryDecorator|callable|null $queryDecorator Acceso a función para modificar el query
+     * @param QueryModifierInterface|callable|null $queryDecorator Acceso a función para modificar el query
      */
-    public static function forItem(string $class, QueryDecorator|callable|null $queryDecorator = null): callable
+    public static function forItem(string $class, QueryModifierInterface|callable|null $queryDecorator = null): callable
     {
         return function ($root, array $args, AppContextInterface $context, ResolveInfo $info) use ($class, $queryDecorator) {
             $entityManager = $context->getEntityManager();
@@ -159,9 +163,11 @@ class ResolverFactory
             $qb->andWhere("{$alias}.{$idPropertyName} = :id")
                 ->setParameter(':id', $id);
             $qb = QueryBuilderHelper::withAssociations($entityManager, $qb, $class);
-            $finalQueryDecorator = ($queryDecorator instanceof QueryDecorator) ? $queryDecorator->getDecorator() : $queryDecorator;
-            if (is_callable($finalQueryDecorator)) {
-                $qb = $finalQueryDecorator($qb, $root, $args, $context, $info);
+            
+            if ($queryDecorator !== null) {
+                $qb = is_callable($queryDecorator)
+                    ? $queryDecorator($qb, $root, $args, $context, $info)
+                    : $qb;
             }
 
             return $qb->getQuery()->getOneOrNullResult(Query::HYDRATE_ARRAY);

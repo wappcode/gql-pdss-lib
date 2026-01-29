@@ -4,12 +4,12 @@ namespace AppModule\Graphql;
 
 use AppModule\Entities\Account;
 use AppModule\Entities\User;
-use GPDCore\Doctrine\QueryDecorator;
+use GPDCore\Contracts\QueryModifierInterface;
 use GPDCore\Graphql\ResolverFactory;
 
 class ResolversAccount
 {
-    public static function getUsersResolver(?callable $proxy = null, ?QueryDecorator $queryDecorator = null): callable
+    public static function getUsersResolver(?callable $proxy = null, ?QueryModifierInterface $queryDecorator = null): callable
     {
         $resolver = ResolverFactory::createCollectionResolver(Account::class, 'users',  User::class, $queryDecorator);
 

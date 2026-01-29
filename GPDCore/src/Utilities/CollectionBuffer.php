@@ -7,8 +7,8 @@ namespace GPDCore\Utilities;
 
 use GPDCore\Contracts\AppContextInterface;
 use GPDCore\Doctrine\EntityUtilities;
+use GPDCore\Contracts\QueryModifierInterface;
 use GPDCore\Doctrine\QueryBuilderHelper;
-use GPDCore\Doctrine\QueryDecorator;
 
 use GraphQL\Type\Definition\ResolveInfo;
 
@@ -32,9 +32,9 @@ class CollectionBuffer
      * @param string              $class          Clase de la entidad que tiene relación con otra
      * @param string              $joinProperty   nombre de la propiedad de la relación
      * @param array               $joinRelations  string[] | EntityAssociation[] nombres de las propiedades que son a su vez relaciones de la entidad relacionada
-     * @param QueryDecorator|null $queryDecorator Acceso a función para modificar el query
+     * @param QueryModifierInterface|null $queryDecorator Acceso a función para modificar el query
      */
-    public function __construct(string $class, string $joinProperty,  ?string $joinClass = null, ?QueryDecorator $queryDecorator = null)
+    public function __construct(string $class, string $joinProperty,  ?string $joinClass = null, ?QueryModifierInterface $queryDecorator = null)
     {
         $this->class = $class;
         $this->joinProperty = $joinProperty;
@@ -88,8 +88,8 @@ class CollectionBuffer
             $qb = QueryBuilderHelper::withRelations($qb, $finalRelations, $this->joinProperty);
         }
 
-        if ($this->queryDecorator instanceof QueryDecorator) {
-            $decorator = $this->queryDecorator->getDecorator();
+        if ($this->queryDecorator instanceof QueryModifierInterface) {
+            $decorator = $this->queryDecorator;
             $qb = $decorator($qb, $source, $args, $context, $info);
         }
         $items = $qb->andWhere($qb->expr()->in("entity.{$idPropertyName}", ':ids'))

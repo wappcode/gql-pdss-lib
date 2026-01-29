@@ -67,7 +67,7 @@ Utilidades y componentes relacionados con Doctrine ORM:
 - **EntityUtilities.php** - Utilidades generales para entidades
 - **QueryBuilderHelper.php** - Helper para QueryBuilder y manejo de asociaciones de Doctrine
 - **ProxyUtilities.php** - Utilidades para proxies de Doctrine
-- **QueryDecorator.php** - Decorador para consultas
+- **QueryModifier.php** - Modificador callable para personalizar queries
 
 ### 🛣️ Routing/ (3 archivos)
 **Namespace:** `GPDCore\Routing`
