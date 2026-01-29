@@ -3,9 +3,9 @@
 namespace GPDCore\Library;
 
 use DateTime;
-use GPDCore\Services\ConfigService;
+use Doctrine\DBAL\Logging\SQLLogger;
 
-class DoctrineSQLLogger implements DoctrineSQLLogger
+class DoctrineSQLLogger implements SQLLogger
 {
     private $startTime;
 
@@ -53,7 +53,7 @@ QUERY;
 
     protected function writeLog(string $msg)
     {
-        $dir = ConfigService::getInstance()->get('sql_log_dir');
+        $dir = AppConfig::getInstance()->get('sql_log_dir');
         $filename = 'doctrine.log';
         $path = $dir . DIRECTORY_SEPARATOR . $filename;
         @file_put_contents($path, $msg, FILE_APPEND | LOCK_EX);

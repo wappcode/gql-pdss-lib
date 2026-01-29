@@ -3,7 +3,6 @@
 namespace GPDCore\Library;
 
 use Doctrine\ORM\EntityManager;
-use GPDCore\Services\ConfigService;
 use Laminas\Diactoros\ServerRequest;
 use Laminas\ServiceManager\ServiceManager;
 use Psr\Http\Message\ServerRequestInterface;
@@ -23,7 +22,7 @@ interface AppContextInterface
     /**
      * Retorna el servicio de configuración.
      */
-    public function getConfig(): ConfigService;
+    public function getConfig(): AppConfigInterface;
 
     /**
      * Retorna el gestor de entidades de Doctrine.

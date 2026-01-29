@@ -3,7 +3,6 @@
 namespace GPDCore\Library;
 
 use Doctrine\ORM\EntityManager;
-use GPDCore\Services\ConfigService;
 use Laminas\ServiceManager\ServiceManager;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -21,10 +20,10 @@ final class AppContext implements AppContextInterface
      * @param array<string, mixed> $contextAttributes
      */
     private function __construct(
-        protected readonly ConfigService $config,
-        protected readonly ?EntityManager $entityManager,
-        protected readonly ?ServiceManager $serviceManager,
+        protected readonly AppConfigInterface $config,
         protected readonly ServerRequestInterface $request,
+        protected readonly ?EntityManager $entityManager = null,
+        protected readonly ?ServiceManager $serviceManager = null,
         protected readonly string $enviroment = AppContextInterface::ENV_DEVELOPMENT,
         protected array $contextAttributes = []
     ) {}
@@ -32,24 +31,24 @@ final class AppContext implements AppContextInterface
     /**
      * Crea una nueva instancia de AppContext.
      * 
-     * @param ConfigService $config
+     * @param AppConfigInterface $config
+     * @param ServerRequestInterface $request
      * @param EntityManager|null $entityManager
      * @param ServiceManager|null $serviceManager
-     * @param ServerRequestInterface $request
      * @param string $enviroment Entorno de la aplicación (ej: 'production', 'development')
      * @return self
      */
     public static function create(
-        ConfigService $config,
-        ?EntityManager $entityManager,
-        ?ServiceManager $serviceManager,
+        AppConfigInterface $config,
         ServerRequestInterface $request,
+        ?EntityManager $entityManager = null,
+        ?ServiceManager $serviceManager = null,
         string $enviroment = AppContextInterface::ENV_DEVELOPMENT
     ): self {
-        return new self($config, $entityManager, $serviceManager, $request, $enviroment);
+        return new self($config, $request, $entityManager, $serviceManager, $enviroment);
     }
 
-    public function getConfig(): ConfigService
+    public function getConfig(): AppConfigInterface
     {
         return $this->config;
     }
