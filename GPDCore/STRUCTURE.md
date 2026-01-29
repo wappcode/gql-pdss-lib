@@ -55,7 +55,15 @@ Componentes específicos para GraphQL:
 - **GraphqlSchemaUtilities.php** - Utilidades para schemas GraphQL
 - **ResolverFactory.php** - Fábrica para resolvers
 
-### 💾 Doctrine/ (8 archivos)
+### � DataLoaders/ (2 archivos)
+**Namespace:** `GPDCore\DataLoaders`
+
+Implementación del patrón DataLoader de GraphQL para prevención N+1:
+
+- **EntityDataLoader.php** - DataLoader para entidades (previene consultas N+1)
+- **CollectionDataLoader.php** - DataLoader para colecciones relacionadas
+
+### 💾 Doctrine/ (7 archivos)
 **Namespace:** `GPDCore\Doctrine`
 
 Utilidades y componentes relacionados con Doctrine ORM:
@@ -63,7 +71,6 @@ Utilidades y componentes relacionados con Doctrine ORM:
 - **ArrayToEntity.php** - Conversión de arrays a entidades
 - **DoctrineSQLLogger.php** - Logger para consultas SQL
 - **EntityAssociation.php** - Gestión de asociaciones de entidades
-- **EntityBuffer.php** - Buffer para entidades (N+1 prevention)
 - **EntityUtilities.php** - Utilidades generales para entidades
 - **QueryBuilderHelper.php** - Helper para QueryBuilder y manejo de asociaciones de Doctrine
 - **ProxyUtilities.php** - Utilidades para proxies de Doctrine
@@ -78,12 +85,11 @@ Componentes de enrutamiento y controladores:
 - **AbstractRouter.php** - Router base
 - **RouteModel.php** - Modelo para rutas
 
-### 🔧 Utilities/ (5 archivos)
+### 🔧 Utilities/ (4 archivos)
 **Namespace:** `GPDCore\Utilities`
 
 Utilidades generales y helpers:
 
-- **CollectionBuffer.php** - Buffer para colecciones
 - **CSVUtilities.php** - Utilidades para manejo de CSV
 - **ImageB64.php** - Utilidades para imágenes en Base64
 - **PHPExcelUtilities.php** - Utilidades para Excel

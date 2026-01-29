@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace GPDCore\Graphql;
 
 use GPDCore\Contracts\AppContextInterface;
+use GPDCore\DataLoaders\CollectionDataLoader;
+use GPDCore\DataLoaders\EntityDataLoader;
 use GPDCore\Doctrine\ArrayToEntity;
-use GPDCore\Doctrine\EntityBuffer;
 use GPDCore\Doctrine\EntityUtilities;
 use GPDCore\Contracts\QueryModifierInterface;
 use GPDCore\Doctrine\QueryBuilderHelper;
@@ -14,7 +15,6 @@ use GPDCore\Exceptions\DuplicateKeyException;
 use GPDCore\Exceptions\EntityNotFoundException;
 use GPDCore\Exceptions\InvalidIdException;
 use GPDCore\Exceptions\RelatedEntitiesExistException;
-use GPDCore\Utilities\CollectionBuffer;
 use Doctrine\ORM\Query;
 use Exception;
 use GraphQL\Deferred;
@@ -28,13 +28,13 @@ class ResolverFactory
     protected static $buffers = [];
 
     /**
-     * NOTA cuando EntityBuffer se utiliza en varias propiedades de diferentes Objetos
+     * NOTA cuando EntityDataLoader se utiliza en varias propiedades de diferentes Objetos
      * Deferred puede ser llamado con la consulta para un objeto y omitir las consultas de los demás objetos
-     * Es necesario crear un EntityBuffer para cada objeto.
+     * Es necesario crear un EntityDataLoader para cada objeto.
      *
      * @return callable
      */
-    public static function forEntity(EntityBuffer $buffer, string $property): callable
+    public static function forEntity(EntityDataLoader $buffer, string $property): callable
     {
         return function ($source, array $args, $context, ResolveInfo $info) use ($buffer, $property) {
             $entityManager = $context->getEntityManager();
@@ -62,7 +62,7 @@ class ResolverFactory
     {
         $key = sprintf('%s::%s', $mainClass, $property);
         if (!isset(static::$buffers[$key])) {
-            static::$buffers[$key] = new CollectionBuffer($mainClass, $property, $joinClass);
+            static::$buffers[$key] = new CollectionDataLoader($mainClass, $property, $joinClass);
         }
         $buffer = static::$buffers[$key];
 

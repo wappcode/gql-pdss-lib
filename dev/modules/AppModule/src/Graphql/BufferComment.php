@@ -3,16 +3,16 @@
 namespace AppModule\Graphql;
 
 use AppModule\Entities\Comment;
-use GPDCore\Doctrine\EntityBuffer;
+use GPDCore\DataLoaders\EntityDataLoader;
 
 class BufferComment
 {
-    private static $instance;
+    private static ?EntityDataLoader $instance = null;
 
-    public static function getInstance(): EntityBuffer
+    public static function getInstance(): EntityDataLoader
     {
         if (static::$instance === null) {
-            static::$instance = new EntityBuffer(Comment::class);
+            static::$instance = new EntityDataLoader(Comment::class);
         }
 
         return static::$instance;

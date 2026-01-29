@@ -2,17 +2,20 @@
 
 declare(strict_types=1);
 
-namespace GPDCore\Doctrine;
+namespace GPDCore\DataLoaders;
 
 use GPDCore\Contracts\AppContextInterface;
+use GPDCore\Doctrine\EntityUtilities;
+use GPDCore\Doctrine\QueryBuilderHelper;
 use GraphQL\Type\Definition\ResolveInfo;
 
 /**
- * Buffer para cargar múltiples entidades de manera eficiente.
+ * DataLoader para cargar múltiples entidades de manera eficiente.
  * 
  * Acumula IDs de entidades y las carga en batch para evitar el problema N+1.
+ * Implementa el patrón DataLoader de GraphQL.
  */
-class EntityBuffer
+class EntityDataLoader
 {
     /** @var array<int|string> */
     protected array $ids = [];
@@ -62,29 +65,29 @@ class EntityBuffer
         $uniqueIds = array_unique($this->ids);
         // Convierte los ids en tipo string para no tener problemas al ejecutar un query con id = 0 cuando la columna es un string
         $uniqueIds = array_map('strval', $uniqueIds);
-        
+
         // Obtener solo los IDs que no han sido procesados
         $ids = array_diff($uniqueIds, $this->processedIds);
-        
+
         if (empty($ids)) {
             return;
         }
-        
+
         $this->processedIds = array_merge($this->processedIds, $ids);
         $entityManager = $context->getEntityManager();
         $idPropertyName = EntityUtilities::getFirstIdentifier($entityManager, $this->class);
-        
+
         $qb = $entityManager->createQueryBuilder()
             ->from($this->class, 'entity')
             ->select('entity');
-        
+
         $qb = QueryBuilderHelper::withAssociations($entityManager, $qb, $this->class);
-        
+
         $qb->andWhere($qb->expr()->in("entity.{$idPropertyName}", ':ids'))
             ->setParameter(':ids', $ids);
-        
+
         $items = $qb->getQuery()->getArrayResult();
-        
+
         foreach ($items as $item) {
             $this->result[$item[$idPropertyName]] = $item;
         }

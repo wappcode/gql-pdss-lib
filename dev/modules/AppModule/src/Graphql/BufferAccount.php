@@ -3,16 +3,16 @@
 namespace AppModule\Graphql;
 
 use AppModule\Entities\Account;
-use GPDCore\Doctrine\EntityBuffer;
+use GPDCore\DataLoaders\EntityDataLoader;
 
 class BufferAccount
 {
-    private static $instance;
+    private static ?EntityDataLoader $instance = null;
 
-    public static function getInstance(): EntityBuffer
+    public static function getInstance(): EntityDataLoader
     {
         if (static::$instance === null) {
-            static::$instance = new EntityBuffer(Account::class);
+            static::$instance = new EntityDataLoader(Account::class);
         }
 
         return static::$instance;

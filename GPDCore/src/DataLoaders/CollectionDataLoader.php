@@ -2,17 +2,21 @@
 
 declare(strict_types=1);
 
-namespace GPDCore\Utilities;
-
+namespace GPDCore\DataLoaders;
 
 use GPDCore\Contracts\AppContextInterface;
-use GPDCore\Doctrine\EntityUtilities;
 use GPDCore\Contracts\QueryModifierInterface;
+use GPDCore\Doctrine\EntityUtilities;
 use GPDCore\Doctrine\QueryBuilderHelper;
-
 use GraphQL\Type\Definition\ResolveInfo;
 
-class CollectionBuffer
+/**
+ * DataLoader para cargar colecciones relacionadas de manera eficiente.
+ * 
+ * Acumula IDs de entidades y carga sus colecciones relacionadas en batch,
+ * evitando el problema N+1. Implementa el patrón DataLoader de GraphQL.
+ */
+class CollectionDataLoader
 {
     protected $ids = [];
 
