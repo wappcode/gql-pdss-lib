@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace GPDCore\Services;
+namespace GPDCore\Utilities;
 
-class IPClientService
+class IPUtilities
 {
     /**
      * Recupera la ip del cliente.
