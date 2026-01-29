@@ -34,7 +34,7 @@ class CollectionBuffer
      * @param array               $joinRelations  string[] | EntityAssociation[] nombres de las propiedades que son a su vez relaciones de la entidad relacionada
      * @param QueryModifierInterface|null $queryDecorator Acceso a función para modificar el query
      */
-    public function __construct(string $class, string $joinProperty,  ?string $joinClass = null, ?QueryModifierInterface $queryDecorator = null)
+    public function __construct(string $class, string $joinProperty,  string $joinClass = null, ?QueryModifierInterface $queryDecorator = null)
     {
         $this->class = $class;
         $this->joinProperty = $joinProperty;
@@ -75,18 +75,12 @@ class CollectionBuffer
         }
         $this->processedIds = array_merge($this->processedIds, $ids);
         $entityManager = $context->getEntityManager();
-        $entityColumnAssociations = !empty($this->joinClass) ? EntityUtilities::getColumnAssociations($entityManager, $this->joinClass) : [];
-        $finalRelations =  $entityColumnAssociations;
         $idPropertyName = EntityUtilities::getFirstIdentifier($entityManager, $this->class);
         $qb = $entityManager->createQueryBuilder()->from($this->class, 'entity')
             ->leftJoin("entity.{$this->joinProperty}", $this->joinProperty)
             ->select(["partial entity.{{$idPropertyName}}", $this->joinProperty]);
 
-        if (!empty($this->joinClass)) {
-            $qb = QueryBuilderHelper::withAssociations($entityManager, $qb, $this->joinClass, $finalRelations, $this->joinProperty);
-        } else {
-            $qb = QueryBuilderHelper::withRelations($qb, $finalRelations, $this->joinProperty);
-        }
+        $qb = QueryBuilderHelper::withAssociations($entityManager, $qb, $this->joinClass, $this->joinProperty);
 
         if ($this->queryDecorator instanceof QueryModifierInterface) {
             $decorator = $this->queryDecorator;
