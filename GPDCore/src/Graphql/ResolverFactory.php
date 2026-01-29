@@ -8,7 +8,7 @@ use GPDCore\Contracts\AppContextInterface;
 use GPDCore\Doctrine\ArrayToEntity;
 use GPDCore\Doctrine\EntityBuffer;
 use GPDCore\Doctrine\EntityUtilities;
-use GPDCore\Doctrine\GeneralDoctrineUtilities;
+use GPDCore\Doctrine\QueryBuilderHelper;
 use GPDCore\Doctrine\QueryDecorator;
 use GPDCore\Exceptions\DuplicateKeyException;
 use GPDCore\Exceptions\EntityNotFoundException;
@@ -100,7 +100,7 @@ class ResolverFactory
             $qb = QueryJoins::addJoins($qb, $joins); // se agregan primero los joins para que puedan ser utilizados por filters y orderby
             $qb = QueryFilter::addFilters($qb, $filters);
             $qb = QuerySort::addOrderBy($qb, $sorting);
-            $qb = GeneralDoctrineUtilities::addColumnAssociationToQuery($entityManager, $qb, $class, $relations);
+            $qb = QueryBuilderHelper::withAssociations($entityManager, $qb, $class, $relations);
             $finalQueryDecorator = ($queryDecorator instanceof QueryDecorator) ? $queryDecorator->getDecorator() : $queryDecorator;
             if (is_callable($finalQueryDecorator)) {
                 $qb = $finalQueryDecorator($qb, $root, $args, $context, $info);
@@ -133,7 +133,7 @@ class ResolverFactory
             if ($limit !== null) {
                 $qb->setMaxResults($limit);
             }
-            $qb = GeneralDoctrineUtilities::addColumnAssociationToQuery($entityManager, $qb, $class, $relations);
+            $qb = QueryBuilderHelper::withAssociations($entityManager, $qb, $class, $relations);
             $finalQueryDecorator = ($queryDecorator instanceof QueryDecorator) ? $queryDecorator->getDecorator() : $queryDecorator;
             if (is_callable($finalQueryDecorator)) {
                 $qb = $finalQueryDecorator($qb, $root, $args, $context, $info);
@@ -160,7 +160,7 @@ class ResolverFactory
             $alias = $qb->getRootAliases()[0];
             $qb->andWhere("{$alias}.{$idPropertyName} = :id")
                 ->setParameter(':id', $id);
-            $qb = GeneralDoctrineUtilities::addColumnAssociationToQuery($entityManager, $qb, $class, $relations);
+            $qb = QueryBuilderHelper::withAssociations($entityManager, $qb, $class, $relations);
             $finalQueryDecorator = ($queryDecorator instanceof QueryDecorator) ? $queryDecorator->getDecorator() : $queryDecorator;
             if (is_callable($finalQueryDecorator)) {
                 $qb = $finalQueryDecorator($qb, $root, $args, $context, $info);
@@ -188,7 +188,7 @@ class ResolverFactory
                 $entityManager->flush();
                 $entityManager->commit();
                 $id = EntityUtilities::getFirstIdentifierValue($entityManager, $entity);
-                $result = GeneralDoctrineUtilities::getArrayEntityById($entityManager, $class, $id, $relations);
+                $result = QueryBuilderHelper::fetchById($entityManager, $class, $id, $relations);
 
                 return $result;
             } catch (Exception $e) {
@@ -225,7 +225,7 @@ class ResolverFactory
                 $entityManager->flush();
                 $entityManager->commit();
                 $id = EntityUtilities::getFirstIdentifierValue($entityManager, $entity);
-                $result = GeneralDoctrineUtilities::getArrayEntityById($entityManager, $class, $id, $relations);
+                $result = QueryBuilderHelper::fetchById($entityManager, $class, $id, $relations);
 
                 return $result;
             } catch (Exception $e) {

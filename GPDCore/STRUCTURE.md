@@ -65,7 +65,7 @@ Utilidades y componentes relacionados con Doctrine ORM:
 - **EntityAssociation.php** - Gestión de asociaciones de entidades
 - **EntityBuffer.php** - Buffer para entidades (N+1 prevention)
 - **EntityUtilities.php** - Utilidades generales para entidades
-- **GeneralDoctrineUtilities.php** - Utilidades generales de Doctrine
+- **QueryBuilderHelper.php** - Helper para QueryBuilder y manejo de asociaciones de Doctrine
 - **ProxyUtilities.php** - Utilidades para proxies de Doctrine
 - **QueryDecorator.php** - Decorador para consultas
 

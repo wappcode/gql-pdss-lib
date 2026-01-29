@@ -6,9 +6,8 @@ namespace GPDCore\Utilities;
 
 
 use GPDCore\Contracts\AppContextInterface;
-use GPDCore\Doctrine\EntityAssociation;
 use GPDCore\Doctrine\EntityUtilities;
-use GPDCore\Doctrine\GeneralDoctrineUtilities;
+use GPDCore\Doctrine\QueryBuilderHelper;
 use GPDCore\Doctrine\QueryDecorator;
 
 use GraphQL\Type\Definition\ResolveInfo;
@@ -84,9 +83,9 @@ class CollectionBuffer
             ->select(["partial entity.{{$idPropertyName}}", $this->joinProperty]);
 
         if (!empty($this->joinClass)) {
-            $qb = GeneralDoctrineUtilities::addColumnAssociationToQuery($entityManager, $qb, $this->joinClass, $finalRelations, $this->joinProperty);
+            $qb = QueryBuilderHelper::withAssociations($entityManager, $qb, $this->joinClass, $finalRelations, $this->joinProperty);
         } else {
-            $qb = GeneralDoctrineUtilities::addRelationsToQuery($qb, $finalRelations, $this->joinProperty);
+            $qb = QueryBuilderHelper::withRelations($qb, $finalRelations, $this->joinProperty);
         }
 
         if ($this->queryDecorator instanceof QueryDecorator) {

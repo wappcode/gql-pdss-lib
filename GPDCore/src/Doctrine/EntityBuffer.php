@@ -69,7 +69,7 @@ class EntityBuffer
         $entityColumnAssociations = EntityUtilities::getColumnAssociations($entityManager, $this->class);
         $finalRelations = !empty($this->relations) ? $this->relations : $entityColumnAssociations;
         $idPropertyName = EntityUtilities::getFirstIdentifier($entityManager, $this->class);
-        $qb = GeneralDoctrineUtilities::addColumnAssociationToQuery($entityManager, $qb, $this->class, $finalRelations);
+        $qb = QueryBuilderHelper::withAssociations($entityManager, $qb, $this->class, $finalRelations);
         $qb->andWhere($qb->expr()->in("entity.{$idPropertyName}", ':ids'))
             ->setParameter(':ids', $ids);
         $items = $qb->getQuery()->getArrayResult();
