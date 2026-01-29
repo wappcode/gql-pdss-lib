@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace GPDCore\Utilities;
 
-class IPUtilities
+class ClientIPUtilities
 {
     /**
      * Recupera la ip del cliente.
