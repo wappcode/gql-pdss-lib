@@ -87,12 +87,12 @@ class GPDApp
 
         $this->applyProductionMode();
         $this->context = $this->createContext();
-        $this->registerModules();
         $this->context = $this->context->withContextAttribute(GPDApp::class, $this);
-        $this->request = $request->withAttribute(AppContextInterface::class, $this->context);
-        $this->request = $request->withAttribute(GPDApp::class, $this);
+        $this->registerModules();
         // Ejecuta la cola de middlewares FrameworkHandler y ese a su vez ejecuta $app->dispatch() de la aplicación
         $response = $this->middlewareQueue->handle($this->request);
+        $this->request = $request->withAttribute(AppContextInterface::class, $this->context);
+        $this->request = $request->withAttribute(GPDApp::class, $this);
         return $response;
     }
     public function dispatch(): ResponseInterface
