@@ -6,7 +6,7 @@ namespace GPDCore\Services;
 
 use Exception;
 use GPDCore\Contracts\AppContextInterface;
-use GPDCore\Graphql\DefaultArrayResolver;
+use GPDCore\Graphql\ArrayFieldResolverFactory;
 use GPDCore\Core\GPDApp;
 use GPDCore\Exceptions\GQLFormattedError;
 use GraphQL\Error\DebugFlag;
@@ -96,7 +96,7 @@ class GraphQLServer
         $this->configureSecurityRules($productionMode);
 
         try {
-            $fieldResolver = DefaultArrayResolver::createResolver($resolverManager);
+            $fieldResolver = ArrayFieldResolverFactory::create($resolverManager);
             $result = GraphQL::executeQuery(
                 $schema,
                 $queryString,

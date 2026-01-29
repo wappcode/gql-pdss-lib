@@ -49,7 +49,7 @@ Componentes específicos para GraphQL:
 - **AbstractCustomTypeFactory.php** - Fábrica base para tipos personalizados
 - **RelayConnectionBuilder.php** - Constructor de conexiones paginadas siguiendo estándar Relay de GraphQL
 - **ConnectionTypeFactory.php** - Fábrica para tipos de conexión
-- **DefaultArrayResolver.php** - Resolver por defecto para arrays
+- **ArrayFieldResolverFactory.php** - Factory para crear resolvers de campos sobre arrays
 - **DefaultDoctrineFieldResolver.php** - Resolver por defecto para campos Doctrine
 - **FieldResolveFactory.php** - (Deprecado: Fusionado con ResolverFactory.php)
 - **GraphqlSchemaUtilities.php** - Utilidades para schemas GraphQL
