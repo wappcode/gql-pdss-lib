@@ -38,111 +38,121 @@ Crear la siguiente estructura de directorios
     modules
         AppModule
             config
+                module.config.php
+                schema.graphql (opcional)
             src
+                AppModule.php
                 Entities
                 Graphql
+                    Resolvers*.php (opcional, para organizar resolvers)
                 Services
 
-Crear archivo modules/AppModule/src/Services/AppRouter.php con el siguiente contenido
+Crear archivo modules/AppModule/config/module.config.php
 
-    <?php
-
-    namespace AppModule\Services;
-
-    use GPDCore\Library\RouteModel;
-    use GPDCore\Library\AbstractRouter;
-    use GPDCore\Controllers\GraphqlController;
-
-        class AppRouter extends AbstractRouter
-        {
-
-
-            protected function addRoutes()
-            {
-                $GraphqlMethod = $this->isProductionMode ? 'POST' : ['POST','GET'];
-
-                // Agrega las entradas para consultas graphql
-                $this->addRoute(new RouteModel($GraphqlMethod, '/api', GraphqlController::class));
-
-                // Las demás rutas deben ir abajo para poder utilizar la configuración de los módulos y sus servicios
-
-                // entrada dominio principal
-
-                // ... otras rutas
-            }
-
-        }
-
-Agregar el archivo modules/AppModule/config/module.config.php
-
-    <?php
-
-    return [];
+```php
+<?php
+return [
+    // Configuración específica del módulo
+];
+```
 
 Agregar el archivo modules/AppModule/src/AppModule.php
 
-    <?php
+```php
+<?php
 
-    namespace AppModule;
+namespace AppModule;
 
-    use GPDCore\Library\AbstractModule;
-    use GraphQL\Type\Definition\Type;
+use GPDCore\Core\AbstractModule;
+use GPDCore\Graphql\ResolverFactory;
+use GPDCore\Contracts\AppContextInterface;
 
-    class AppModule extends AbstractModule {
-
-        /**
-        * Array con la configuración del módulo
-        *
-        * @return array
-        */
-        function getConfig(): array {
-            return require(__DIR__.'/../config/module.config.php');
-        }
-        function getServicesAndGQLTypes(): array
-        {
-            return [
-                'invokables' => [],
-                'factories'=> [],
-                'aliases' => []
-            ];
-        }
-        /**
-        * Array con los resolvers del módulo
-        *
-        * @return array array(string $key => callable $resolver)
-        */
-        function getResolvers(): array {
-            return [];
-        }
-        /**
-        * Array con los graphql Queries del módulo
-        *
-        * @return array
-        */
-        function getQueryFields(): array {
-            return [
-                'echo' =>  [
-                    'type' => Type::nonNull(Type::string()),
-                    'args' => [
-                        'message' => Type::nonNull(Type::string())
-                    ],
-
-                    'resolve' => function($root, $args) { return $args["message"];}
-                ],
-            ];
-        }
-        /**
-        * Array con los graphql mutations del módulo
-        *
-        * @return array
-        */
-        function getMutationFields(): array {
-            return [];
-        }
-
-
-
+class AppModule extends AbstractModule
+{
+    /**
+     * Array con la configuración del módulo.
+     */
+    public function getConfig(): array
+    {
+        return require __DIR__ . '/../config/module.config.php';
     }
+
+    /**
+     * Schema GraphQL del módulo 
+     */
+    public function getSchema(): string
+    {
+        $schema = @file_get_contents(__DIR__ . '/../config/schema.graphql');
+        return $schema ?: '';
+    }
+
+    /**
+     * Servicios del módulo para ServiceManager.
+     */
+    public function getServices(): array
+    {
+        return [
+            'invokables' => [],
+            'factories' => [],
+            'aliases' => []
+        ];
+    }
+
+    /**
+     * Tipos GraphQL personalizados del módulo.
+     */
+    public function getTypes(): array
+    {
+        return [];
+    }
+
+    /**
+     * Middlewares HTTP del módulo.
+     */
+    public function getMiddlewares(): array
+    {
+        return [];
+    }
+
+    /**
+     * Resolvers GraphQL del módulo.
+     * 
+     * @return array array(string $key => callable $resolver)
+     */
+    public function getResolvers(): array
+    {
+        return [
+            // Ejemplo de resolver simple
+            'Query::echo' => fn($root, $args, AppContextInterface $context, $info) => $args['message'],
+            
+            // Ejemplo usando ResolverFactory para CRUD
+            // 'Query::getUsers' => ResolverFactory::forConnection(User::class),
+            // 'Query::getUser' => ResolverFactory::forItem(User::class),
+            // 'Mutation::createUser' => ResolverFactory::forCreate(User::class),
+            // 'Mutation::updateUser' => ResolverFactory::forUpdate(User::class),
+            // 'Mutation::deleteUser' => ResolverFactory::forDelete(User::class),
+        ];
+    }
+
+    /**
+     * Campos Query definidos programáticamente (opcional).
+     * Nota: Preferible usar schema.graphql + getResolvers()
+     */
+    public function getQueryFields(): array
+    {
+        return [];
+    }
+
+    /**
+     * Campos Mutation definidos programáticamente (opcional).
+     * Nota: Preferible usar schema.graphql + getResolvers()
+     */
+    public function getMutationFields(): array
+    {
+        return [];
+    }
+}
+```
 
 Agregar al archivo composer.json el siguiente código
 
@@ -154,41 +164,74 @@ Agregar al archivo composer.json el siguiente código
 
 Ejecutar ./composer.phar dump-autoload -o
 
-Crear un archivo para sobreescribir la configuración de los módulos
+Crear un archivo de configuración maestro
 
 ```
-config/local.config.php
+config/master.config.php
 ```
 
-```
+```php
 <?php
-return [];
+return [
+    // Configuración general de la aplicación
+];
+```
+
+Crear un archivo para configuración local (no versionado)
+
+```
+config/local.config.php (opcional)
+```
+
+```php
+<?php
+return [
+    // Configuración local que sobreescribe master.config.php
+];
 ```
 
 Crear un archivo public/index.php con el siguiente contenido
 
-```
+```php
 <?php
 
 use AppModule\AppModule;
-use AppModule\Services\AppRouter;
-use GPDCore\Library\GPDApp;
-use GPDCore\Services\ContextService;
+use GPDCore\Factory\EntityManagerFactory;
+use GPDCore\Core\AppConfig;
+use GPDCore\Core\Application;
+use GPDCore\Contracts\AppContextInterface;
+use Laminas\Diactoros\ServerRequestFactory;
+use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
 use Laminas\ServiceManager\ServiceManager;
 
-require_once __DIR__ . "/../vendor/autoload.php";
+require_once __DIR__ . '/../vendor/autoload.php';
 
-$enviroment = getenv("APP_ENV");
+// Configuración
+$configFile = __DIR__ . '/../config/doctrine.local.php';
+$cacheDir = __DIR__ . '/../data/DoctrineORMModule';
+$enviroment = getenv('APP_ENV') ?: 'development';
+$masterConfig = require __DIR__ . '/../config/master.config.php';
+
+// Inicializar ServiceManager y Config
 $serviceManager = new ServiceManager();
-$context = new ContextService($serviceManager);
-$router = new AppRouter();
-$app = new GPDApp($context, $router, $enviroment);
-$app->addModules([
-    AppModule::class,
-]);
-$localConfig = require __DIR__."/../config/local.config.php";
-$context->getConfig()->add($localConfig);
-$app->run();
+$config = AppConfig::getInstance()->setMasterConfig($masterConfig);
+
+// Crear EntityManager
+$options = file_exists($configFile) ? require $configFile : [];
+$isDevMode = $enviroment !== AppContextInterface::ENV_PRODUCTION;
+$entityManager = EntityManagerFactory::createInstance($options, $cacheDir, $isDevMode);
+
+// Crear Request PSR-7
+$request = ServerRequestFactory::fromGlobals();
+
+// Crear y configurar Application
+$app = new Application($config, $entityManager, $enviroment);
+$app->addModule(AppModule::class);
+
+// Ejecutar aplicación y emitir respuesta
+$response = $app->run($request);
+$emitter = new SapiEmitter();
+$emitter->emit($response);
 ```
 
 Agregar archivo config/doctrine.entities.php con el siguiente contenido
@@ -426,3 +469,117 @@ Crea un tipo Edge
         cursor: string!,
         node: ObjectType!
     }
+
+### ResolverFactory
+
+Clase que facilita la creación de resolvers para operaciones CRUD comunes con Doctrine ORM.
+
+#### Métodos principales
+
+**forConnection(string $entityClass, ?QueryModifierInterface $queryModifier = null): callable**
+
+Crea un resolver para consultas paginadas siguiendo el estándar Relay Connection.
+
+```php
+'Query::getUsers' => ResolverFactory::forConnection(User::class)
+```
+
+**forItem(string $entityClass): callable**
+
+Crea un resolver para obtener un único elemento por ID.
+
+```php
+'Query::getUser' => ResolverFactory::forItem(User::class)
+```
+
+**forCreate(string $entityClass): callable**
+
+Crea un resolver para operaciones de creación.
+
+```php
+'Mutation::createUser' => ResolverFactory::forCreate(User::class)
+```
+
+**forUpdate(string $entityClass): callable**
+
+Crea un resolver para operaciones de actualización.
+
+```php
+'Mutation::updateUser' => ResolverFactory::forUpdate(User::class)
+```
+
+**forDelete(string $entityClass): callable**
+
+Crea un resolver para operaciones de eliminación.
+
+```php
+'Mutation::deleteUser' => ResolverFactory::forDelete(User::class)
+```
+
+**forEntity(DataLoaderInterface $dataLoader, string $fieldName): callable**
+
+Crea un resolver para relaciones many-to-one usando DataLoader (prevención N+1).
+
+```php
+$buffer = new EntityDataLoader(User::class, $entityManager);
+'Post::author' => ResolverFactory::forEntity($buffer, 'author')
+```
+
+**forCollection(string $entityClass, string $fieldName, string $targetEntity, ?QueryModifierInterface $queryModifier = null): callable**
+
+Crea un resolver para relaciones one-to-many usando DataLoader.
+
+```php
+'User::posts' => ResolverFactory::forCollection(User::class, 'posts', Post::class)
+```
+
+### ResolverMiddleware
+
+Permite aplicar middleware a resolvers GraphQL para agregar lógica transversal (autenticación, logging, etc.).
+
+#### Métodos
+
+**wrap(callable $resolver, ResolverMiddlewareInterface|callable|null $middleware): callable**
+
+Envuelve un resolver con un middleware.
+
+```php
+$authMiddleware = fn($next) => fn($root, $args, $context, $info) => {
+    if (!$context->isAuthenticated()) {
+        throw new UnauthorizedException();
+    }
+    return $next($root, $args, $context, $info);
+};
+
+'Query::protected' => ResolverMiddleware::wrap($resolver, $authMiddleware)
+```
+
+**chain(callable $resolver, array $middlewares): callable**
+
+Aplica múltiples middlewares en secuencia.
+
+```php
+'Query::echo' => ResolverMiddleware::chain($echoResolver, [
+    $authMiddleware,
+    $loggingMiddleware,
+    $cachingMiddleware
+])
+```
+
+### MiddlewareCallable
+
+Clase para crear middlewares reutilizables que implementan `ResolverMiddlewareInterface`.
+
+```php
+use GPDCore\Graphql\MiddlewareCallable;
+
+$authMiddleware = MiddlewareCallable::create(function(callable $next) {
+    return function($root, $args, $context, $info) use ($next) {
+        // Lógica antes
+        $result = $next($root, $args, $context, $info);
+        // Lógica después
+        return $result;
+    };
+});
+```
+
