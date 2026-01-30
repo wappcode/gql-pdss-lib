@@ -41,7 +41,7 @@ Contiene las clases principales del framework y la lógica central:
 - **SchemaManager.php** - Gestor de schemas GraphQL
 - **TypesManager.php** - Gestor de tipos GraphQL
 
-### 🔷 Graphql/ (8 archivos)
+### 🔷 Graphql/ (9 archivos)
 **Namespace:** `GPDCore\Graphql`
 
 Componentes específicos para GraphQL:
@@ -53,6 +53,7 @@ Componentes específicos para GraphQL:
 - **DefaultDoctrineFieldResolver.php** - Resolver por defecto para campos Doctrine
 - **FieldResolveFactory.php** - (Deprecado: Fusionado con ResolverFactory.php)
 - **GraphqlSchemaUtilities.php** - Utilidades para schemas GraphQL
+- **MiddlewareCallable.php** - Middleware callable reutilizable para resolvers
 - **ResolverFactory.php** - Fábrica para resolvers
 - **ResolverMiddleware.php** - Middleware para envolver resolvers con lógica adicional
 
