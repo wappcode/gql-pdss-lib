@@ -6,7 +6,7 @@ namespace GPDCore\DataLoaders;
 
 use GPDCore\Contracts\AppContextInterface;
 use GPDCore\Contracts\QueryModifierInterface;
-use GPDCore\Doctrine\EntityUtilities;
+use GPDCore\Doctrine\EntityMetadataHelper;
 use GraphQL\Type\Definition\ResolveInfo;
 
 /**
@@ -83,7 +83,7 @@ class CollectionCountDataLoader
 
         $this->processedIds = array_merge($this->processedIds, $ids);
         $entityManager = $context->getEntityManager();
-        $idPropertyName = EntityUtilities::getFirstIdentifier($entityManager, $this->class);
+        $idPropertyName = EntityMetadataHelper::getIdFieldName($entityManager, $this->class);
 
         $qb = $entityManager->createQueryBuilder()
             ->from($this->class, 'entity')

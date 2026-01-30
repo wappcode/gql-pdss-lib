@@ -31,7 +31,7 @@ class EntityHydrator
     public static function hydrate(EntityManager $entityManager, object $entity, array $data): object
     {
         $reflectionClass = new ReflectionClass($entity);
-        $collectionAssociations = EntityUtilities::getCollections($entityManager, get_class($entity));
+        $collectionAssociations = EntityMetadataHelper::getCollectionAssociations($entityManager, get_class($entity));
 
         foreach ($data as $propertyName => $value) {
             $collectionAssociation = $collectionAssociations[$propertyName] ?? null;

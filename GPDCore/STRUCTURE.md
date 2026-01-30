@@ -71,7 +71,7 @@ Utilidades y componentes relacionados con Doctrine ORM:
 - **EntityHydrator.php** - Hydrator para poblar entidades con datos de arrays
 - **DoctrineSQLLogger.php** - Logger para consultas SQL
 - **EntityAssociation.php** - Gestión de asociaciones de entidades
-- **EntityUtilities.php** - Utilidades generales para entidades
+- **EntityMetadataHelper.php** - Helper para metadata e información de entidades
 - **QueryBuilderHelper.php** - Helper para QueryBuilder y manejo de asociaciones de Doctrine
 - **ProxyUtilities.php** - Utilidades para proxies de Doctrine
 - **QueryModifier.php** - Modificador callable para personalizar queries
@@ -120,7 +120,7 @@ use GPDCore\Library\GQLException;
 ```php
 use GPDCore\Core\AppConfig;
 use GPDCore\Core\GPDApp;
-use GPDCore\Doctrine\EntityUtilities;
+use GPDCore\Doctrine\EntityMetadataHelper;
 use GPDCore\Exceptions\GQLException;
 ```
 

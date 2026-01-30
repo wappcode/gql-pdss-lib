@@ -9,7 +9,7 @@ use GPDCore\DataLoaders\CollectionCountDataLoader;
 use GPDCore\DataLoaders\CollectionDataLoader;
 use GPDCore\DataLoaders\EntityDataLoader;
 use GPDCore\Doctrine\EntityHydrator;
-use GPDCore\Doctrine\EntityUtilities;
+use GPDCore\Doctrine\EntityMetadataHelper;
 use GPDCore\Contracts\QueryModifierInterface;
 use GPDCore\Doctrine\QueryBuilderHelper;
 use GPDCore\Exceptions\DuplicateKeyException;
@@ -40,7 +40,7 @@ class ResolverFactory
         return function ($source, array $args, $context, ResolveInfo $info) use ($buffer, $property) {
             $entityManager = $context->getEntityManager();
             $className = $buffer->getClass();
-            $idPropertyName = EntityUtilities::getFirstIdentifier($entityManager, $className);
+            $idPropertyName = EntityMetadataHelper::getIdFieldName($entityManager, $className);
             $id = $source[$property][$idPropertyName] ?? '0';
             $buffer->add($id);
 
@@ -69,7 +69,7 @@ class ResolverFactory
 
         return function ($source, $args, AppContextInterface $context, $info) use ($buffer, $mainClass) {
             $entityManager = $context->getEntityManager();
-            $idPropertyName = EntityUtilities::getFirstIdentifier($entityManager, $mainClass);
+            $idPropertyName = EntityMetadataHelper::getIdFieldName($entityManager, $mainClass);
             $id = $source[$idPropertyName] ?? '0';
             $buffer->add($id);
 
@@ -103,7 +103,7 @@ class ResolverFactory
 
         return function ($source, $args, AppContextInterface $context, $info) use ($buffer, $mainClass) {
             $entityManager = $context->getEntityManager();
-            $idPropertyName = EntityUtilities::getFirstIdentifier($entityManager, $mainClass);
+            $idPropertyName = EntityMetadataHelper::getIdFieldName($entityManager, $mainClass);
             $id = $source[$idPropertyName] ?? '0';
             $buffer->add($id);
 
@@ -139,15 +139,15 @@ class ResolverFactory
             $sorting = $args['input']['sorts'] ?? [];
 
             $entityManager = $context->getEntityManager();
-            $relations = EntityUtilities::getColumnAssociations($entityManager, $class);
+            $relations = EntityMetadataHelper::getJoinColumnAssociations($entityManager, $class);
             $qb = $entityManager->createQueryBuilder()->from($class, 'entity')->select('entity');
             $qb = QueryJoins::addJoins($qb, $joins); // se agregan primero los joins para que puedan ser utilizados por filters y orderby
             $qb = QueryFilter::addFilters($qb, $filters);
             $qb = QuerySort::addOrderBy($qb, $sorting);
             $qb = QueryBuilderHelper::withAssociations($entityManager, $qb, $class);
-            
+
             if ($queryDecorator !== null) {
-                $qb = is_callable($queryDecorator) 
+                $qb = is_callable($queryDecorator)
                     ? $queryDecorator($qb, $root, $args, $context, $info)
                     : $qb;
             }
@@ -179,7 +179,7 @@ class ResolverFactory
                 $qb->setMaxResults($limit);
             }
             $qb = QueryBuilderHelper::withAssociations($entityManager, $qb, $class);
-            
+
             if ($queryDecorator !== null) {
                 $qb = is_callable($queryDecorator)
                     ? $queryDecorator($qb, $root, $args, $context, $info)
@@ -201,13 +201,13 @@ class ResolverFactory
         return function ($root, array $args, AppContextInterface $context, ResolveInfo $info) use ($class, $queryDecorator) {
             $entityManager = $context->getEntityManager();
             $qb = $entityManager->createQueryBuilder()->from($class, 'entity')->select('entity');
-            $idPropertyName = EntityUtilities::getFirstIdentifier($entityManager, $class);
+            $idPropertyName = EntityMetadataHelper::getIdFieldName($entityManager, $class);
             $id = $args['id'];
             $alias = $qb->getRootAliases()[0];
             $qb->andWhere("{$alias}.{$idPropertyName} = :id")
                 ->setParameter(':id', $id);
             $qb = QueryBuilderHelper::withAssociations($entityManager, $qb, $class);
-            
+
             if ($queryDecorator !== null) {
                 $qb = is_callable($queryDecorator)
                     ? $queryDecorator($qb, $root, $args, $context, $info)
@@ -225,7 +225,7 @@ class ResolverFactory
     {
         return function ($root, array $args, AppContextInterface $context, ResolveInfo $info) use ($class) {
             $entityManager = $context->getEntityManager();
-            $relations = EntityUtilities::getColumnAssociations($entityManager, $class);
+            $relations = EntityMetadataHelper::getJoinColumnAssociations($entityManager, $class);
             $entity = new $class();
             $input = $args['input'];
             EntityHydrator::hydrate($entityManager, $entity, $input); // carga los valores del array a la entidad
@@ -235,7 +235,7 @@ class ResolverFactory
                 $entityManager->persist($entity);
                 $entityManager->flush();
                 $entityManager->commit();
-                $id = EntityUtilities::getFirstIdentifierValue($entityManager, $entity);
+                $id = EntityMetadataHelper::extractEntityId($entityManager, $entity);
                 $result = QueryBuilderHelper::fetchById($entityManager, $class, $id, $relations);
 
                 return $result;
@@ -253,7 +253,7 @@ class ResolverFactory
     {
         return function ($root, array $args, AppContextInterface $context, ResolveInfo $info) use ($class) {
             $entityManager = $context->getEntityManager();
-            $relations = EntityUtilities::getColumnAssociations($entityManager, $class);
+            $relations = EntityMetadataHelper::getJoinColumnAssociations($entityManager, $class);
             $id = $args['id'];
             $input = $args['input'];
             $entity = $entityManager->getRepository($class)->find($id);
@@ -272,7 +272,7 @@ class ResolverFactory
                 $entityManager->persist($entity);
                 $entityManager->flush();
                 $entityManager->commit();
-                $id = EntityUtilities::getFirstIdentifierValue($entityManager, $entity);
+                $id = EntityMetadataHelper::extractEntityId($entityManager, $entity);
                 $result = QueryBuilderHelper::fetchById($entityManager, $class, $id, $relations);
 
                 return $result;

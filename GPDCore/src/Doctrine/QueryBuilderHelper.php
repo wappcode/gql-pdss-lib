@@ -32,7 +32,7 @@ class QueryBuilderHelper
     {
         $qbCopy = clone $qb;
         $rootAlias = $alias ?? $qbCopy->getRootAliases()[0];
-        $associations = EntityUtilities::getColumnAssociations($entityManager, $className);
+        $associations = EntityMetadataHelper::getJoinColumnAssociations($entityManager, $className);
 
         $aliases = $qbCopy->getAllAliases();
 
@@ -73,7 +73,7 @@ class QueryBuilderHelper
             throw new InvalidIdException();
         }
 
-        $idPropertyName = EntityUtilities::getFirstIdentifier($entityManager, $class);
+        $idPropertyName = EntityMetadataHelper::getIdFieldName($entityManager, $class);
         $qb = $entityManager->createQueryBuilder()->from($class, 'entity')
             ->andWhere("entity.{$idPropertyName} = :id")
             ->setParameter(':id', $id)
