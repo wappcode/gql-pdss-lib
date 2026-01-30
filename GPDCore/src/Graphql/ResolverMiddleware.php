@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace GPDCore\Graphql;
 
-use GPDCore\Contracts\MiddlewareInterface;
+use GPDCore\Contracts\ResolverMiddlewareInterface;
 use InvalidArgumentException;
 
 /**
@@ -18,11 +18,11 @@ class ResolverMiddleware
     /**
      * Envuelve un resolver con un middleware.
      * 
-     * Un middleware es un callable o MiddlewareInterface que recibe el resolver original
+     * Un middleware es un callable o ResolverMiddlewareInterface que recibe el resolver original
      * y retorna uno nuevo que puede ejecutar lógica antes/después del resolver original.
      *
      * @param callable $resolver Resolver original
-     * @param MiddlewareInterface|callable|null $middleware Middleware que envuelve al resolver
+     * @param ResolverMiddlewareInterface|callable|null $middleware Middleware que envuelve al resolver
      * @return callable Resolver con middleware aplicado, o el original si middleware es null
      * 
      * @example
@@ -36,7 +36,7 @@ class ResolverMiddleware
      * };
      * $wrapped = ResolverMiddleware::wrap($originalResolver, $middleware);
      */
-    public static function wrap(callable $resolver, MiddlewareInterface|callable|null $middleware): callable
+    public static function wrap(callable $resolver, ResolverMiddlewareInterface|callable|null $middleware): callable
     {
         if ($middleware === null) {
             return $resolver;
@@ -52,9 +52,9 @@ class ResolverMiddleware
      * el primer middleware en el array sea el más externo en la cadena de ejecución.
      *
      * @param callable $resolver Resolver original
-     * @param array<MiddlewareInterface|callable> $middlewares Array de middlewares
+     * @param array<ResolverMiddlewareInterface|callable> $middlewares Array de middlewares
      * @return callable Resolver con todos los middlewares encadenados
-     * @throws InvalidArgumentException Si algún elemento del array no es callable ni MiddlewareInterface
+     * @throws InvalidArgumentException Si algún elemento del array no es callable ni ResolverMiddlewareInterface
      * 
      * @example
      * $resolver = ResolverMiddleware::chain($original, [
@@ -65,11 +65,11 @@ class ResolverMiddleware
      */
     public static function chain(callable $resolver, array $middlewares): callable
     {
-        // Validar que todos los elementos sean callables o MiddlewareInterface
+        // Validar que todos los elementos sean callables o ResolverMiddlewareInterface
         foreach ($middlewares as $index => $middleware) {
-            if (!is_callable($middleware) && !($middleware instanceof MiddlewareInterface)) {
+            if (!is_callable($middleware) && !($middleware instanceof ResolverMiddlewareInterface)) {
                 throw new InvalidArgumentException(
-                    "Middleware at index {$index} must be callable or implement MiddlewareInterface"
+                    "Middleware at index {$index} must be callable or implement ResolverMiddlewareInterface"
                 );
             }
         }

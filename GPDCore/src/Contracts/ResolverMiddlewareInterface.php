@@ -13,7 +13,7 @@ namespace GPDCore\Contracts;
  * Los middlewares deben ser invocables y recibir un resolver para retornar
  * otro resolver que incluya la lógica adicional.
  */
-interface MiddlewareInterface
+interface ResolverMiddlewareInterface
 {
     /**
      * Aplica el middleware al resolver proporcionado.

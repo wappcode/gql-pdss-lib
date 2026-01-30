@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace GPDCore\Graphql;
 
 use GPDCore\Contracts\AppContextInterface;
-use GPDCore\Contracts\MiddlewareInterface;
+use GPDCore\Contracts\ResolverMiddlewareInterface;
 use GraphQL\Type\Definition\ResolveInfo;
 
 /**
@@ -20,7 +20,7 @@ use GraphQL\Type\Definition\ResolveInfo;
  * Útil para aplicar lógica transversal como autenticación, autorización, logging,
  * validación, transformación de datos, etc.
  */
-class MiddlewareCallable implements MiddlewareInterface
+class MiddlewareCallable implements ResolverMiddlewareInterface
 {
     /**
      * Función middleware que envuelve el resolver.
