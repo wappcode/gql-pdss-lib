@@ -54,6 +54,7 @@ Componentes específicos para GraphQL:
 - **FieldResolveFactory.php** - (Deprecado: Fusionado con ResolverFactory.php)
 - **GraphqlSchemaUtilities.php** - Utilidades para schemas GraphQL
 - **ResolverFactory.php** - Fábrica para resolvers
+- **ResolverMiddleware.php** - Middleware para envolver resolvers con lógica adicional
 
 ### � DataLoaders/ (2 archivos)
 **Namespace:** `GPDCore\DataLoaders`
@@ -63,7 +64,7 @@ Implementación del patrón DataLoader de GraphQL para prevención N+1:
 - **EntityDataLoader.php** - DataLoader para entidades (previene consultas N+1)
 - **CollectionDataLoader.php** - DataLoader para colecciones relacionadas
 
-### 💾 Doctrine/ (7 archivos)
+### 💾 Doctrine/ (6 archivos)
 **Namespace:** `GPDCore\Doctrine`
 
 Utilidades y componentes relacionados con Doctrine ORM:
@@ -73,7 +74,6 @@ Utilidades y componentes relacionados con Doctrine ORM:
 - **EntityAssociation.php** - Gestión de asociaciones de entidades
 - **EntityMetadataHelper.php** - Helper para metadata e información de entidades
 - **QueryBuilderHelper.php** - Helper para QueryBuilder y manejo de asociaciones de Doctrine
-- **ProxyUtilities.php** - Utilidades para proxies de Doctrine
 - **QueryModifier.php** - Modificador callable para personalizar queries
 
 ### 🛣️ Routing/ (3 archivos)

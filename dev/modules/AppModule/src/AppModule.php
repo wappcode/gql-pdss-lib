@@ -12,7 +12,7 @@ use GPDCore\Graphql\ResolverFactory;
 use GPDCore\Core\AbstractModule;
 use GPDCore\Contracts\AppContextInterface;
 use GPDCore\Library\IContextService;
-use GPDCore\Doctrine\ProxyUtilities;
+use GPDCore\Graphql\ResolverMiddleware;
 
 class AppModule extends AbstractModule
 {
@@ -69,8 +69,8 @@ class AppModule extends AbstractModule
             'Post::comments' => ResolversPost::getCommentsResolver(),
             'Comment::post' => ResolversComment::getPostResolver(),
             'Query::echo' => $echoResolve,
-            'Query::echoProxy' => ProxyUtilities::apply($echoResolve, $proxyEcho1),
-            'Query::echoProxies' => ProxyUtilities::applyAll($echoResolve, [$proxyEcho1, $proxyEcho2]),
+            'Query::echoProxy' => ResolverMiddleware::wrap($echoResolve, $proxyEcho1),
+            'Query::echoProxies' => ResolverMiddleware::chain($echoResolve, [$proxyEcho1, $proxyEcho2]),
             'Query::getUsers' => ResolverFactory::forConnection(User::class),
             'Query::getUser' => ResolverFactory::forItem(User::class),
             'Mutation::createUser' => ResolverFactory::forCreate(User::class),
