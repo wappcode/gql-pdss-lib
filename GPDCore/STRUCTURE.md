@@ -6,7 +6,7 @@ Este documento describe la organización del código en el directorio `GPDCore/s
 
 A partir de la versión actual, todos los archivos que anteriormente estaban en `Library/` han sido reorganizados en carpetas temáticas para mejorar la mantenibilidad y claridad del código.
 
-### 📋 Contracts/ (14 archivos)
+### 📋 Contracts/ (15 archivos)
 **Namespace:** `GPDCore\Contracts`
 
 Contiene todas las interfaces del sistema que definen contratos entre componentes:
@@ -17,6 +17,7 @@ Contiene todas las interfaces del sistema que definen contratos entre componente
 - **ConfigProviderInterface.php** - Proveedores de configuración
 - **IErrorManager.php** - Gestión de errores
 - **IGQLException.php** - Excepciones GraphQL
+- **MiddlewareInterface.php** - Contrato para middlewares de resolvers GraphQL
 - **MiddlewareProviderInterface.php** - Proveedores de middleware
 - **MiddlewareQueueInterface.php** - Cola de middlewares
 - **ModuleProviderInterface.php** - Proveedores de módulos
