@@ -13,14 +13,14 @@ class ResolversPost
     {
         $buffer = BufferUser::getInstance();
 
-        $resolver = ResolverFactory::createEntityResolver($buffer, 'author');
+        $resolver = ResolverFactory::forEntity($buffer, 'author');
 
         return is_callable($proxy) ? $proxy($resolver) : $resolver;
     }
 
     public static function getCommentsResolver(?callable $proxy = null, ?QueryDecorator $queryDecorator = null): callable
     {
-        $resolver = ResolverFactory::createCollectionResolver(Post::class, 'comments', Comment::class, $queryDecorator);
+        $resolver = ResolverFactory::forCollection(Post::class, 'comments', Comment::class, $queryDecorator);
 
         return is_callable($proxy) ? $proxy($resolver) : $resolver;
     }

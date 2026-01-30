@@ -11,7 +11,7 @@ class ResolversAccount
 {
     public static function getUsersResolver(?callable $proxy = null, ?QueryModifierInterface $queryDecorator = null): callable
     {
-        $resolver = ResolverFactory::createCollectionResolver(Account::class, 'users',  User::class, $queryDecorator);
+        $resolver = ResolverFactory::forCollection(Account::class, 'users', User::class, $queryDecorator);
 
         return is_callable($proxy) ? $proxy($resolver) : $resolver;
     }

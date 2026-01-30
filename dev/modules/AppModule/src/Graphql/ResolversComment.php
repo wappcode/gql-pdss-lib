@@ -10,7 +10,7 @@ class ResolversComment
     {
         $buffer = BufferPost::getInstance();
 
-        $resolver = ResolverFactory::createEntityResolver($buffer, 'post');
+        $resolver = ResolverFactory::forEntity($buffer, 'post');
 
         return is_callable($proxy) ? $proxy($resolver) : $resolver;
     }
