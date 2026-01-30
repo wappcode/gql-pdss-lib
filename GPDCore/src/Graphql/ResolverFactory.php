@@ -82,6 +82,15 @@ class ResolverFactory
     }
 
     /**
+     * Crea un resolver de colección con soporte para conexiones paginadas.
+     * 
+     * Combina el patrón DataLoader para prevención N+1 con conexiones paginadas tipo Relay.
+     * Permite filtrado, ordenamiento y paginación de colecciones relacionadas.
+     * 
+     * IMPORTANTE: asignar el valor de joinClass agrega los datos de las asociaciones de la entidad relacionada.
+     *
+     * @param string $mainClass Clase de la entidad principal
+     * @param string $property Nombre de la propiedad que contiene la relación
      * Crea un resolver tipo query connection
      * $queryDecorator es una funcion que modifica el query acepta como parámetro un QueryBuilder y retorna una copia modificada function(QueryBuilder $qb);.
      *

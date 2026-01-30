@@ -31,7 +31,7 @@ class CollectionDataLoader
     /** @var array<int|string> */
     protected array $processedIds = [];
 
-    protected ?string $joinClass;
+    public readonly ?string $joinClass;
 
     protected ?QueryModifierInterface $queryDecorator;
 
