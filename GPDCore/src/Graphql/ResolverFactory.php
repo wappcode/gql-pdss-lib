@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace GPDCore\Graphql;
 
 use GPDCore\Contracts\AppContextInterface;
+use GPDCore\DataLoaders\CollectionCountDataLoader;
 use GPDCore\DataLoaders\CollectionDataLoader;
 use GPDCore\DataLoaders\EntityDataLoader;
 use GPDCore\Doctrine\ArrayToEntity;
@@ -63,6 +64,40 @@ class ResolverFactory
         $key = sprintf('%s::%s', $mainClass, $property);
         if (!isset(static::$buffers[$key])) {
             static::$buffers[$key] = new CollectionDataLoader($mainClass, $property, $joinClass);
+        }
+        $buffer = static::$buffers[$key];
+
+        return function ($source, $args, AppContextInterface $context, $info) use ($buffer, $mainClass) {
+            $entityManager = $context->getEntityManager();
+            $idPropertyName = EntityUtilities::getFirstIdentifier($entityManager, $mainClass);
+            $id = $source[$idPropertyName] ?? '0';
+            $buffer->add($id);
+
+            return new Deferred(function () use ($id, $source, $args, $context, $info, $buffer) {
+                $buffer->loadBuffered($source, $args, $context, $info);
+                $result = $buffer->get($id);
+
+                return $result;
+            });
+        };
+    }
+
+    /**
+     * Crea un collection count resolver que retorna el número de elementos en la colección.
+     * 
+     * Utiliza el patrón DataLoader para evitar N+1 queries al contar elementos.
+     * Solo retorna el conteo, no los elementos de la colección.
+     *
+     * @param string $mainClass Clase de la entidad principal
+     * @param string $property Nombre de la propiedad que contiene la relación
+     * @param QueryModifierInterface|null $queryDecorator Modificador para personalizar el query
+     * @return callable Resolver que retorna un entero con el conteo
+     */
+    public static function forCollectionCount(string $mainClass, string $property, ?QueryModifierInterface $queryDecorator = null): callable
+    {
+        $key = sprintf('%s::%s::count', $mainClass, $property);
+        if (!isset(static::$buffers[$key])) {
+            static::$buffers[$key] = new CollectionCountDataLoader($mainClass, $property, $queryDecorator);
         }
         $buffer = static::$buffers[$key];
 
