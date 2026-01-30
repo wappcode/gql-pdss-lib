@@ -68,7 +68,7 @@ Implementación del patrón DataLoader de GraphQL para prevención N+1:
 
 Utilidades y componentes relacionados con Doctrine ORM:
 
-- **ArrayToEntity.php** - Conversión de arrays a entidades
+- **EntityHydrator.php** - Hydrator para poblar entidades con datos de arrays
 - **DoctrineSQLLogger.php** - Logger para consultas SQL
 - **EntityAssociation.php** - Gestión de asociaciones de entidades
 - **EntityUtilities.php** - Utilidades generales para entidades

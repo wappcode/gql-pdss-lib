@@ -8,7 +8,7 @@ use GPDCore\Contracts\AppContextInterface;
 use GPDCore\DataLoaders\CollectionCountDataLoader;
 use GPDCore\DataLoaders\CollectionDataLoader;
 use GPDCore\DataLoaders\EntityDataLoader;
-use GPDCore\Doctrine\ArrayToEntity;
+use GPDCore\Doctrine\EntityHydrator;
 use GPDCore\Doctrine\EntityUtilities;
 use GPDCore\Contracts\QueryModifierInterface;
 use GPDCore\Doctrine\QueryBuilderHelper;
@@ -228,7 +228,7 @@ class ResolverFactory
             $relations = EntityUtilities::getColumnAssociations($entityManager, $class);
             $entity = new $class();
             $input = $args['input'];
-            ArrayToEntity::setValues($entityManager, $entity, $input); // carga los valores del array a la entidad
+            EntityHydrator::hydrate($entityManager, $entity, $input); // carga los valores del array a la entidad
 
             $entityManager->beginTransaction();
             try {
@@ -262,7 +262,7 @@ class ResolverFactory
                 throw new EntityNotFoundException();
             }
 
-            ArrayToEntity::setValues($entityManager, $entity, $input); // carga los valores del array a la entidad
+            EntityHydrator::hydrate($entityManager, $entity, $input); // carga los valores del array a la entidad
             if (method_exists($entity, 'setUpdated')) {
                 $entity->setUpdated();
             }
