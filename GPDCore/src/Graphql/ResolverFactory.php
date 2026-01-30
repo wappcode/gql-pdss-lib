@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace GPDCore\Graphql;
 
+use Doctrine\ORM\Query;
+use Exception;
 use GPDCore\Contracts\AppContextInterface;
+use GPDCore\Contracts\QueryModifierInterface;
 use GPDCore\DataLoaders\CollectionCountDataLoader;
 use GPDCore\DataLoaders\CollectionDataLoader;
 use GPDCore\DataLoaders\EntityDataLoader;
 use GPDCore\Doctrine\EntityHydrator;
 use GPDCore\Doctrine\EntityMetadataHelper;
-use GPDCore\Contracts\QueryModifierInterface;
 use GPDCore\Doctrine\QueryBuilderHelper;
 use GPDCore\Exceptions\DuplicateKeyException;
 use GPDCore\Exceptions\EntityNotFoundException;
 use GPDCore\Exceptions\InvalidIdException;
 use GPDCore\Exceptions\RelatedEntitiesExistException;
-use Doctrine\ORM\Query;
-use Exception;
 use GraphQL\Deferred;
 use GraphQL\Type\Definition\ResolveInfo;
 use PDSSUtilities\QueryFilter;
@@ -32,8 +32,6 @@ class ResolverFactory
      * NOTA cuando EntityDataLoader se utiliza en varias propiedades de diferentes Objetos
      * Deferred puede ser llamado con la consulta para un objeto y omitir las consultas de los demás objetos
      * Es necesario crear un EntityDataLoader para cada objeto.
-     *
-     * @return callable
      */
     public static function forEntity(EntityDataLoader $buffer, string $property): callable
     {
@@ -56,8 +54,6 @@ class ResolverFactory
     /**
      * Crea un collection resolver
      * IMPORTANTE asignar el valor de propertyRelations o joinClass no agrega los datos de las asociaciones si los dos son nulos.
-     *
-     * @return callable
      */
     public static function forCollection(string $mainClass, string $property, ?string $joinClass = null): callable
     {
@@ -84,13 +80,14 @@ class ResolverFactory
 
     /**
      * Crea un collection count resolver que retorna el número de elementos en la colección.
-     * 
+     *
      * Utiliza el patrón DataLoader para evitar N+1 queries al contar elementos.
      * Solo retorna el conteo, no los elementos de la colección.
      *
-     * @param string $mainClass Clase de la entidad principal
-     * @param string $property Nombre de la propiedad que contiene la relación
+     * @param string                      $mainClass      Clase de la entidad principal
+     * @param string                      $property       Nombre de la propiedad que contiene la relación
      * @param QueryModifierInterface|null $queryDecorator Modificador para personalizar el query
+     *
      * @return callable Resolver que retorna un entero con el conteo
      */
     public static function forCollectionCount(string $mainClass, string $property, ?QueryModifierInterface $queryDecorator = null): callable
@@ -118,16 +115,11 @@ class ResolverFactory
 
     /**
      * Crea un resolver de colección con soporte para conexiones paginadas.
-     * 
+     *
      * Combina el patrón DataLoader para prevención N+1 con conexiones paginadas tipo Relay.
      * Permite filtrado, ordenamiento y paginación de colecciones relacionadas.
-     * 
-     * IMPORTANTE: asignar el valor de joinClass agrega los datos de las asociaciones de la entidad relacionada.
      *
-     * @param string $mainClass Clase de la entidad principal
-     * @param string $property Nombre de la propiedad que contiene la relación
-     * Crea un resolver tipo query connection
-     * $queryDecorator es una funcion que modifica el query acepta como parámetro un QueryBuilder y retorna una copia modificada function(QueryBuilder $qb);.
+     * IMPORTANTE: asignar el valor de joinClass agrega los datos de las asociaciones de la entidad relacionada.
      *
      * @param callable|QueryModifierInterface|null $queryDecorator Acceso a función para modificar el query
      */
@@ -225,18 +217,18 @@ class ResolverFactory
     {
         return function ($root, array $args, AppContextInterface $context, ResolveInfo $info) use ($class) {
             $entityManager = $context->getEntityManager();
-            $relations = EntityMetadataHelper::getJoinColumnAssociations($entityManager, $class);
             $entity = new $class();
             $input = $args['input'];
             EntityHydrator::hydrate($entityManager, $entity, $input); // carga los valores del array a la entidad
 
             $entityManager->beginTransaction();
+
             try {
                 $entityManager->persist($entity);
                 $entityManager->flush();
                 $entityManager->commit();
                 $id = EntityMetadataHelper::extractEntityId($entityManager, $entity);
-                $result = QueryBuilderHelper::fetchById($entityManager, $class, $id, $relations);
+                $result = QueryBuilderHelper::fetchById($entityManager, $class, $id);
 
                 return $result;
             } catch (Exception $e) {
@@ -253,7 +245,6 @@ class ResolverFactory
     {
         return function ($root, array $args, AppContextInterface $context, ResolveInfo $info) use ($class) {
             $entityManager = $context->getEntityManager();
-            $relations = EntityMetadataHelper::getJoinColumnAssociations($entityManager, $class);
             $id = $args['id'];
             $input = $args['input'];
             $entity = $entityManager->getRepository($class)->find($id);
@@ -273,7 +264,7 @@ class ResolverFactory
                 $entityManager->flush();
                 $entityManager->commit();
                 $id = EntityMetadataHelper::extractEntityId($entityManager, $entity);
-                $result = QueryBuilderHelper::fetchById($entityManager, $class, $id, $relations);
+                $result = QueryBuilderHelper::fetchById($entityManager, $class, $id);
 
                 return $result;
             } catch (Exception $e) {
@@ -325,6 +316,7 @@ class ResolverFactory
         if (str_contains($message, 'SQLSTATE') && str_contains($message, 'Duplicate')) {
             throw new DuplicateKeyException(previous: $e);
         }
+
         throw $e;
     }
 
@@ -339,6 +331,7 @@ class ResolverFactory
         if (str_contains($message, 'SQLSTATE') && str_contains($message, 'Cannot delete or update a parent row')) {
             throw new RelatedEntitiesExistException(previous: $e);
         }
+
         throw $e;
     }
 }

@@ -1,12 +1,10 @@
 <?php
 
 use AppModule\AppModule;
-use AppModule\Services\AppRouter;
-use GPDCore\Factory\EntityManagerFactory;
+use GPDCore\Contracts\AppContextInterface;
 use GPDCore\Core\AppConfig;
 use GPDCore\Core\Application;
-use GPDCore\Core\AppContext;
-use GPDCore\Contracts\AppContextInterface;
+use GPDCore\Factory\EntityManagerFactory;
 use Laminas\Diactoros\ServerRequestFactory;
 use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
 use Laminas\ServiceManager\ServiceManager;
@@ -26,8 +24,7 @@ $app = new Application($config, $entityManager, $enviroment);
 $app->addModule(
     AppModule::class
 );
-//Poner la instancia de la app en el contexto para que los controladores y servicios puedan acceder a ella
-
+// Poner la instancia de la app en el contexto para que los controladores y servicios puedan acceder a ella
 
 $response = $app->run($request);
 $emitter = new SapiEmitter();

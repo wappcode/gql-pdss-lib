@@ -4,15 +4,13 @@ declare(strict_types=1);
 
 namespace GPDCore\Core;
 
-
+use AppModule\Services\AppRouter;
+use Doctrine\ORM\EntityManager;
+use Exception;
 use GPDCore\Contracts\AppConfigInterface;
 use GPDCore\Contracts\AppContextInterface;
 use GPDCore\Contracts\ResolverManagerInterface;
 use GPDCore\Routing\AbstractRouter;
-
-use AppModule\Services\AppRouter;
-use Doctrine\ORM\EntityManager;
-use Exception;
 use Laminas\ServiceManager\ServiceManager;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -21,29 +19,42 @@ use Psr\Http\Server\MiddlewareInterface;
 class Application
 {
     /**
-     * Modulos de la aplicación
+     * Modulos de la aplicación.
      *
      * @var array<AbstractModule>
      */
     protected array $modules = [];
+
     protected AbstractRouter $router;
+
     protected bool $started = false;
+
     protected bool $productionMode = false;
+
     protected AppConfigInterface $config;
+
     protected AppContextInterface $context;
+
     protected SchemaManager $schemaManager;
+
     protected TypesManager $typesManager;
+
     protected ResolverManagerInterface $resolverManager;
+
     protected string $enviroment;
+
     protected ?EntityManager $entityManager;
+
     /**
      * Al establecer el valor la cadena deberá iniciar con /
      * ejemplo /micarpeta/public.
-     * @var string
      */
     protected string $baseHref = '';
+
     protected ?ServiceManager $serviceManager = null;
+
     protected ?ServerRequestInterface $request = null;
+
     protected MiddlewareQueue $middlewareQueue;
 
     public function __construct(AppConfigInterface $config, ?EntityManager $entityManager, string $enviroment = 'development', string $baseHref = '')
@@ -60,10 +71,11 @@ class Application
         $this->middlewareQueue = $this->createMiddlewareQueue();
         $this->productionMode = $enviroment === AppContextInterface::ENV_PRODUCTION;
     }
+
     /**
      * El último módulo agregado debe ser el modulo de la app pricipal para que sobreescriba la configuración de los demás modulos.
      */
-    public function addModule(string | AbstractModule $module): Application
+    public function addModule(string|AbstractModule $module): Application
     {
         if ($this->started) {
             throw new Exception('Solo se puede asignar los módulos antes de que la aplicación inicie');
@@ -82,10 +94,9 @@ class Application
         if (!$this->context) {
             throw new Exception('El contexto de la aplicación no ha sido creado aún. Ejecuta el método run() de la aplicación primero.');
         }
+
         return $this->context;
     }
-
-
 
     public function run(ServerRequestInterface $request): ResponseInterface
     {
@@ -98,11 +109,14 @@ class Application
         $this->request = $request->withAttribute(AppContextInterface::class, $this->context);
         $this->request = $request->withAttribute(Application::class, $this);
         $response = $this->middlewareQueue->handle($this->request);
+
         return $response;
     }
+
     public function dispatch(): ResponseInterface
     {
         $this->started = true;
+
         return $this->router->dispatch($this->request);
     }
 
@@ -129,29 +143,30 @@ class Application
         return $this->enviroment;
     }
 
-
     public function getBaseHref(): string
     {
         return $this->baseHref;
     }
 
     /**
-     * Get the value of middlewareQueue
+     * Get the value of middlewareQueue.
      */
     protected function createMiddlewareQueue(): MiddlewareQueue
     {
         $frameworkHandler = new FrameworkHandler($this);
         $middlewareQueue = new MiddlewareQueue($frameworkHandler);
+
         return $middlewareQueue;
     }
 
     public function addMiddleware(MiddlewareInterface $middleware): Application
     {
         $this->middlewareQueue->add($middleware);
+
         return $this;
     }
 
-    protected function  createContext(): AppContextInterface
+    protected function createContext(): AppContextInterface
     {
         $context = AppContext::create(
             $this->config,
@@ -159,6 +174,7 @@ class Application
             $this->serviceManager,
             $this->enviroment
         );
+
         return $context;
     }
 
@@ -166,7 +182,6 @@ class Application
     {
         return $this->schemaManager;
     }
-
 
     public function getTypesManager(): TypesManager
     {

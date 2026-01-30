@@ -8,8 +8,8 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 final class FrameworkHandler implements RequestHandlerInterface
 {
+    private Application $app;
 
-    private  Application $app;
     public function __construct(Application $app)
     {
         $this->app = $app;

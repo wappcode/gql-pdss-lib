@@ -2,22 +2,20 @@
 
 namespace GPDCore\Routing;
 
-
 use GPDCore\Contracts\AppControllerInterface;
-
 use Laminas\Diactoros\ResponseFactory;
 use Laminas\Diactoros\StreamFactory;
-use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 abstract class AbstractAppController implements AppControllerInterface
 {
-
     protected ResponseFactory $responseFactory;
+
     protected StreamFactory $streamFactory;
 
     protected ?array $routeParams = null;
+
     public function __construct()
     {
         $this->responseFactory = new ResponseFactory();
@@ -36,9 +34,9 @@ abstract class AbstractAppController implements AppControllerInterface
 
         return $response;
     }
+
     /**
-     * Recupera un array con el payload JSON de la request
-     * @return void
+     * Recupera un array con el payload JSON de la request.
      */
     protected function getJsonPayload(ServerRequestInterface $request): ?array
     {
@@ -50,14 +48,17 @@ abstract class AbstractAppController implements AppControllerInterface
 
         return json_decode($body, true);
     }
+
     public function setRouteParams(?array $params): void
     {
         $this->routeParams = $params;
     }
+
     public function getRouteParam(string $name): mixed
     {
         return $this->routeParams[$name] ?? null;
     }
+
     public function getRouteParams(): ?array
     {
         return $this->routeParams;

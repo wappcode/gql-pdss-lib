@@ -1,7 +1,7 @@
 <?php
 
-use GPDCore\Core\AppConfig;
 use GPDCore\Contracts\AppConfigInterface;
+use GPDCore\Core\AppConfig;
 use PHPUnit\Framework\TestCase;
 
 class AppConfigTest extends TestCase
@@ -74,18 +74,18 @@ class AppConfigTest extends TestCase
                 'port' => 3306,
                 'credentials' => [
                     'username' => 'root',
-                    'password' => 'secret'
-                ]
-            ]
+                    'password' => 'secret',
+                ],
+            ],
         ];
 
         $newConfig = [
             'database' => [
                 'port' => 3307,
                 'credentials' => [
-                    'password' => 'new_secret'
-                ]
-            ]
+                    'password' => 'new_secret',
+                ],
+            ],
         ];
 
         $this->config->add($initialConfig);
@@ -116,7 +116,7 @@ class AppConfigTest extends TestCase
             'float' => 45.67,
             'bool' => true,
             'array' => [1, 2, 3],
-            'null' => null
+            'null' => null,
         ];
 
         $this->config->add($config);
@@ -150,14 +150,14 @@ class AppConfigTest extends TestCase
         $this->config->add([
             'database' => [
                 'host' => 'localhost',
-                'port' => 3306
-            ]
+                'port' => 3306,
+            ],
         ]);
 
         $this->config->setMasterConfig([
             'database' => [
-                'port' => 9999
-            ]
+                'port' => 9999,
+            ],
         ]);
 
         $this->assertEquals(9999, $this->config->get('database')['port']);
@@ -180,14 +180,14 @@ class AppConfigTest extends TestCase
         $this->config->setMasterConfig([
             'feature' => [
                 'enabled' => true,
-                'options' => ['debug' => false]
-            ]
+                'options' => ['debug' => false],
+            ],
         ]);
 
         $this->config->setMasterConfig([
             'feature' => [
-                'options' => ['verbose' => true]
-            ]
+                'options' => ['verbose' => true],
+            ],
         ]);
 
         $this->assertTrue($this->config->get('feature')['enabled']);

@@ -2,10 +2,8 @@
 
 namespace GPDCore\Exceptions;
 
-
-use GPDCore\Contracts\IGQLException;
-
 use Exception;
+use GPDCore\Contracts\IGQLException;
 use GraphQL\Error\ClientAware;
 use Throwable;
 

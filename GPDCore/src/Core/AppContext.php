@@ -2,20 +2,17 @@
 
 namespace GPDCore\Core;
 
-
+use Doctrine\ORM\EntityManager;
 use GPDCore\Contracts\AppConfigInterface;
 use GPDCore\Contracts\AppContextInterface;
-
-use Doctrine\ORM\EntityManager;
 use Laminas\ServiceManager\ServiceManager;
-use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Contexto de aplicación inmutable.
- * 
+ *
  * Provee acceso a servicios centrales de la aplicación siguiendo el patrón
  * de inmutabilidad. Los métodos `with*` retornan nuevas instancias.
- * 
+ *
  * Las instancias solo pueden ser creadas a través del método factory `create()`.
  */
 final class AppContext implements AppContextInterface
@@ -24,21 +21,18 @@ final class AppContext implements AppContextInterface
      * @param array<string, mixed> $contextAttributes
      */
     private function __construct(
-        protected readonly AppConfigInterface $config,
-        protected readonly ?EntityManager $entityManager = null,
-        protected readonly ?ServiceManager $serviceManager = null,
-        protected readonly string $enviroment = AppContextInterface::ENV_DEVELOPMENT,
-        protected array $contextAttributes = []
-    ) {}
+        private readonly AppConfigInterface $config,
+        private readonly ?EntityManager $entityManager = null,
+        private readonly ?ServiceManager $serviceManager = null,
+        private readonly string $enviroment = AppContextInterface::ENV_DEVELOPMENT,
+        private array $contextAttributes = []
+    ) {
+    }
 
     /**
      * Crea una nueva instancia de AppContext.
-     * 
-     * @param AppConfigInterface $config
-     * @param EntityManager|null $entityManager
-     * @param ServiceManager|null $serviceManager
+     *
      * @param string $enviroment Entorno de la aplicación (ej: 'production', 'development')
-     * @return self
      */
     public static function create(
         AppConfigInterface $config,
@@ -46,7 +40,7 @@ final class AppContext implements AppContextInterface
         ?ServiceManager $serviceManager = null,
         string $enviroment = AppContextInterface::ENV_DEVELOPMENT
     ): self {
-        return new self($config,  $entityManager, $serviceManager, $enviroment);
+        return new self($config, $entityManager, $serviceManager, $enviroment);
     }
 
     public function getConfig(): AppConfigInterface
@@ -63,7 +57,6 @@ final class AppContext implements AppContextInterface
     {
         return $this->serviceManager;
     }
-
 
     public function isProductionMode(): bool
     {
@@ -85,6 +78,7 @@ final class AppContext implements AppContextInterface
         $new = clone $this;
         $new->contextAttributes = $this->contextAttributes;
         $new->contextAttributes[$name] = $value;
+
         return $new;
     }
 }

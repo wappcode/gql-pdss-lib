@@ -107,7 +107,6 @@ class Post extends AbstractEntityModel
     /**
      * Set the value of comments.
      *
-     *
      * @return self
      */
     public function setComments(Collection $comments)

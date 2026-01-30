@@ -11,7 +11,7 @@ use GraphQL\Type\Definition\ResolveInfo;
 
 /**
  * DataLoader para cargar múltiples entidades de manera eficiente.
- * 
+ *
  * Acumula IDs de entidades y las carga en batch para evitar el problema N+1.
  * Implementa el patrón DataLoader de GraphQL.
  */
@@ -46,7 +46,7 @@ class EntityDataLoader
 
     /**
      * Obtiene una entidad previamente cargada del buffer.
-     * 
+     *
      * @return array|null Array con los datos de la entidad o null si no existe
      */
     public function get(int|string $id): ?array
@@ -56,7 +56,7 @@ class EntityDataLoader
 
     /**
      * Carga en batch todas las entidades pendientes del buffer.
-     * 
+     *
      * Este método carga de manera eficiente múltiples entidades en una sola consulta,
      * evitando el problema N+1. Solo carga los IDs que aún no han sido procesados.
      */

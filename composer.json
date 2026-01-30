@@ -33,13 +33,15 @@
   "require-dev": {
     "phpunit/phpunit": "^9.5",
     "wappcode/graphql-basic-client": "^1",
-    "friendsofphp/php-cs-fixer": "^3.0"
+    "friendsofphp/php-cs-fixer": "^3.0",
+    "phpoffice/phpspreadsheet": "^5.4"
   },
   "license": "MIT",
   "scripts": {
     "cs-fix": "php-cs-fixer fix",
     "cs-fix-dry": "php-cs-fixer fix --dry-run --diff",
     "cs-check": "php-cs-fixer fix --dry-run --diff --verbose",
-    "test": "phpunit --colors=always"
+    "test": "phpunit --colors=always",
+    "doctrine": "bin/doctrine"
   }
 }

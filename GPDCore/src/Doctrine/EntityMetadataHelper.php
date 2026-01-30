@@ -13,7 +13,7 @@ use RuntimeException;
 
 /**
  * Helper para trabajar con metadata de entidades Doctrine.
- * 
+ *
  * Proporciona métodos para obtener información sobre identificadores,
  * asociaciones y metadatos de entidades.
  */
@@ -23,8 +23,10 @@ class EntityMetadataHelper
      * Obtiene el nombre del campo identificador (clave primaria) de una entidad.
      *
      * @param EntityManager $entityManager Gestor de entidades
-     * @param string $className Nombre completo de la clase de la entidad
+     * @param string        $className     Nombre completo de la clase de la entidad
+     *
      * @return string Nombre del campo identificador
+     *
      * @throws RuntimeException Si la entidad no tiene identificador
      */
     public static function getIdFieldName(EntityManager $entityManager, string $className): string
@@ -42,7 +44,8 @@ class EntityMetadataHelper
      * Extrae el valor del identificador de una entidad.
      *
      * @param EntityManager $entityManager Gestor de entidades
-     * @param object $entity Instancia de la entidad
+     * @param object        $entity        Instancia de la entidad
+     *
      * @return mixed Valor del identificador o null si no se puede obtener
      */
     public static function extractEntityId(EntityManager $entityManager, object $entity): mixed
@@ -67,12 +70,13 @@ class EntityMetadataHelper
 
     /**
      * Obtiene las asociaciones con columnas de join de la entidad.
-     * 
+     *
      * Retorna solo asociaciones con una única columna de join (ManyToOne, OneToOne).
      * Las claves del array son los nombres de las propiedades relacionadas.
      *
      * @param EntityManager $entityManager Gestor de entidades
-     * @param string $className Nombre completo de la clase de la entidad
+     * @param string        $className     Nombre completo de la clase de la entidad
+     *
      * @return array<string, EntityAssociation> Array asociativo [propertyName => EntityAssociation]
      */
     public static function getJoinColumnAssociations(EntityManager $entityManager, string $className): array
@@ -83,12 +87,12 @@ class EntityMetadataHelper
         // Filtrar solo asociaciones con una columna de join
         $associations = array_filter(
             $associations,
-            fn($association) => count($association->joinColumns ?? []) === 1
+            fn ($association) => count($association->joinColumns ?? []) === 1
         );
 
         // Mapear a objetos EntityAssociation
         $associations = array_map(
-            fn($association) => self::createAssociationFromMapping($entityManager, $association),
+            fn ($association) => self::createAssociationFromMapping($entityManager, $association),
             $associations
         );
 
@@ -97,11 +101,12 @@ class EntityMetadataHelper
 
     /**
      * Obtiene las asociaciones de tipo colección de la entidad.
-     * 
+     *
      * Retorna solo asociaciones OneToMany y ManyToMany.
      *
      * @param EntityManager $entityManager Gestor de entidades
-     * @param string $className Nombre completo de la clase de la entidad
+     * @param string        $className     Nombre completo de la clase de la entidad
+     *
      * @return array<string, EntityAssociation> Array asociativo [propertyName => EntityAssociation]
      */
     public static function getCollectionAssociations(EntityManager $entityManager, string $className): array
@@ -112,13 +117,13 @@ class EntityMetadataHelper
         // Filtrar solo asociaciones de tipo colección
         $associations = array_filter(
             $associations,
-            fn($association) => $association instanceof OneToManyAssociationMapping
+            fn ($association) => $association instanceof OneToManyAssociationMapping
                 || $association instanceof ManyToManyAssociationMapping
         );
 
         // Mapear a objetos EntityAssociation
         $associations = array_map(
-            fn($association) => self::createAssociationFromMapping($entityManager, $association),
+            fn ($association) => self::createAssociationFromMapping($entityManager, $association),
             $associations
         );
 
@@ -128,9 +133,11 @@ class EntityMetadataHelper
     /**
      * Crea un objeto EntityAssociation a partir de un mapping de asociación.
      *
-     * @param EntityManager $entityManager Gestor de entidades
-     * @param object $associationMapping Mapping de la asociación de Doctrine
+     * @param EntityManager $entityManager      Gestor de entidades
+     * @param object        $associationMapping Mapping de la asociación de Doctrine
+     *
      * @return EntityAssociation Objeto con información de la asociación
+     *
      * @throws RuntimeException Si la entidad objetivo no tiene identificador
      */
     protected static function createAssociationFromMapping(

@@ -4,14 +4,11 @@ namespace GPDCore\Core;
 
 use GPDCore\Contracts\AppConfigInterface;
 
-
 /**
  * Contenedor singleton de configuración de la aplicación.
- * 
+ *
  * Maneja la configuración global accesible desde cualquier punto de la aplicación.
  * Proporciona métodos para obtener, verificar y actualizar valores de configuración.
- * 
- * @final
  */
 final class AppConfig implements AppConfigInterface
 {
@@ -19,7 +16,6 @@ final class AppConfig implements AppConfigInterface
      * @var self|null Instancia singleton
      */
     private static ?self $instance = null;
-
 
     /**
      * @var array<string, mixed> Almacenamiento de configuración
@@ -33,8 +29,6 @@ final class AppConfig implements AppConfigInterface
 
     /**
      * Obtiene la instancia única de AppConfig.
-     * 
-     * @return self
      */
     public static function getInstance(): self
     {
@@ -45,9 +39,6 @@ final class AppConfig implements AppConfigInterface
         return self::$instance;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function get(string $key, mixed $default = null): mixed
     {
         // Si la clave existe en masterConfig, mergeamos recursivamente con config
@@ -67,9 +58,6 @@ final class AppConfig implements AppConfigInterface
         return $this->config[$key] ?? $default;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function add(array $newConfig): self
     {
         $this->config = array_replace_recursive($this->config, $newConfig);
@@ -79,12 +67,11 @@ final class AppConfig implements AppConfigInterface
 
     /**
      * Establece configuración maestra que sobrescribe la configuración de módulos.
-     * 
+     *
      * Esta configuración no puede ser modificada por add() y siempre tiene precedencia
      * al obtener valores con get(). Debe establecerse al inicio de la aplicación.
-     * 
+     *
      * @param array<string, mixed> $masterConfig Configuración maestra
-     * @return self
      */
     public function setMasterConfig(array $masterConfig): self
     {
@@ -93,21 +80,26 @@ final class AppConfig implements AppConfigInterface
         return $this;
     }
 
-
     /**
      * Constructor privado para implementar patrón singleton.
-     * 
+     *
      * Se previene la instanciación desde fuera usando getInstance().
      */
-    private function __construct() {}
+    private function __construct()
+    {
+    }
 
     /**
      * Se previene la clonación de la instancia singleton.
      */
-    private function __clone(): void {}
+    private function __clone(): void
+    {
+    }
 
     /**
      * Se previene la des-serialización de la instancia singleton.
      */
-    public function __wakeup(): void {}
+    public function __wakeup(): void
+    {
+    }
 }

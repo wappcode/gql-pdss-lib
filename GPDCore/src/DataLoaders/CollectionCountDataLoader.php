@@ -11,7 +11,7 @@ use GraphQL\Type\Definition\ResolveInfo;
 
 /**
  * DataLoader para contar elementos de colecciones relacionadas de manera eficiente.
- * 
+ *
  * Acumula IDs de entidades y obtiene el conteo de sus colecciones relacionadas en batch,
  * evitando el problema N+1. Implementa el patrón DataLoader de GraphQL.
  */
@@ -33,8 +33,8 @@ class CollectionCountDataLoader
     protected ?QueryModifierInterface $queryDecorator;
 
     /**
-     * @param string $class Clase de la entidad que tiene relación con otra
-     * @param string $joinProperty Nombre de la propiedad de la relación
+     * @param string                      $class          Clase de la entidad que tiene relación con otra
+     * @param string                      $joinProperty   Nombre de la propiedad de la relación
      * @param QueryModifierInterface|null $queryDecorator Modificador para personalizar el query
      */
     public function __construct(string $class, string $joinProperty, ?QueryModifierInterface $queryDecorator = null)
@@ -54,7 +54,7 @@ class CollectionCountDataLoader
 
     /**
      * Obtiene el conteo de una colección previamente cargado del buffer.
-     * 
+     *
      * @return int Número de elementos en la colección o 0 si no existe
      */
     public function get(int|string $id): int
@@ -64,7 +64,7 @@ class CollectionCountDataLoader
 
     /**
      * Carga en batch los conteos de todas las colecciones relacionadas pendientes del buffer.
-     * 
+     *
      * Este método cuenta de manera eficiente múltiples colecciones en una sola consulta,
      * evitando el problema N+1. Solo procesa los IDs que aún no han sido procesados.
      */

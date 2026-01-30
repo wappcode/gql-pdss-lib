@@ -11,7 +11,7 @@ use ReflectionMethod;
 
 /**
  * Hydrator para poblar entidades Doctrine con datos de arrays.
- * 
+ *
  * Mapea automáticamente propiedades de arrays a métodos setter de entidades,
  * incluyendo manejo especial para asociaciones de colecciones.
  */
@@ -19,13 +19,14 @@ class EntityHydrator
 {
     /**
      * Hidrata una entidad con valores de un array.
-     * 
+     *
      * Solo asigna valores que coinciden con métodos setter públicos de la entidad.
      * Maneja automáticamente asociaciones de colecciones usando EntityManager.
      *
-     * @param EntityManager $entityManager Gestor de entidades de Doctrine
-     * @param object $entity Entidad a hidratar
-     * @param array<string, mixed> $data Datos a asignar (key => value)
+     * @param EntityManager        $entityManager Gestor de entidades de Doctrine
+     * @param object               $entity        Entidad a hidratar
+     * @param array<string, mixed> $data          Datos a asignar (key => value)
+     *
      * @return object La entidad hidratada
      */
     public static function hydrate(EntityManager $entityManager, object $entity, array $data): object
@@ -53,7 +54,8 @@ class EntityHydrator
      * Obtiene un método público de una clase mediante reflection.
      *
      * @param ReflectionClass $reflectionClass Clase de la que obtener el método
-     * @param string $methodName Nombre del método
+     * @param string          $methodName      Nombre del método
+     *
      * @return ReflectionMethod|null El método si existe y es público, null en caso contrario
      */
     protected static function getMethod(ReflectionClass $reflectionClass, string $methodName): ?ReflectionMethod
@@ -74,9 +76,9 @@ class EntityHydrator
     /**
      * Invoca un método en una entidad con un valor dado.
      *
-     * @param object $entity Entidad sobre la que invocar el método
+     * @param object                $entity Entidad sobre la que invocar el método
      * @param ReflectionMethod|null $method Método a invocar
-     * @param mixed $value Valor a pasar como argumento
+     * @param mixed                 $value  Valor a pasar como argumento
      */
     protected static function invokeMethod(object $entity, ?ReflectionMethod $method, mixed $value): void
     {
@@ -89,14 +91,14 @@ class EntityHydrator
 
     /**
      * Hidrata una asociación de colección en una entidad.
-     * 
+     *
      * Limpia la colección existente y la sincroniza con las entidades
      * correspondientes a los IDs proporcionados.
      *
-     * @param EntityManager $entityManager Gestor de entidades de Doctrine
-     * @param object $entity Entidad que contiene la colección
-     * @param EntityAssociation $relation Metadata de la asociación
-     * @param mixed $value Array de IDs o null/vacío para limpiar la colección
+     * @param EntityManager     $entityManager Gestor de entidades de Doctrine
+     * @param object            $entity        Entidad que contiene la colección
+     * @param EntityAssociation $relation      Metadata de la asociación
+     * @param mixed             $value         Array de IDs o null/vacío para limpiar la colección
      */
     protected static function hydrateCollection(
         EntityManager $entityManager,

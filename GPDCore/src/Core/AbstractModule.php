@@ -4,20 +4,16 @@ declare(strict_types=1);
 
 namespace GPDCore\Core;
 
-
 use GPDCore\Contracts\AppConfigInterface;
 use GPDCore\Contracts\AppContextInterface;
 use GPDCore\Contracts\ModuleProviderInterface;
 use GPDCore\Contracts\ResolverManagerInterface;
-
 use Laminas\ServiceManager\ServiceManager;
-use Psr\Http\Message\ServerRequestInterface;
 
-abstract class AbstractModule implements
-    ModuleProviderInterface
+abstract class AbstractModule implements ModuleProviderInterface
 {
-
     protected AppContextInterface $context;
+
     /**
      * Array con la configuración del módulo.
      */
@@ -43,8 +39,8 @@ abstract class AbstractModule implements
      */
     abstract public function getResolvers(): array;
 
-
     abstract public function getMiddlewares(): array;
+
     abstract public function getTypes(): array;
 
     public function registerServices(ServiceManager $serviceManager, AppContextInterface $context): void
@@ -72,6 +68,7 @@ abstract class AbstractModule implements
         $moduleConfig = $this->getConfig();
         $config->add($moduleConfig);
     }
+
     public function registerMiddleware(MiddlewareQueue $queue, AppContextInterface $context): void
     {
         $middlewares = $this->getMiddlewares();
@@ -79,6 +76,7 @@ abstract class AbstractModule implements
             $queue->add($middleware);
         }
     }
+
     public function registerResolvers(ResolverManagerInterface $resolverManager, AppContextInterface $context): void
     {
         $resolvers = $this->getResolvers();

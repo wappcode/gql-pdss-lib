@@ -8,12 +8,12 @@ class ClientIPUtilities
 {
     /**
      * Obtiene la dirección IP real del cliente.
-     * 
+     *
      * Verifica múltiples fuentes en orden de prioridad:
      * 1. HTTP_CLIENT_IP (IP compartida/ISP)
      * 2. HTTP_X_FORWARDED_FOR (IP detrás de proxy)
      * 3. REMOTE_ADDR (IP directa)
-     * 
+     *
      * @return string La dirección IP del cliente o '0.0.0.0' si no se puede determinar
      */
     public static function getClientIP(): string
@@ -44,9 +44,8 @@ class ClientIPUtilities
 
     /**
      * Alias para retrocompatibilidad.
-     * 
+     *
      * @deprecated Usar getClientIP() en su lugar
-     * @return string
      */
     public static function get(): string
     {
@@ -55,8 +54,9 @@ class ClientIPUtilities
 
     /**
      * Valida si una cadena es una dirección IP válida (IPv4 o IPv6).
-     * 
+     *
      * @param string $ip La dirección IP a validar
+     *
      * @return bool True si es válida, false en caso contrario
      */
     public static function isValidIP(string $ip): bool
@@ -66,8 +66,9 @@ class ClientIPUtilities
 
     /**
      * Verifica si una IP es privada o reservada.
-     * 
+     *
      * @param string $ip La dirección IP a verificar
+     *
      * @return bool True si es IP privada/reservada, false si es pública
      */
     public static function isPrivateIP(string $ip): bool
@@ -81,8 +82,9 @@ class ClientIPUtilities
 
     /**
      * Limpia y sanitiza una dirección IP.
-     * 
+     *
      * @param string $ip La dirección IP a limpiar
+     *
      * @return string La IP sanitizada
      */
     private static function sanitizeIP(string $ip): string
@@ -92,7 +94,7 @@ class ClientIPUtilities
 
     /**
      * Obtiene todas las IPs posibles del cliente (útil para debugging).
-     * 
+     *
      * @return array<string, string|null> Array con todas las fuentes de IP
      */
     public static function getAllIPs(): array
@@ -107,12 +109,13 @@ class ClientIPUtilities
 
     /**
      * Verifica si la IP del cliente es localhost.
-     * 
+     *
      * @return bool True si es localhost, false en caso contrario
      */
     public static function isLocalhost(): bool
     {
         $ip = self::getClientIP();
+
         return in_array($ip, ['127.0.0.1', '::1', 'localhost', '0.0.0.0']);
     }
 }

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace GPDCore\Graphql;
 
+use GPDCore\Contracts\AppContextInterface;
 use GPDCore\Graphql\Types\PageInfoType;
 use GPDCore\Graphql\Types\PaginationInput;
-use GPDCore\Contracts\AppContextInterface;
 use GraphQL\Type\Definition\InputObjectType;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;

@@ -9,6 +9,11 @@ use PhpOffice\PhpSpreadsheet\Shared\Date;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
+/** 
+ * Utilidades para trabajar con PHPExcel / PhpSpreadsheet
+ * Instalar dependencia con composer:
+ * composer require phpoffice/phpspreadsheet
+ */
 class PHPExcelUtilities
 {
     /**
@@ -31,15 +36,14 @@ class PHPExcelUtilities
         $date = static::getDateFromValue($value);
         if (!isset($date) || !($date instanceof DateTime)) {
             return;
-        } else {
-            $formatedDate = Date::PHPToExcel($date);
-            $sheet->setCellValue($cell, $formatedDate);
-            $sheet->getStyle($cell)
-                    ->getNumberFormat()
-                    ->setFormatCode(
-                        NumberFormat::FORMAT_DATE_DATETIME
-                    );
         }
+        $formatedDate = Date::PHPToExcel($date);
+        $sheet->setCellValue($cell, $formatedDate);
+        $sheet->getStyle($cell)
+            ->getNumberFormat()
+            ->setFormatCode(
+                NumberFormat::FORMAT_DATE_DATETIME
+            );
     }
 
     /**
@@ -52,15 +56,14 @@ class PHPExcelUtilities
         $date = static::getDateFromValue($value);
         if (!isset($date) || !($date instanceof DateTime)) {
             return;
-        } else {
-            $formatedDate = Date::PHPToExcel($date);
-            $sheet->setCellValue($cell, $formatedDate);
-            $sheet->getStyle($cell)
-                    ->getNumberFormat()
-                    ->setFormatCode(
-                        NumberFormat::FORMAT_DATE_DDMMYYYY
-                    );
         }
+        $formatedDate = Date::PHPToExcel($date);
+        $sheet->setCellValue($cell, $formatedDate);
+        $sheet->getStyle($cell)
+            ->getNumberFormat()
+            ->setFormatCode(
+                NumberFormat::FORMAT_DATE_DDMMYYYY
+            );
     }
 
     protected static function getDateFromValue($value): ?DateTime

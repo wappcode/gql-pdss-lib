@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace GPDCore\Graphql;
 
+use ArrayAccess;
 use GPDCore\Contracts\AppContextInterface;
 use GPDCore\Contracts\ResolverManagerInterface;
 use GraphQL\Type\Definition\ResolveInfo;
 
 /**
  * Factory para crear resolvers de campos que operan sobre arrays.
- * 
+ *
  * Permite acceso a elementos de array por clave. Si existe un resolver
  * personalizado registrado en el ResolverManager, lo usará; de lo contrario,
  * intentará acceder al valor del array usando el nombre del campo como clave.
@@ -19,8 +20,9 @@ final class ArrayFieldResolverFactory
 {
     /**
      * Crea un resolver de campo para datos tipo array.
-     * 
+     *
      * @param ResolverManagerInterface $resolverManager Manager que contiene los resolvers personalizados
+     *
      * @return callable Resolver que acepta ($root, $args, $context, $info) y retorna mixed
      */
     public static function create(ResolverManagerInterface $resolverManager): callable
@@ -46,7 +48,7 @@ final class ArrayFieldResolverFactory
             }
 
             // Si $root implementa ArrayAccess
-            if ($root instanceof \ArrayAccess) {
+            if ($root instanceof ArrayAccess) {
                 return $root[$fieldName] ?? null;
             }
 
@@ -56,7 +58,7 @@ final class ArrayFieldResolverFactory
 
     /**
      * Alias para compatibilidad hacia atrás.
-     * 
+     *
      * @deprecated Use create() instead
      */
     public static function createResolver(ResolverManagerInterface $resolverManager): callable
@@ -66,7 +68,7 @@ final class ArrayFieldResolverFactory
 
     /**
      * Alias para compatibilidad hacia atrás.
-     * 
+     *
      * @deprecated Use create() instead
      */
     public static function createArrayFieldResolver(ResolverManagerInterface $resolverManager): callable

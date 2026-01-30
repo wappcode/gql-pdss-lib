@@ -12,7 +12,7 @@ interface ResolverManagerInterface
     /**
      * Registra un resolver con una clave específica.
      *
-     * @param string $key Clave identificadora del resolver
+     * @param string   $key      Clave identificadora del resolver
      * @param callable $resolver Función resolver a registrar
      */
     public function add(string $key, callable $resolver): void;
@@ -21,6 +21,7 @@ interface ResolverManagerInterface
      * Obtiene un resolver registrado por su clave.
      *
      * @param string $key Clave del resolver a obtener
+     *
      * @return callable|null El resolver si existe, null en caso contrario
      */
     public function get(string $key): ?callable;
@@ -29,6 +30,7 @@ interface ResolverManagerInterface
      * Verifica si existe un resolver registrado con la clave especificada.
      *
      * @param string $key Clave del resolver a verificar
+     *
      * @return bool True si existe, false en caso contrario
      */
     public function has(string $key): bool;
@@ -37,6 +39,7 @@ interface ResolverManagerInterface
      * Elimina un resolver registrado.
      *
      * @param string $key Clave del resolver a eliminar
+     *
      * @return bool True si se eliminó, false si no existía
      */
     public function remove(string $key): bool;

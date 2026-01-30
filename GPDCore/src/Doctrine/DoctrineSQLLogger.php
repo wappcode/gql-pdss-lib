@@ -8,13 +8,14 @@ use GPDCore\Core\AppConfig;
 
 /**
  * Logger para queries SQL de Doctrine.
- * 
+ *
  * Nota: SQLLogger está deprecado en Doctrine DBAL 3+.
  * Esta clase mantiene compatibilidad pero puede necesitar migración a PSR-3 Logger.
  */
 class DoctrineSQLLogger
 {
     private float $startTime = 0.0;
+
     private ?string $logDirectory = null;
 
     /**

@@ -3,14 +3,14 @@
 use AppModule\Entities\Post;
 use AppModule\Entities\User;
 use GPDCore\Doctrine\EntityAssociation;
-use GPDCore\Doctrine\EntityUtilities;
+use GPDCore\Doctrine\EntityMetadataHelper;
 
 class EntityUtilitiesTest extends PHPUnit\Framework\TestCase
 {
     public function testAssociationJoinColumns()
     {
         global $entityManager;
-        $associations = EntityUtilities::getColumnAssociations($entityManager, Post::class);
+        $associations = EntityMetadataHelper::getJoinColumnAssociations($entityManager, Post::class);
         $hasAssociations = count($associations) === 1;
         /** @var EntityAssociation */
         $relation = $associations['author'];
@@ -24,7 +24,7 @@ class EntityUtilitiesTest extends PHPUnit\Framework\TestCase
     public function testAssociationCollections()
     {
         global $entityManager;
-        $associations = EntityUtilities::getCollections($entityManager, User::class);
+        $associations = EntityMetadataHelper::getCollectionAssociations($entityManager, User::class);
         $accountId = $associations['accounts']->getIdentifier();
         $this->assertEquals('code', $accountId, 'El identificador de una cuenta debe ser la propiedad code');
     }

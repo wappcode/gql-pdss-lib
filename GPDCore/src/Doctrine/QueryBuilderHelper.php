@@ -12,8 +12,6 @@ use GPDCore\Exceptions\InvalidIdException;
 
 class QueryBuilderHelper
 {
-
-
     /**
      * Agrega asociaciones a un query con sus claves primarias correspondientes.
      * Crea una copia del QueryBuilder para no modificar el original.
@@ -22,10 +20,10 @@ class QueryBuilderHelper
      *          Para múltiples entidades, los alias pueden confundirse si hay propiedades con el mismo nombre.
      *
      * @param EntityManager $entityManager EntityManager de Doctrine
-     * @param QueryBuilder $qb QueryBuilder a copiar y modificar
-     * @param string $className Nombre completo de la clase de la entidad
-     * @param array|null $associations Array de strings o EntityAssociation[] (null para obtener automáticamente)
-     * @param string|null $alias Alias alternativo para agregar asociaciones desde un join específico
+     * @param QueryBuilder  $qb            QueryBuilder a copiar y modificar
+     * @param string        $className     Nombre completo de la clase de la entidad
+     * @param string|null   $alias         Alias alternativo para agregar asociaciones desde un join específico
+     *
      * @return QueryBuilder Copia del QueryBuilder con las asociaciones agregadas
      */
     public static function withAssociations(EntityManager $entityManager, QueryBuilder $qb, string $className, ?string $alias = null): QueryBuilder
@@ -60,14 +58,15 @@ class QueryBuilderHelper
      * Recupera un array con los datos de una entidad ORM por su ID.
      *
      * @param EntityManager $entityManager EntityManager de Doctrine
-     * @param string $class Nombre completo de la clase de la entidad
-     * @param mixed $id ID de la entidad a buscar
-     * @param array|null $relations Array de relaciones a incluir (null para obtener automáticamente)
+     * @param string        $class         Nombre completo de la clase de la entidad
+     * @param mixed         $id            ID de la entidad a buscar
+     *
      * @return array Array con los datos de la entidad
-     * @throws InvalidIdException Si el ID proporcionado está vacío o es inválido
+     *
+     * @throws InvalidIdException      Si el ID proporcionado está vacío o es inválido
      * @throws EntityNotFoundException Si no se encuentra la entidad con el ID proporcionado
      */
-    public static function fetchById(EntityManager $entityManager, string $class, $id, ?array $relations = null): array
+    public static function fetchById(EntityManager $entityManager, string $class, $id): array
     {
         if (empty($id)) {
             throw new InvalidIdException();
@@ -79,7 +78,7 @@ class QueryBuilderHelper
             ->setParameter(':id', $id)
             ->select('entity');
 
-        $qb = self::withAssociations($entityManager, $qb, $class, $relations);
+        $qb = self::withAssociations($entityManager, $qb, $class);
         $result = $qb->getQuery()->getOneOrNullResult(Query::HYDRATE_ARRAY);
 
         if ($result === null) {
@@ -92,11 +91,11 @@ class QueryBuilderHelper
     /**
      * Agrega una asociación al QueryBuilder (método helper privado para evitar duplicación).
      *
-     * @param QueryBuilder $qb QueryBuilder a modificar
-     * @param string $rootAlias Alias raíz desde donde agregar la relación
-     * @param string $fieldName Nombre del campo de la relación
-     * @param string $identifier Nombre del identificador (generalmente 'id')
-     * @param array $aliases Array de alias existentes en el QueryBuilder
+     * @param QueryBuilder $qb         QueryBuilder a modificar
+     * @param string       $rootAlias  Alias raíz desde donde agregar la relación
+     * @param string       $fieldName  Nombre del campo de la relación
+     * @param string       $identifier Nombre del identificador (generalmente 'id')
+     * @param array        $aliases    Array de alias existentes en el QueryBuilder
      */
     private static function addAssociationToQueryBuilder(QueryBuilder $qb, string $rootAlias, string $fieldName, string $identifier, array $aliases): void
     {

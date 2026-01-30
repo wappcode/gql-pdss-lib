@@ -2,9 +2,7 @@
 
 namespace GPDCore\Exceptions;
 
-
 use GPDCore\Contracts\IGQLException;
-
 use GraphQL\Error\Error;
 use GraphQL\Error\FormattedError;
 

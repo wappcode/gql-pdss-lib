@@ -36,6 +36,7 @@ abstract class AbstractEntityModel
     {
         $this->setUpdated();
     }
+
     public function getId(): ?int
     {
         return $this->id;

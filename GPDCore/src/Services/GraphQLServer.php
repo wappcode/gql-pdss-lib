@@ -6,9 +6,9 @@ namespace GPDCore\Services;
 
 use Exception;
 use GPDCore\Contracts\AppContextInterface;
-use GPDCore\Graphql\ArrayFieldResolverFactory;
 use GPDCore\Core\Application;
 use GPDCore\Exceptions\GQLFormattedError;
+use GPDCore\Graphql\ArrayFieldResolverFactory;
 use GraphQL\Error\DebugFlag;
 use GraphQL\Error\FormattedError;
 use GraphQL\GraphQL;
@@ -33,25 +33,31 @@ class GraphQLServer
     private const DEFAULT_MAX_QUERY_COMPLEXITY = 1000;
 
     protected Application $app;
+
     protected AppContextInterface $context;
+
     protected ResponseFactory $responseFactory;
+
     protected StreamFactory $streamFactory;
+
     private ?Schema $cachedSchema = null;
 
     // Configuración de seguridad
     private bool $introspectionEnabled;
+
     private int $maxQueryDepth;
+
     private int $maxQueryComplexity;
 
     /**
      * Constructor del servidor GraphQL.
      *
-     * @param Application $app La aplicación GPD
-     * @param ResponseFactory|null $responseFactory Factory para respuestas PSR-7
-     * @param StreamFactory|null $streamFactory Factory para streams PSR-7
-     * @param bool|null $introspectionEnabled Si null, se deshabilita solo en producción
-     * @param int|null $maxQueryDepth Profundidad máxima de queries (null = usar default)
-     * @param int|null $maxQueryComplexity Complejidad máxima de queries (null = usar default)
+     * @param Application          $app                  La aplicación GPD
+     * @param ResponseFactory|null $responseFactory      Factory para respuestas PSR-7
+     * @param StreamFactory|null   $streamFactory        Factory para streams PSR-7
+     * @param bool|null            $introspectionEnabled Si null, se deshabilita solo en producción
+     * @param int|null             $maxQueryDepth        Profundidad máxima de queries (null = usar default)
+     * @param int|null             $maxQueryComplexity   Complejidad máxima de queries (null = usar default)
      */
     public function __construct(
         Application $app,
@@ -77,7 +83,9 @@ class GraphQLServer
      * Inicializa y ejecuta el servidor GraphQL.
      *
      * @param array $content Contenido de la petición GraphQL
+     *
      * @return ResponseInterface Respuesta HTTP PSR-7
+     *
      * @throws Exception En modo desarrollo si hay un error
      */
     public function start(array $content): ResponseInterface
@@ -128,6 +136,7 @@ class GraphQLServer
      * Valida que el contenido de la petición sea válido.
      *
      * @param array $content Contenido a validar
+     *
      * @throws InvalidArgumentException Si el contenido no es válido
      */
     private function validateContent(array $content): void
@@ -186,11 +195,13 @@ class GraphQLServer
      * Establece si la introspección está habilitada.
      *
      * @param bool $enabled True para habilitar, false para deshabilitar
+     *
      * @return self Para method chaining
      */
     public function setIntrospectionEnabled(bool $enabled): self
     {
         $this->introspectionEnabled = $enabled;
+
         return $this;
     }
 
@@ -208,11 +219,13 @@ class GraphQLServer
      * Establece el límite máximo de profundidad de queries.
      *
      * @param int $maxDepth Profundidad máxima permitida
+     *
      * @return self Para method chaining
      */
     public function setMaxQueryDepth(int $maxDepth): self
     {
         $this->maxQueryDepth = $maxDepth;
+
         return $this;
     }
 
@@ -230,11 +243,13 @@ class GraphQLServer
      * Establece el límite máximo de complejidad de queries.
      *
      * @param int $maxComplexity Complejidad máxima permitida
+     *
      * @return self Para method chaining
      */
     public function setMaxQueryComplexity(int $maxComplexity): self
     {
         $this->maxQueryComplexity = $maxComplexity;
+
         return $this;
     }
 
@@ -242,6 +257,7 @@ class GraphQLServer
      * Recupera el valor query de la consulta GraphQL.
      *
      * @param array $content Contenido de la petición
+     *
      * @return string La query GraphQL
      */
     protected function getQuery(array $content): string
@@ -257,6 +273,7 @@ class GraphQLServer
      * Recupera el nombre de la operación GraphQL.
      *
      * @param array $content Contenido de la petición
+     *
      * @return string|null El nombre de la operación
      */
     protected function getOperationName(array $content): ?string
@@ -272,6 +289,7 @@ class GraphQLServer
      * Recupera las variables de la consulta GraphQL.
      *
      * @param array $content Contenido de la petición
+     *
      * @return array|null Las variables de la consulta
      */
     protected function getVariables(array $content): ?array
@@ -286,8 +304,9 @@ class GraphQLServer
     /**
      * Busca un valor en los datos del template.
      *
-     * @param array $data Datos del template
+     * @param array  $data  Datos del template
      * @param string $value Nombre del valor a buscar
+     *
      * @return mixed|null El valor encontrado o null
      */
     protected function findValueFromTemplate(array $data, string $value): mixed
@@ -304,8 +323,9 @@ class GraphQLServer
     /**
      * Crea una respuesta JSON PSR-7.
      *
-     * @param array $data Datos a enviar en la respuesta
-     * @param int $status Código de estado HTTP
+     * @param array $data   Datos a enviar en la respuesta
+     * @param int   $status Código de estado HTTP
+     *
      * @return ResponseInterface Respuesta PSR-7
      */
     protected function createJsonResponse(array $data, int $status = self::HTTP_OK): ResponseInterface

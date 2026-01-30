@@ -12,7 +12,7 @@ use GraphQL\Type\Definition\ResolveInfo;
 
 /**
  * DataLoader para cargar colecciones relacionadas de manera eficiente.
- * 
+ *
  * Acumula IDs de entidades y carga sus colecciones relacionadas en batch,
  * evitando el problema N+1. Implementa el patrón DataLoader de GraphQL.
  */
@@ -36,9 +36,9 @@ class CollectionDataLoader
     protected ?QueryModifierInterface $queryDecorator;
 
     /**
-     * @param string $class Clase de la entidad que tiene relación con otra
-     * @param string $joinProperty Nombre de la propiedad de la relación
-     * @param string|null $joinClass Clase de la entidad relacionada
+     * @param string                      $class          Clase de la entidad que tiene relación con otra
+     * @param string                      $joinProperty   Nombre de la propiedad de la relación
+     * @param string|null                 $joinClass      Clase de la entidad relacionada
      * @param QueryModifierInterface|null $queryDecorator Modificador para personalizar el query
      */
     public function __construct(string $class, string $joinProperty, ?string $joinClass = null, ?QueryModifierInterface $queryDecorator = null)
@@ -59,7 +59,7 @@ class CollectionDataLoader
 
     /**
      * Obtiene una colección previamente cargada del buffer.
-     * 
+     *
      * @return array Array con los elementos de la colección o array vacío si no existe
      */
     public function get(int|string $id): array
@@ -69,7 +69,7 @@ class CollectionDataLoader
 
     /**
      * Carga en batch todas las colecciones relacionadas pendientes del buffer.
-     * 
+     *
      * Este método carga de manera eficiente múltiples colecciones en una sola consulta,
      * evitando el problema N+1. Solo carga los IDs que aún no han sido procesados.
      */

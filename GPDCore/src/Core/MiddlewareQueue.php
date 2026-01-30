@@ -2,9 +2,7 @@
 
 namespace GPDCore\Core;
 
-
 use GPDCore\Contracts\MiddlewareQueueInterface;
-
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -16,6 +14,7 @@ final class MiddlewareQueue implements MiddlewareQueueInterface, RequestHandlerI
     private array $queue = [];
 
     private ?RequestHandlerInterface $finalHandler = null;
+
     private int $index = 0;
 
     public function __construct(RequestHandlerInterface $finalHandler)
@@ -36,7 +35,7 @@ final class MiddlewareQueue implements MiddlewareQueueInterface, RequestHandlerI
         }
 
         $middleware = $this->queue[$this->index];
-        $this->index++;
+        ++$this->index;
 
         return $middleware->process($request, $this);
     }

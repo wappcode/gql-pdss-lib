@@ -19,11 +19,12 @@ class RelayConnectionBuilder
     /**
      * Construye una respuesta de conexión paginada para GraphQL siguiendo el estándar Relay.
      *
-     * @param QueryBuilder $qb QueryBuilder con la consulta base
-     * @param mixed $root Valor raíz del resolver
-     * @param array $args Argumentos de GraphQL
+     * @param QueryBuilder        $qb      QueryBuilder con la consulta base
+     * @param mixed               $root    Valor raíz del resolver
+     * @param array               $args    Argumentos de GraphQL
      * @param AppContextInterface $context Contexto de la aplicación
-     * @param ResolveInfo $info Información de resolución de GraphQL
+     * @param ResolveInfo         $info    Información de resolución de GraphQL
+     *
      * @return array Array con estructura de conexión (totalCount, pageInfo, edges)
      */
     public static function build(QueryBuilder $qb, mixed $root, array $args, AppContextInterface $context, ResolveInfo $info): array
@@ -56,9 +57,11 @@ class RelayConnectionBuilder
     /**
      * Resuelve el límite de resultados basado en los parámetros de paginación.
      *
-     * @param array $paginationInput Parámetros de paginación (first, last)
-     * @param int|null $appLimit Límite máximo de la aplicación
+     * @param array    $paginationInput Parámetros de paginación (first, last)
+     * @param int|null $appLimit        Límite máximo de la aplicación
+     *
      * @return int Límite calculado
+     *
      * @throws InvalidPaginationException Si los valores de paginación son negativos
      */
     protected static function resolveLimit(array $paginationInput, ?int $appLimit): int
@@ -88,7 +91,8 @@ class RelayConnectionBuilder
      * Resuelve el offset basado en los cursores de paginación.
      *
      * @param array $paginationInput Parámetros de paginación (before, after, last)
-     * @param int $total Total de registros
+     * @param int   $total           Total de registros
+     *
      * @return int Offset calculado
      */
     protected static function resolveOffset(array $paginationInput, int $total): int
@@ -115,9 +119,10 @@ class RelayConnectionBuilder
     /**
      * Obtiene los nodos (resultados) de la consulta con paginación desde la base de datos.
      *
-     * @param QueryBuilder $qb QueryBuilder base
-     * @param int|null $limit Límite de resultados
-     * @param int $offset Offset para la paginación
+     * @param QueryBuilder $qb     QueryBuilder base
+     * @param int|null     $limit  Límite de resultados
+     * @param int          $offset Offset para la paginación
+     *
      * @return Paginator Paginador con los resultados
      */
     protected static function fetchNodes(QueryBuilder $qb, ?int $limit, int $offset): Paginator
@@ -135,6 +140,7 @@ class RelayConnectionBuilder
      * Cuenta el total de registros de la consulta.
      *
      * @param QueryBuilder $qb QueryBuilder base
+     *
      * @return int Total de registros
      */
     protected static function countTotal(QueryBuilder $qb): int
@@ -149,8 +155,9 @@ class RelayConnectionBuilder
     /**
      * Crea los edges a partir de los nodos obtenidos.
      *
-     * @param iterable $nodes Nodos (resultados) a convertir en edges
-     * @param int $afterCursor Cursor inicial para calcular posiciones
+     * @param iterable $nodes       Nodos (resultados) a convertir en edges
+     * @param int      $afterCursor Cursor inicial para calcular posiciones
+     *
      * @return array Array de edges con cursor y node
      */
     protected static function createEdges(iterable $nodes, int $afterCursor): array
@@ -171,6 +178,7 @@ class RelayConnectionBuilder
      * Extrae el cursor del primer edge.
      *
      * @param array $edges Array de edges
+     *
      * @return string Cursor del primer elemento o cadena vacía si no hay edges
      */
     protected static function extractFirstCursor(array $edges): string
@@ -182,6 +190,7 @@ class RelayConnectionBuilder
      * Extrae el cursor del último edge.
      *
      * @param array $edges Array de edges
+     *
      * @return string Cursor del último elemento o cadena vacía si no hay edges
      */
     protected static function extractLastCursor(array $edges): string

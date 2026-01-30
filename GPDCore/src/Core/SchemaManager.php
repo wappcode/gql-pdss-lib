@@ -2,10 +2,7 @@
 
 namespace GPDCore\Core;
 
-
-
 use GPDCore\Graphql\GraphqlSchemaUtilities;
-
 use GraphQL\Language\AST\TypeDefinitionNode;
 use GraphQL\Type\Definition\ScalarType;
 use GraphQL\Type\Schema;

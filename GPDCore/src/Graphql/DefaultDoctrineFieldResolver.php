@@ -51,9 +51,9 @@ final class DefaultDoctrineFieldResolver
             ];
 
             return $resolver->invoke($resolveObj, ...$args);
-        } else {
-            return null;
         }
+
+        return null;
     }
 
     /**

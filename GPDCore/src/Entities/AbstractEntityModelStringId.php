@@ -38,6 +38,7 @@ abstract class AbstractEntityModelStringId
     {
         $this->setUpdated();
     }
+
     public function getId(): ?string
     {
         return $this->id;
@@ -45,7 +46,6 @@ abstract class AbstractEntityModelStringId
 
     /**
      * Get the value of created.
-     *
      */
     public function getCreated(): DateTimeImmutable
     {
@@ -54,7 +54,6 @@ abstract class AbstractEntityModelStringId
 
     /**
      * Get the value of updated.
-     *
      */
     public function getUpdated(): DateTimeImmutable
     {
@@ -63,7 +62,6 @@ abstract class AbstractEntityModelStringId
 
     /**
      * Set the value of updated.
-     *
      *
      * @return self
      */

@@ -8,10 +8,9 @@ use AppModule\Graphql\ResolversComment;
 use AppModule\Graphql\ResolversPost;
 use AppModule\Graphql\ResolversUser;
 use DateTime;
-use GPDCore\Graphql\ResolverFactory;
-use GPDCore\Core\AbstractModule;
 use GPDCore\Contracts\AppContextInterface;
-use GPDCore\Library\IContextService;
+use GPDCore\Core\AbstractModule;
+use GPDCore\Graphql\ResolverFactory;
 use GPDCore\Graphql\ResolverMiddleware;
 
 class AppModule extends AbstractModule
@@ -49,6 +48,7 @@ class AppModule extends AbstractModule
     {
         return [];
     }
+
     /**
      * Array con los resolvers del módulo.
      *
@@ -56,12 +56,12 @@ class AppModule extends AbstractModule
      */
     public function getResolvers(): array
     {
-        $proxyEcho1 = fn($resolver) => fn($root, $args, $context, $info) => 'Proxy 1 ' . $resolver($root, $args, $context, $info);
-        $proxyEcho2 = fn($resolver) => fn($root, $args, $context, $info) => 'Proxy 2 ' . $resolver($root, $args, $context, $info);
-        $echoResolve = fn($root, $args, $context, $info) => $args['msg'];
+        $proxyEcho1 = fn ($resolver) => fn ($root, $args, $context, $info) => 'Proxy 1 ' . $resolver($root, $args, $context, $info);
+        $proxyEcho2 = fn ($resolver) => fn ($root, $args, $context, $info) => 'Proxy 2 ' . $resolver($root, $args, $context, $info);
+        $echoResolve = fn ($root, $args, $context, $info) => $args['msg'];
 
         return [
-            'Query::showDate' => fn($root, $args, AppContextInterface $context, $info) =>  new DateTime(),
+            'Query::showDate' => fn ($root, $args, AppContextInterface $context, $info) =>  new DateTime(),
             'User::accounts' => ResolversUser::getAccountsResolver(),
             'User::posts' => ResolversUser::getPostsResolver(),
             'Account::users' => ResolversAccount::getUsersResolver(),

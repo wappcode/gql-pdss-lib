@@ -2,14 +2,11 @@
 
 namespace GPDCore\Routing;
 
-
-use GPDCore\Contracts\AppControllerInterface;
-use GPDCore\Core\Application;
-
 use Exception;
 use FastRoute;
+use GPDCore\Contracts\AppControllerInterface;
+use GPDCore\Core\Application;
 use Laminas\Diactoros\ResponseFactory;
-use Laminas\Diactoros\ServerRequestFactory;
 use Laminas\Diactoros\StreamFactory;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -23,6 +20,7 @@ abstract class AbstractRouter
     protected $isProductionMode;
 
     protected ResponseFactory $responseFactory;
+
     protected StreamFactory $streamFactory;
 
     public function __construct()
@@ -44,6 +42,7 @@ abstract class AbstractRouter
             $response = $this->responseFactory->createResponse(200)
                 ->withHeader('Content-Type', 'application/json; charset=UTF-8');
             $response->getBody()->write('{}');
+
             return $response;
         }
 
@@ -56,18 +55,19 @@ abstract class AbstractRouter
         switch ($routeInfo[0]) {
             case FastRoute\Dispatcher::NOT_FOUND:
                 $response = $this->responseFactory->createResponse(404);
+
                 return $response;
 
             case FastRoute\Dispatcher::METHOD_NOT_ALLOWED:
                 $allowedMethods = $routeInfo[1];
                 $response = $this->responseFactory->createResponse(405)
                     ->withHeader('Allow', implode(', ', $allowedMethods));
+
                 return $response;
 
             case FastRoute\Dispatcher::FOUND:
                 $handler = $routeInfo[1];
                 $routeParams = $routeInfo[2];
-
 
                 try {
                     if ($handler instanceof AppControllerInterface) {
@@ -79,28 +79,31 @@ abstract class AbstractRouter
                         /** @var AppControllerInterface */
                         $controller = new $handler();
                         if (!$controller instanceof AppControllerInterface) {
-                            throw new Exception("El controlador de la ruta debe implementar AppControllerInterface");
+                            throw new Exception('El controlador de la ruta debe implementar AppControllerInterface');
                         }
                         $response = $controller->dispatch($request);
                         $controller->setRouteParams($routeParams);
                     } else {
-                        throw new Exception("Controlador de ruta no válido");
+                        throw new Exception('Controlador de ruta no válido');
                     }
                     if (!($response instanceof ResponseInterface)) {
-                        throw new Exception("El controlador de la ruta debe retornar una instancia de ResponseInterface");
+                        throw new Exception('El controlador de la ruta debe retornar una instancia de ResponseInterface');
                     }
+
                     return $response;
                 } catch (Exception $e) {
                     $code = $e->getCode() ?: 500;
                     $msg = $e->getMessage();
                     $response = $this->responseFactory->createResponse($code);
                     $response->getBody()->write($msg);
+
                     return $response;
                 }
 
             default:
                 $response = $this->responseFactory->createResponse(500);
                 $response->getBody()->write('Routing error');
+
                 return $response;
         }
     }
