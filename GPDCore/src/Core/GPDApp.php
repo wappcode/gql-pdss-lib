@@ -25,17 +25,16 @@ class GPDApp
      *
      * @var array<AbstractModule>
      */
-    protected $modules = [];
+    protected array $modules = [];
     protected AbstractRouter $router;
-    protected $started = false;
-    protected $productionMode = false;
+    protected bool $started = false;
+    protected bool $productionMode = false;
     protected AppConfigInterface $config;
     protected AppContextInterface $context;
     protected SchemaManager $schemaManager;
     protected TypesManager $typesManager;
     protected ResolverManagerInterface $resolverManager;
-    protected $enviroment;
-    protected $servicesAndGQLTypes = [];
+    protected string $enviroment;
     protected ?EntityManager $entityManager;
     /**
      * Al establecer el valor la cadena deberá iniciar con /
@@ -88,9 +87,8 @@ class GPDApp
 
 
 
-    public function run(ServerRequestInterface $request)
+    public function run(ServerRequestInterface $request): ResponseInterface
     {
-
         $this->applyProductionMode();
         $this->context = $this->createContext();
         $this->context = $this->context->withContextAttribute(GPDApp::class, $this);
@@ -115,30 +113,24 @@ class GPDApp
 
     protected function applyProductionMode(): void
     {
-        if (!$this->productionMode) {
-            return;
-        }
-
         if ($this->productionMode) {
             ini_set('display_errors', '0');
             error_reporting(0);
         } else {
             ini_set('display_errors', '1');
         }
-
-        return;
     }
 
     /**
      * Posibles valores (production, development, testing).
      */
-    public function getEnviroment()
+    public function getEnviroment(): string
     {
         return $this->enviroment;
     }
 
 
-    public function getBaseHref()
+    public function getBaseHref(): string
     {
         return $this->baseHref;
     }
@@ -153,7 +145,7 @@ class GPDApp
         return $middlewareQueue;
     }
 
-    public function adMiddleware(MiddlewareInterface $middleware): GPDApp
+    public function addMiddleware(MiddlewareInterface $middleware): GPDApp
     {
         $this->middlewareQueue->add($middleware);
         return $this;
@@ -186,7 +178,7 @@ class GPDApp
         return $this->resolverManager;
     }
 
-    private function registerModules()
+    private function registerModules(): void
     {
         foreach ($this->modules as $module) {
             $module->registerModule(
