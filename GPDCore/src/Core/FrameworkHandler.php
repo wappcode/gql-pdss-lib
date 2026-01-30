@@ -9,8 +9,8 @@ use Psr\Http\Server\RequestHandlerInterface;
 final class FrameworkHandler implements RequestHandlerInterface
 {
 
-    private  GPDApp $app;
-    public function __construct(GPDApp $app)
+    private  Application $app;
+    public function __construct(Application $app)
     {
         $this->app = $app;
     }

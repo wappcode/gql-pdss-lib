@@ -35,8 +35,8 @@ Contiene las clases principales del framework y la lógica central:
 - **AbstractModule.php** - Clase base para módulos de la aplicación
 - **AppConfig.php** - Implementación de configuración de la aplicación
 - **AppContext.php** - Contexto de ejecución de la aplicación
+- **Application.php** - Clase principal de la aplicación
 - **FrameworkHandler.php** - Manejador principal del framework
-- **GPDApp.php** - Clase principal de la aplicación
 - **MiddlewareQueue.php** - Implementación de cola de middlewares
 - **ResolverManager.php** - Gestor de resolvers GraphQL
 - **SchemaManager.php** - Gestor de schemas GraphQL
@@ -113,7 +113,7 @@ Si tienes código que referencia el antiguo namespace `GPDCore\Library`, necesit
 ### Antes:
 ```php
 use GPDCore\Library\AppConfig;
-use GPDCore\Library\GPDApp;
+use GPDCore\Library\Application;
 use GPDCore\Library\EntityUtilities;
 use GPDCore\Library\GQLException;
 ```
@@ -121,7 +121,7 @@ use GPDCore\Library\GQLException;
 ### Ahora:
 ```php
 use GPDCore\Core\AppConfig;
-use GPDCore\Core\GPDApp;
+use GPDCore\Core\Application;
 use GPDCore\Doctrine\EntityMetadataHelper;
 use GPDCore\Exceptions\GQLException;
 ```

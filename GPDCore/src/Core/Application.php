@@ -18,7 +18,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 
-class GPDApp
+class Application
 {
     /**
      * Modulos de la aplicación
@@ -63,7 +63,7 @@ class GPDApp
     /**
      * El último módulo agregado debe ser el modulo de la app pricipal para que sobreescriba la configuración de los demás modulos.
      */
-    public function addModule(string | AbstractModule $module): GPDApp
+    public function addModule(string | AbstractModule $module): Application
     {
         if ($this->started) {
             throw new Exception('Solo se puede asignar los módulos antes de que la aplicación inicie');
@@ -91,12 +91,12 @@ class GPDApp
     {
         $this->applyProductionMode();
         $this->context = $this->createContext();
-        $this->context = $this->context->withContextAttribute(GPDApp::class, $this);
+        $this->context = $this->context->withContextAttribute(Application::class, $this);
         $this->registerModules();
         // Ejecuta la cola de middlewares FrameworkHandler y ese a su vez ejecuta $app->dispatch() de la aplicación
         $this->request = $request;
         $this->request = $request->withAttribute(AppContextInterface::class, $this->context);
-        $this->request = $request->withAttribute(GPDApp::class, $this);
+        $this->request = $request->withAttribute(Application::class, $this);
         $response = $this->middlewareQueue->handle($this->request);
         return $response;
     }
@@ -145,7 +145,7 @@ class GPDApp
         return $middlewareQueue;
     }
 
-    public function addMiddleware(MiddlewareInterface $middleware): GPDApp
+    public function addMiddleware(MiddlewareInterface $middleware): Application
     {
         $this->middlewareQueue->add($middleware);
         return $this;

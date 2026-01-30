@@ -7,7 +7,7 @@ namespace GPDCore\Services;
 use Exception;
 use GPDCore\Contracts\AppContextInterface;
 use GPDCore\Graphql\ArrayFieldResolverFactory;
-use GPDCore\Core\GPDApp;
+use GPDCore\Core\Application;
 use GPDCore\Exceptions\GQLFormattedError;
 use GraphQL\Error\DebugFlag;
 use GraphQL\Error\FormattedError;
@@ -32,7 +32,7 @@ class GraphQLServer
     private const DEFAULT_MAX_QUERY_DEPTH = 15;
     private const DEFAULT_MAX_QUERY_COMPLEXITY = 1000;
 
-    protected GPDApp $app;
+    protected Application $app;
     protected AppContextInterface $context;
     protected ResponseFactory $responseFactory;
     protected StreamFactory $streamFactory;
@@ -46,7 +46,7 @@ class GraphQLServer
     /**
      * Constructor del servidor GraphQL.
      *
-     * @param GPDApp $app La aplicación GPD
+     * @param Application $app La aplicación GPD
      * @param ResponseFactory|null $responseFactory Factory para respuestas PSR-7
      * @param StreamFactory|null $streamFactory Factory para streams PSR-7
      * @param bool|null $introspectionEnabled Si null, se deshabilita solo en producción
@@ -54,7 +54,7 @@ class GraphQLServer
      * @param int|null $maxQueryComplexity Complejidad máxima de queries (null = usar default)
      */
     public function __construct(
-        GPDApp $app,
+        Application $app,
         ?ResponseFactory $responseFactory = null,
         ?StreamFactory $streamFactory = null,
         ?bool $introspectionEnabled = null,

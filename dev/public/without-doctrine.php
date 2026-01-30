@@ -3,7 +3,7 @@
 use AppModule\AppWithoutDoctrineModule;
 use AppModule\Services\AppRouter;
 use GPDCore\Core\AppConfig;
-use GPDCore\Core\GPDApp;
+use GPDCore\Core\Application;
 use Laminas\Diactoros\ServerRequestFactory;
 use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
 use Laminas\ServiceManager\ServiceManager;
@@ -15,7 +15,7 @@ $request = ServerRequestFactory::fromGlobals();
 $enviroment = getenv('APP_ENV');
 $serviceManager = new ServiceManager();
 $router = new AppRouter();
-$app = new GPDApp($config, entityManager: null, enviroment: $enviroment);
+$app = new Application($config, entityManager: null, enviroment: $enviroment);
 $response = $app
     ->addModule(AppWithoutDoctrineModule::class)
     ->run($request);

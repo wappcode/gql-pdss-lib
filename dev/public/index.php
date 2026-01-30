@@ -4,7 +4,7 @@ use AppModule\AppModule;
 use AppModule\Services\AppRouter;
 use GPDCore\Factory\EntityManagerFactory;
 use GPDCore\Core\AppConfig;
-use GPDCore\Core\GPDApp;
+use GPDCore\Core\Application;
 use GPDCore\Core\AppContext;
 use GPDCore\Contracts\AppContextInterface;
 use Laminas\Diactoros\ServerRequestFactory;
@@ -22,7 +22,7 @@ $entityManagerOptions = $options = file_exists($configFile) ? require $configFil
 $isEntityManagerDevMode = $enviroment !== AppContextInterface::ENV_PRODUCTION;
 $entityManager = EntityManagerFactory::createInstance($options, $cacheDir, $isEntityManagerDevMode);
 $request = ServerRequestFactory::fromGlobals();
-$app = new GPDApp($config, $entityManager, $enviroment);
+$app = new Application($config, $entityManager, $enviroment);
 $app->addModule(
     AppModule::class
 );

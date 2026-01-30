@@ -4,7 +4,7 @@ namespace GPDCore\Routing;
 
 
 use GPDCore\Contracts\AppControllerInterface;
-use GPDCore\Core\GPDApp;
+use GPDCore\Core\Application;
 
 use Exception;
 use FastRoute;
@@ -121,7 +121,7 @@ abstract class AbstractRouter
     {
         $path = $request->getUri()->getPath();
 
-        $app = $request->getAttribute(GPDApp::class);
+        $app = $request->getAttribute(Application::class);
 
         // Usar SCRIPT_NAME (más estándar que SCRIPT_FILENAME)
         $scriptName = $_SERVER['SCRIPT_NAME'] ?? '';
