@@ -12,6 +12,7 @@ use GPDCore\Contracts\AppContextInterface;
 use GPDCore\Core\AbstractModule;
 use GPDCore\Graphql\ResolverFactory;
 use GPDCore\Graphql\ResolverMiddleware;
+use GPDCore\Graphql\ResolverPipelineFactory;
 
 class AppModule extends AbstractModule
 {
@@ -56,12 +57,12 @@ class AppModule extends AbstractModule
      */
     public function getResolvers(): array
     {
-        $proxyEcho1 = fn ($resolver) => fn ($root, $args, $context, $info) => 'Proxy 1 ' . $resolver($root, $args, $context, $info);
-        $proxyEcho2 = fn ($resolver) => fn ($root, $args, $context, $info) => 'Proxy 2 ' . $resolver($root, $args, $context, $info);
-        $echoResolve = fn ($root, $args, $context, $info) => $args['msg'];
+        $proxyEcho1 = fn($resolver) => fn($root, $args, $context, $info) => 'Proxy 1 ' . $resolver($root, $args, $context, $info);
+        $proxyEcho2 = fn($resolver) => fn($root, $args, $context, $info) => 'Proxy 2 ' . $resolver($root, $args, $context, $info);
+        $echoResolve = fn($root, $args, $context, $info) => $args['msg'];
 
         return [
-            'Query::showDate' => fn ($root, $args, AppContextInterface $context, $info) =>  new DateTime(),
+            'Query::showDate' => fn($root, $args, AppContextInterface $context, $info) =>  new DateTime(),
             'User::accounts' => ResolversUser::getAccountsResolver(),
             'User::posts' => ResolversUser::getPostsResolver(),
             'Account::users' => ResolversAccount::getUsersResolver(),
@@ -69,8 +70,14 @@ class AppModule extends AbstractModule
             'Post::comments' => ResolversPost::getCommentsResolver(),
             'Comment::post' => ResolversComment::getPostResolver(),
             'Query::echo' => $echoResolve,
-            'Query::echoProxy' => ResolverMiddleware::wrap($echoResolve, $proxyEcho1),
-            'Query::echoProxies' => ResolverMiddleware::chain($echoResolve, [$proxyEcho1, $proxyEcho2]),
+            'Query::echoProxy' => ResolverPipelineFactory::createPipeline($echoResolve, [
+                ResolverPipelineFactory::createWrapper($proxyEcho1),
+            ]),
+            'Query::echoProxies' => ResolverPipelineFactory::createPipeline($echoResolve, [
+                // pipeline va en orden inverso al de ejecución
+                ResolverPipelineFactory::createWrapper($proxyEcho2),
+                ResolverPipelineFactory::createWrapper($proxyEcho1),
+            ]),
             'Query::getUsers' => ResolverFactory::forConnection(User::class),
             'Query::getUser' => ResolverFactory::forItem(User::class),
             'Mutation::createUser' => ResolverFactory::forCreate(User::class),

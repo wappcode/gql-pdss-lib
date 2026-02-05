@@ -6,7 +6,9 @@ namespace GPDCore\Graphql;
 
 use ArrayAccess;
 use GPDCore\Contracts\AppContextInterface;
+use GPDCore\Contracts\ResolverPipelineHandlerInterface;
 use GPDCore\Contracts\ResolverManagerInterface;
+use GPDCore\Contracts\ResolverPipelineInterface;
 use GraphQL\Type\Definition\ResolveInfo;
 
 /**
@@ -38,6 +40,11 @@ final class ArrayFieldResolverFactory
             $resolverKey = sprintf('%s::%s', $info->parentType->name, $fieldName);
             $resolver = $resolverManager->get($resolverKey);
 
+            if ($resolver instanceof ResolverPipelineInterface) {
+                // Si el resolver es una MiddlewareQueue, manejar la solicitud
+                $resolve = $resolver->build();
+                return $resolve($root, $args, $context, $info);
+            }
             if (is_callable($resolver)) {
                 return $resolver($root, $args, $context, $info);
             }

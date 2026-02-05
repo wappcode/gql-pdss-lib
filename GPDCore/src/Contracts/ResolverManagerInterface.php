@@ -24,7 +24,7 @@ interface ResolverManagerInterface
      *
      * @return callable|null El resolver si existe, null en caso contrario
      */
-    public function get(string $key): ?callable;
+    public function get(string $key): callable | ResolverPipelineInterface | null;
 
     /**
      * Verifica si existe un resolver registrado con la clave especificada.

@@ -539,7 +539,7 @@ Permite aplicar middleware a resolvers GraphQL para agregar lógica transversal 
 
 #### Métodos
 
-**wrap(callable $resolver, ResolverMiddlewareInterface|callable|null $middleware): callable**
+**wrap(callable $resolver, ResolverPipelineHandlerInterface|callable|null $middleware): callable**
 
 Envuelve un resolver con un middleware.
 
@@ -568,7 +568,7 @@ Aplica múltiples middlewares en secuencia.
 
 ### MiddlewareCallable
 
-Clase para crear middlewares reutilizables que implementan `ResolverMiddlewareInterface`.
+Clase para crear middlewares reutilizables que implementan `ResolverPipelineHandlerInterface`.
 
 ```php
 use GPDCore\Graphql\MiddlewareCallable;

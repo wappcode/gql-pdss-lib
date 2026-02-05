@@ -19,7 +19,7 @@ Contiene todas las interfaces del sistema que definen contratos entre componente
 - **IGQLException.php** - Excepciones GraphQL
 - **MiddlewareProviderInterface.php** - Proveedores de middleware
 - **MiddlewareQueueInterface.php** - Cola de middlewares
-- **ResolverMiddlewareInterface.php** - Contrato para middlewares de resolvers GraphQL
+- **ResolverPipelineHandlerInterface.php** - Contrato para middlewares de resolvers GraphQL
 - **ModuleProviderInterface.php** - Proveedores de módulos
 - **ResolverManagerInterface.php** - Gestión de resolvers
 - **ResolverProviderInterface.php** - Proveedores de resolvers

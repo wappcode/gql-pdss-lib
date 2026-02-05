@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace GPDCore\Core;
 
 use GPDCore\Contracts\ResolverManagerInterface;
+use GPDCore\Contracts\ResolverPipelineInterface;
 
 /**
  * Registra todos los resolvers de Doctrine Entities para ser usados por el resolver predeterminado del servidor.
@@ -21,16 +22,14 @@ class ResolverManager implements ResolverManagerInterface
     /**
      * Constructor público para crear instancias del gestor de resolvers.
      */
-    public function __construct()
-    {
-    }
+    public function __construct() {}
 
-    public function add(string $key, callable $resolver): void
+    public function add(string $key, callable | ResolverPipelineInterface $resolver): void
     {
         $this->resolvers[$key] = $resolver;
     }
 
-    public function get(string $key): ?callable
+    public function get(string $key): callable | ResolverPipelineInterface | null
     {
         return $this->resolvers[$key] ?? null;
     }
