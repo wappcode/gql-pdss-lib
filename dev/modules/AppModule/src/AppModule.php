@@ -11,7 +11,6 @@ use DateTime;
 use GPDCore\Contracts\AppContextInterface;
 use GPDCore\Core\AbstractModule;
 use GPDCore\Graphql\ResolverFactory;
-use GPDCore\Graphql\ResolverMiddleware;
 use GPDCore\Graphql\ResolverPipelineFactory;
 
 class AppModule extends AbstractModule

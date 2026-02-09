@@ -74,3 +74,4 @@ type PageInfo {
 }
 scalar Date
 scalar DateTime
+scalar JSONData

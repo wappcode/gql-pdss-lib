@@ -15,6 +15,7 @@ use UnexpectedValueException;
 
 final class DateTimeType extends ScalarType
 {
+    public const NAME = 'DateTime';
     public function parseLiteral($valueNode, ?array $variables = null)
     {
         // Note: throwing GraphQL\Error\Error vs \UnexpectedValueException to benefit from GraphQL

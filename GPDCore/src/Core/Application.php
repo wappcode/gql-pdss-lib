@@ -5,11 +5,15 @@ declare(strict_types=1);
 namespace GPDCore\Core;
 
 use AppModule\Services\AppRouter;
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManager;
 use Exception;
 use GPDCore\Contracts\AppConfigInterface;
 use GPDCore\Contracts\AppContextInterface;
 use GPDCore\Contracts\ResolverManagerInterface;
+use GPDCore\Graphql\Types\DateTimeType;
+use GPDCore\Graphql\Types\DateType;
+use GPDCore\Graphql\Types\JSONData;
 use GPDCore\Routing\AbstractRouter;
 use Laminas\ServiceManager\ServiceManager;
 use Psr\Http\Message\ResponseInterface;
@@ -65,7 +69,7 @@ class Application
         $this->baseHref = $baseHref;
         $this->serviceManager = new ServiceManager();
         $this->resolverManager = new ResolverManager();
-        $this->typesManager = new TypesManager();
+        $this->typesManager = $this->createTypeManager();
         $this->schemaManager = new SchemaManager();
         $this->router = new AppRouter();
         $this->middlewareQueue = $this->createMiddlewareQueue();
@@ -206,5 +210,18 @@ class Application
                 $this->serviceManager,
             );
         }
+    }
+    /**
+     * Inicializa y agrega los tipos scalar basicos de la librería
+     *
+     * @return TypesManager
+     */
+    private function createTypeManager(): TypesManager
+    {
+        $typesManager = new TypesManager();
+        $typesManager->add(DateType::NAME, DateType::class);
+        $typesManager->add(DateTimeType::NAME, DateTimeType::class);
+        $typesManager->add(JSONData::NAME, JSONData::class);
+        return $typesManager;
     }
 }

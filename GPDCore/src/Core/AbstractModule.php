@@ -44,7 +44,7 @@ abstract class AbstractModule implements ModuleProviderInterface
     /**
      * Array con los tipos scalar graphql del módulo. El indice se utiliza como nombre del tipo.
      *
-     * @return array
+     * @return array<ScalarType | class-string<ScalarType>>
      */
     abstract public function getTypes(): array;
 

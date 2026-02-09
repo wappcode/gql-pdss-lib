@@ -15,9 +15,10 @@ use UnexpectedValueException;
 
 final class DateType extends ScalarType
 {
+    const  NAME = 'Date';
     public function __construct(array $config = [])
     {
-        $config['name'] = 'Date';
+        $config['name'] = static::NAME;
         parent::__construct($config);
     }
 

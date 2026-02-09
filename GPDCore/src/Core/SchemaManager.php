@@ -23,7 +23,7 @@ class SchemaManager
             $name = $typeConfig['name'];
             if ($typesManager != null && $typesManager->has($name)) {
                 /** @var ScalarType */
-                $type = $typesManager->get($name);
+                $type = $this->getType($typesManager, $name);
                 if ($type instanceof ScalarType) {
                     $config = [
                         'serialize' => function ($value) use ($type) {
@@ -58,5 +58,24 @@ class SchemaManager
         $schema = BuildSchema::build($appSchema, $typedefinitions);
 
         return $schema;
+    }
+
+    private function getType(?TypesManager $typesManager, $name): ?ScalarType
+    {
+        $type = $typesManager->get($name);
+        if ($type instanceof ScalarType) {
+            return $type;
+        }
+        if (is_string($type)) {
+            try {
+                $typeInstance = new $type();
+                if ($typeInstance instanceof ScalarType) {
+                    return $typeInstance;
+                }
+            } catch (\Throwable $e) {
+                return null;
+            }
+        }
+        return null;
     }
 }

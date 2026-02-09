@@ -13,12 +13,12 @@ use UnexpectedValueException;
 
 final class JSONData extends ScalarType
 {
-    public const SM_NAME = 'JSONData';
+    public const NAME = 'JSONData';
 
     public function __construct(array $config = [])
     {
         parent::__construct($config);
-        $this->name = static::SM_NAME;
+        $this->name = static::NAME;
         $this->description = 'Parse a string to an array';
     }
 
