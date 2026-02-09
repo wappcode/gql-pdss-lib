@@ -24,7 +24,6 @@ $app = new Application($config, $entityManager, $enviroment);
 $app->addModule(
     AppModule::class
 );
-// Poner la instancia de la app en el contexto para que los controladores y servicios puedan acceder a ella
 
 $response = $app->run($request);
 $emitter = new SapiEmitter();
