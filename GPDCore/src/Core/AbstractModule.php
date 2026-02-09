@@ -41,6 +41,11 @@ abstract class AbstractModule implements ModuleProviderInterface
 
     abstract public function getMiddlewares(): array;
 
+    /**
+     * Array con los tipos scalar graphql del módulo. El indice se utiliza como nombre del tipo.
+     *
+     * @return array
+     */
     abstract public function getTypes(): array;
 
     public function registerServices(ServiceManager $serviceManager, AppContextInterface $context): void
