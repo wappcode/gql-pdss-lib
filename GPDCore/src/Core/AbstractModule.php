@@ -35,10 +35,14 @@ abstract class AbstractModule implements ModuleProviderInterface
     /**
      * Array con los resolvers del módulo.
      *
-     * @return array array(string $key => callable $resolver)
+     * @return array array(string $key => callable | \GPDCore\Graphql\ResolverPipeline $resolver)
      */
     abstract public function getResolvers(): array;
 
+    /**
+     *
+     * @return array<\Psr\Http\Server\MiddlewareInterface>
+     */
     abstract public function getMiddlewares(): array;
 
     /**
@@ -116,13 +120,13 @@ abstract class AbstractModule implements ModuleProviderInterface
         ?ServiceManager $serviceManager,
     ): void {
         $this->context = $context;
-        $this->registerMiddleware($middlewareQueue, $context);
-        $this->registerResolvers($resolverManager, $context);
-        $this->registerType($typesManager, $context);
-        $this->registerSchemaChunk($schemaManager, $context);
         $this->registerConfig($config, $context);
         if ($serviceManager) {
             $this->registerServices($serviceManager, $context);
         }
+        $this->registerMiddleware($middlewareQueue, $context);
+        $this->registerType($typesManager, $context);
+        $this->registerSchemaChunk($schemaManager, $context);
+        $this->registerResolvers($resolverManager, $context);
     }
 }
