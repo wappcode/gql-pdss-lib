@@ -2,6 +2,7 @@
 
 namespace GPDCore\Routing;
 
+use GPDCore\Contracts\AppContextInterface;
 use GPDCore\Contracts\AppControllerInterface;
 use Laminas\Diactoros\ResponseFactory;
 use Laminas\Diactoros\StreamFactory;
@@ -62,5 +63,8 @@ abstract class AbstractAppController implements AppControllerInterface
     public function getRouteParams(): ?array
     {
         return $this->routeParams;
+    }
+    public function getAppContext(ServerRequestInterface $request): ?AppContextInterface{
+        return $request->getAttribute(AppContextInterface::class);
     }
 }

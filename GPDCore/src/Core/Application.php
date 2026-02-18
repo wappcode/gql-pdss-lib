@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace GPDCore\Core;
 
 use AppModule\Services\AppRouter;
-use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManager;
 use Exception;
 use GPDCore\Contracts\AppConfigInterface;
