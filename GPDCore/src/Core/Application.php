@@ -100,27 +100,39 @@ class Application
 
         return $this->context;
     }
+    public function withContextAttribute(string $name, mixed $value): void
+    {
+        $context = $this->getContext();
+        $context = $context->withContextAttribute($name, $value);
+        $this->context = $context;
+    }
 
     public function run(ServerRequestInterface $request): ResponseInterface
     {
         $this->applyProductionMode();
         $this->context = $this->createContext();
-        $this->context = $this->context->withContextAttribute(Application::class, $this);
-        $this->registerModules();
+        $this->withContextAttribute(Application::class, $this);
+        // Se registra las diferentes partes de un módulo por separado para evitar que el orden de registro afecte, por ejemplo, que un módulo necesite registrar servicios para luego registrar los resolvers que los utilizan
+        // Esto tambien permite que se sobreescriban los servicios y así todos usan la misma instancia que sería la última que se registro evitando que un modulo utilice una y cuando otro modulo la sobreescribe utiliza otra.
+        $this->setApplicationToModules($this);
+        $this->registerModulesConfig($this->context);
+        $this->registerModulesServices($this->context);
+        $this->registerModulesMiddleware($this->middlewareQueue, $this->context);
+        $this->registerModulesGraphQLConfig($this->context);
+
         // Ejecuta la cola de middlewares FrameworkHandler y ese a su vez ejecuta $app->dispatch() de la aplicación
         $this->request = $request;
-        $this->request = $request->withAttribute(AppContextInterface::class, $this->context);
         $this->request = $request->withAttribute(Application::class, $this);
         $response = $this->middlewareQueue->handle($this->request);
 
         return $response;
     }
 
-    public function dispatch(): ResponseInterface
+    public function dispatch(ServerRequestInterface $request): ResponseInterface
     {
         $this->started = true;
-
-        return $this->router->dispatch($this->request);
+        $this->withContextAttribute(ServerRequestInterface::class, $request);
+        return $this->router->dispatch($request);
     }
 
     public function isProductionMode(): bool
@@ -196,18 +208,38 @@ class Application
         return $this->resolverManager;
     }
 
-    private function registerModules(): void
+    private function setApplicationToModules(Application $application): void
     {
         foreach ($this->modules as $module) {
-            $module->registerModule(
-                $this->schemaManager,
-                $this->resolverManager,
-                $this->middlewareQueue,
-                $this->typesManager,
-                $this->config,
-                $this->context,
-                $this->serviceManager,
-            );
+            $module->setApplication($this);
+        }
+    }
+    private function registerModulesConfig(AppContextInterface $context): void
+    {
+        $config = $context->getConfig();
+        foreach ($this->modules as $module) {
+            $module->registerConfig($config, $context);
+        }
+    }
+    private function registerModulesServices(AppContextInterface $context): void
+    {
+        $serviceManager = $context->getServiceManager();
+        foreach ($this->modules as $module) {
+            $module->registerServices($serviceManager, $context);
+        }
+    }
+    private function registerModulesMiddleware(MiddlewareQueue $middlewareQueue, AppContextInterface $context): void
+    {
+        foreach ($this->modules as $module) {
+            $module->registerMiddleware($middlewareQueue, $context);
+        }
+    }
+    private function registerModulesGraphQLConfig(AppContextInterface $context): void
+    {
+        foreach ($this->modules as $module) {
+            $module->registerType($this->typesManager, $context);
+            $module->registerSchemaChunk($this->schemaManager, $context);
+            $module->registerResolvers($this->resolverManager, $context);
         }
     }
     /**
