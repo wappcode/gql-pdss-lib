@@ -1,76 +1,124 @@
 # GQLPDSS-lib
 
-Ingresa al siguiente link para más información. [Quick Start](https://wappcode.github.io/gql-pdss-lib-docs?1)
+**Una librería PHP moderna para crear APIs GraphQL escalables con Doctrine ORM, arquitectura modular y funcionalidades avanzadas como DataLoaders y middleware.**
 
-## Intalar
+[![Versión](https://img.shields.io/badge/version-5.0.0-blue)](https://github.com/wappcode/gql-pdss-lib)
+[![PHP](https://img.shields.io/badge/PHP-8.2%2B-777BB4)](https://www.php.net/)
+[![Doctrine](https://img.shields.io/badge/Doctrine-ORM%203-orange)](https://www.doctrine-project.org/)
+[![GraphQL](https://img.shields.io/badge/GraphQL-15.19.1-E10098)](https://graphql.org/)
 
-## Usar Composer
+## 📚 Documentación Completa
 
-Ejecutar
+Para información detallada, visita: [Quick Start Guide](https://wappcode.github.io/gql-pdss-lib-docs?1)
 
-    ./composer.phar init
+## ✨ Características Principales
 
-Agregar al archivo composer.json las referencias a la libreria
+- 🚀 **API GraphQL completa** 
+- 🏗️ **Arquitectura modular** flexible y escalable  
+- 🔄 **Resolvers automáticos** para operaciones CRUD con Doctrine ORM
+- ⚡ **DataLoaders integrados** para prevenir el problema N+1
+- 🔧 **Middleware pipeline** para lógica transversal (auth, logging, cache)
+- 📄 **Paginación estilo Relay** con cursor-based pagination
+- 🎯 **Tipos GraphQL personalizados** (DateTime, Date, JSON)
+- 🐳 **Entorno Docker** preconfigurado para desarrollo
+- 📋 **Sistema de filtros avanzado** con múltiples operadores
 
-    {
-    "name": "name/project",
+## 🛠️ Instalación
+
+### Usar Composer
+
+### 1. Crear nuevo proyecto
+
+```bash
+composer init
+```
+
+### 2. Instalar la librería
+
+```bash
+composer require wappcode/gqlpdss:^5.0.0
+```
+
+O agregar al `composer.json`:
+
+```json
+{
+    "name": "mi-proyecto/graphql-api",
     "type": "project",
     "require": {
-        "wappcode/gqlpdss": "^2.0.0"
+        "wappcode/gqlpdss": "^5.0.0"
     },
+    "require-dev": {
+        "phpunit/phpunit": "^10.0"
     }
+}
+```
 
-Ejecutar
+```bash
+composer install
+```
 
-    ./composer.phar install
+### 3. Estructura del proyecto
 
-Crear estructura de directorios
+Crea la siguiente estructura de directorios:
 
-    config
-    data
-    modules
-    public
+```
+mi-proyecto/
+├── config/
+│   ├── master.config.php
+│   ├── doctrine.local.php
+│   └── doctrine.entities.php
+├── data/
+│   └── DoctrineORMModule/
+├── modules/
+│   └── AppModule/
+│       ├── config/
+│       │   ├── module.config.php
+│       │   └── schema.graphql
+│       └── src/
+│           ├── AppModule.php
+│           ├── Entities/
+│           ├── Graphql/
+│           └── Services/
+├── public/
+│   └── index.php
+├── cli-config.php
+└── composer.json
+```
 
-Crear módulo principal AppModule en la carpeta modules
+## ⚙️ Configuración
 
-Crear la siguiente estructura de directorios
+### 1. Configurar el módulo principal
 
-    modules
-        AppModule
-            config
-                module.config.php
-                schema.graphql (opcional)
-            src
-                AppModule.php
-                Entities
-                Graphql
-                    Resolvers*.php (opcional, para organizar resolvers)
-                Services
-
-Crear archivo modules/AppModule/config/module.config.php
+#### Crear `modules/AppModule/config/module.config.php`
 
 ```php
 <?php
 return [
     // Configuración específica del módulo
+    'version' => '1.0.0',
+    'description' => 'Módulo principal de la aplicación'
 ];
 ```
 
-Agregar el archivo modules/AppModule/src/AppModule.php
+#### Crear `modules/AppModule/src/AppModule.php`
 
 ```php
 <?php
 
 namespace AppModule;
 
+use AppModule\Entities\User;
+use DateTime;
+use GPDCore\Contracts\AppContextInterface;
 use GPDCore\Core\AbstractModule;
 use GPDCore\Graphql\ResolverFactory;
-use GPDCore\Contracts\AppContextInterface;
+use GPDCore\Graphql\ResolverPipelineFactory;
 
 class AppModule extends AbstractModule
 {
     /**
-     * Array con la configuración del módulo.
+     * Configuración del módulo
      */
     public function getConfig(): array
     {
@@ -78,16 +126,16 @@ class AppModule extends AbstractModule
     }
 
     /**
-     * Schema GraphQL del módulo 
+     * Schema GraphQL del módulo
      */
     public function getSchema(): string
     {
-        $schema = @file_get_contents(__DIR__ . '/../config/schema.graphql');
+        $schema = file_get_contents(__DIR__ . '/../config/schema.graphql');
         return $schema ?: '';
     }
 
     /**
-     * Servicios del módulo para ServiceManager.
+     * Servicios del módulo para ServiceManager
      */
     public function getServices(): array
     {
@@ -99,7 +147,7 @@ class AppModule extends AbstractModule
     }
 
     /**
-     * Tipos GraphQL personalizados del módulo.
+     * Tipos GraphQL personalizados
      */
     public function getTypes(): array
     {
@@ -107,7 +155,7 @@ class AppModule extends AbstractModule
     }
 
     /**
-     * Middlewares HTTP del módulo.
+     * Middlewares HTTP del módulo
      */
     public function getMiddlewares(): array
     {
@@ -115,91 +163,128 @@ class AppModule extends AbstractModule
     }
 
     /**
-     * Resolvers GraphQL del módulo.
-     * 
-     * @return array array(string $key => callable $resolver)
+     * Rutas REST del módulo (opcional)
      */
-    public function getResolvers(): array
-    {
-        return [
-            // Ejemplo de resolver simple
-            'Query::echo' => fn($root, $args, AppContextInterface $context, $info) => $args['message'],
-            
-            // Ejemplo usando ResolverFactory para CRUD
-            // 'Query::getUsers' => ResolverFactory::forConnection(User::class),
-            // 'Query::getUser' => ResolverFactory::forItem(User::class),
-            // 'Mutation::createUser' => ResolverFactory::forCreate(User::class),
-            // 'Mutation::updateUser' => ResolverFactory::forUpdate(User::class),
-            // 'Mutation::deleteUser' => ResolverFactory::forDelete(User::class),
-        ];
-    }
-
-    /**
-     * Campos Query definidos programáticamente (opcional).
-     * Nota: Preferible usar schema.graphql + getResolvers()
-     */
-    public function getQueryFields(): array
+    public function getRoutes(): array
     {
         return [];
     }
 
     /**
-     * Campos Mutation definidos programáticamente (opcional).
-     * Nota: Preferible usar schema.graphql + getResolvers()
+     * Resolvers GraphQL del módulo
      */
-    public function getMutationFields(): array
+    public function getResolvers(): array
+    {
+        // Middleware de ejemplo
+        $proxyEcho1 = fn($resolver) => fn($root, $args, $context, $info) => 
+            'Proxy 1 ' . $resolver($root, $args, $context, $info);
+        $proxyEcho2 = fn($resolver) => fn($root, $args, $context, $info) => 
+            'Proxy 2 ' . $resolver($root, $args, $context, $info);
+        $echoResolve = fn($root, $args, $context, $info) => $args['msg'];
+
+        return [
+            // Resolver simple
+            'Query::showDate' => fn($root, $args, AppContextInterface $context, $info) => new DateTime(),
+            'Query::echo' => $echoResolve,
+            
+            // Resolvers con middleware pipeline
+            'Query::echoProxy' => ResolverPipelineFactory::createPipeline($echoResolve, [
+                ResolverPipelineFactory::createWrapper($proxyEcho1),
+            ]),
+            'Query::echoProxies' => ResolverPipelineFactory::createPipeline($echoResolve, [
+                ResolverPipelineFactory::createWrapper($proxyEcho2),
+                ResolverPipelineFactory::createWrapper($proxyEcho1),
+            ]),
+            
+            // Resolvers CRUD automáticos usando ResolverFactory
+            'Query::getUsers' => ResolverFactory::forConnection(User::class),
+            'Query::getUser' => ResolverFactory::forItem(User::class),
+            'Mutation::createUser' => ResolverFactory::forCreate(User::class),
+            'Mutation::updateUser' => ResolverFactory::forUpdate(User::class),
+            'Mutation::deleteUser' => ResolverFactory::forDelete(User::class),
+        ];
+    }
+
+    /**
+     * Campos Query adicionales (opcional)
+     */
+    public function getQueryFields(): array
     {
         return [];
     }
 }
 ```
 
-Agregar al archivo composer.json el siguiente código
+#### Configurar el autoload en `composer.json`
 
-     "autoload": {
+```json
+{
+    "autoload": {
         "psr-4": {
             "AppModule\\": "modules/AppModule/src/"
         }
     }
-
-Ejecutar ./composer.phar dump-autoload -o
-
-Crear un archivo de configuración maestro
-
+}
 ```
-config/master.config.php
+
+```bash
+composer dump-autoload -o
 ```
+
+### 2. Archivos de configuración
+
+#### Crear `config/master.config.php`
 
 ```php
 <?php
 return [
     // Configuración general de la aplicación
+    'app' => [
+        'name' => 'Mi API GraphQL',
+        'version' => '1.0.0',
+        'debug' => false
+    ],
+    
 ];
 ```
 
-Crear un archivo para configuración local (no versionado)
-
-```
-config/local.config.php (opcional)
-```
+#### Crear `config/doctrine.entities.php`
 
 ```php
 <?php
 return [
-    // Configuración local que sobreescribe master.config.php
+    "AppModule\\Entities" => __DIR__ . "/../modules/AppModule/src/Entities",
 ];
 ```
 
-Crear un archivo public/index.php con el siguiente contenido
+#### Crear `config/doctrine.local.php`
+
+```php
+<?php
+return [
+    "driver" => [
+        'user'     => 'root',
+        'password' => 'password',
+        'dbname'   => 'mi_database',
+        'driver'   => 'pdo_mysql',
+        'host'     => '127.0.0.1',
+        'charset'  => 'utf8mb4'
+    ],
+    "entities" => require __DIR__ . "/doctrine.entities.php"
+];
+```
+
+#### Crear `public/index.php`
 
 ```php
 <?php
 
 use AppModule\AppModule;
-use GPDCore\Factory\EntityManagerFactory;
+use GPDCore\Contracts\AppContextInterface;
 use GPDCore\Core\AppConfig;
 use GPDCore\Core\Application;
-use GPDCore\Contracts\AppContextInterface;
+use GPDCore\Factory\EntityManagerFactory;
+use GraphqlModule\GraphqlModule;
 use Laminas\Diactoros\ServerRequestFactory;
 use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
 use Laminas\ServiceManager\ServiceManager;
@@ -209,24 +294,33 @@ require_once __DIR__ . '/../vendor/autoload.php';
 // Configuración
 $configFile = __DIR__ . '/../config/doctrine.local.php';
 $cacheDir = __DIR__ . '/../data/DoctrineORMModule';
-$enviroment = getenv('APP_ENV') ?: 'development';
-$masterConfig = require __DIR__ . '/../config/master.config.php';
+$environment = getenv('APP_ENV') ?: AppContextInterface::ENV_DEVELOPMENT;
 
-// Inicializar ServiceManager y Config
-$serviceManager = new ServiceManager();
+// Cargar configuración
+$masterConfig = require __DIR__ . '/../config/master.config.php';
 $config = AppConfig::getInstance()->setMasterConfig($masterConfig);
 
+// Inicializar ServiceManager
+$serviceManager = new ServiceManager();
+
 // Crear EntityManager
-$options = file_exists($configFile) ? require $configFile : [];
-$isDevMode = $enviroment !== AppContextInterface::ENV_PRODUCTION;
-$entityManager = EntityManagerFactory::createInstance($options, $cacheDir, $isDevMode);
+$entityManagerOptions = file_exists($configFile) ? require $configFile : [];
+$isEntityManagerDevMode = $environment !== AppContextInterface::ENV_PRODUCTION;
+$entityManager = EntityManagerFactory::createInstance(
+    $entityManagerOptions, 
+    $cacheDir, 
+    $isEntityManagerDevMode
+);
 
 // Crear Request PSR-7
 $request = ServerRequestFactory::fromGlobals();
 
 // Crear y configurar Application
-$app = new Application($config, $entityManager, $enviroment);
-$app->addModule(AppModule::class);
+$app = new Application($config, $entityManager, $environment);
+
+// Registrar módulos
+$app->addModule(new GraphqlModule(route: '/api'))    // GraphQL endpoint
+   ->addModule(AppModule::class);                      // Módulo principal
 
 // Ejecutar aplicación y emitir respuesta
 $response = $app->run($request);
@@ -234,257 +328,267 @@ $emitter = new SapiEmitter();
 $emitter->emit($response);
 ```
 
-Agregar archivo config/doctrine.entities.php con el siguiente contenido
-
-    <?php
-
-    return  [
-        "AppModule\Entities" => __DIR__."/../modules/AppModule/src/Entities",
-    ];
-
-Agregar archivo config/doctrine.local.php con el siguiente contenido
-
-    <?php
-    return [
-        "driver"=> [
-            'user'     =>   '',
-            'password' =>   '',
-            'dbname'   =>   '',
-            'driver'   =>   'pdo_mysql',
-            'host'   =>     '127.0.0.1',
-            'charset' =>    'utf8mb4'
-        ],
-        "entities"=> require __DIR__."/doctrine.entities.php"
-    ];
-
-Crear archivo cli-config.php con el siguiente código
-
-    <?php
-
-    use GPDCore\Factory\EntityManagerFactory;
-    use Doctrine\ORM\Tools\Console\ConsoleRunner;
-
-    require_once __DIR__."/vendor/autoload.php";
-    $options = require __DIR__."/config/doctrine.local.php";
-    $cacheDir = __DIR__ . "/data/DoctrineORMModule";
-    $entityManager = EntityManagerFactory::createInstance($options, $cacheDir, true, '');
-
-    return ConsoleRunner::createHelperSet($entityManager);
-
-## Crear entities en AppModule
-
-Crear archivo modules/AppModule/src/Entities/Post.php
-
-    <?php
-
-    declare(strict_types=1);
-
-    namespace GraphQLTests\Doctrine\Blog\Model;
-
-    use DateTimeImmutable;
-    use Doctrine\ORM\Mapping as ORM;
-    use GPDCore\Entities\AbstractEntityModel;
-
-    /**
-    *
-    * @ORM\Entity
-    *
-    */
-    final class Post extends AbstractEntityModel
-    {
-        const STATUS_PRIVATE = 'private';
-        const STATUS_PUBLIC = 'public';
-
-        /**
-        * @var string
-        *
-        * @ORM\Column(type="string", length=50, options={"default" = ""})
-        */
-        private $title = '';
-
-        /**
-        * @var string
-        *
-        * @ORM\Column(type="text")
-        */
-        private $body = '';
-
-        /**
-        * @var DateTimeImmutable
-        *
-        * @ORM\Column(type="datetime_immutable")
-        */
-        private $publicationDate;
-
-        /**
-        * @var string
-        *
-        * @ORM\Column(type="string", options={"default" = Post::STATUS_PRIVATE})
-        */
-        private $status = self::STATUS_PRIVATE;
-
-
-        /**
-        *
-        * @return  string
-        */
-        public function getTitle(): string
-        {
-            return $this->title;
-        }
-
-        /**
-        *
-        * @param  string  $title
-        *
-        * @return  self
-        */
-        public function setTitle(string $title)
-        {
-            $this->title = $title;
-
-            return $this;
-        }
-
-        /**
-        *
-        * @return  string
-        */
-        public function getBody(): string
-        {
-            return $this->body;
-        }
-
-        /**
-        *
-        * @param  string  $body
-        *
-        * @return  self
-        */
-        public function setBody(string $body)
-        {
-            $this->body = $body;
-
-            return $this;
-        }
-
-        /**
-        *
-        * @return  DateTimeImmutable
-        */
-        public function getPublicationDate(): DateTimeImmutable
-        {
-            return $this->publicationDate;
-        }
-
-        /**
-        *
-        * @param  DateTimeImmutable  $publicationDate
-        *
-        * @return  self
-        */
-        public function setPublicationDate(DateTimeImmutable $publicationDate)
-        {
-            $this->publicationDate = $publicationDate;
-
-            return $this;
-        }
-
-        /**
-        *
-        * @return  string
-        */
-        public function getStatus()
-        {
-            return $this->status;
-        }
-
-        /**
-        *
-        * @param  string  $status
-        *
-        * @return  self
-        */
-        public function setStatus(string $status)
-        {
-            $this->status = $status;
-
-            return $this;
-        }
-    }
-
-Actualizar archivo doctrine.entities.php con la ubicación de las entidades
-
-    return  [
-            "AppModule\Entities" => __DIR__."/../modules/AppModule/src/Entities",
-    ]
-
-Ejecutar el siguiente comando para generar el código SQL para actualizar la base de datos
-
-    ./vendor/bin/doctrine orm:schema-tool:update --dump-sql
-
-O Ejecutar el siguiente comando para actualizar la base de datos
-
-    ./vendor/bin/doctrine orm:schema-tool:update --force
-
-NOTA: Estos comandos no deben ser utilizados en producción
-
-Iniciar con el comándo
-
-    php -S localhost:8000 public/index.php
-
-Para consultar api Graphql la ruta es http://localhost:8000/api
-
-# API
-
-### ConnectionTypeFactory
-
-Clase que genera tipos connection para consultas de listas con paginación
-
-#### Metodos
-
-createConnectionType (\GraphQL\Type\Definition\ObjectType $type, string $name, string $description): \GraphQL\Type\Definition\ObjectType
-
-Crea un tipo connection con los siguientes campos
-
-    {
-        totalCount: int!
-        pageInfo: PaginationInput {
-            hasPreviousPage: bool!
-            hasNextPage: bool!
-            startCursor: string!
-            endCursor: string!
-        },
-        edges: [EdgeType]! {
-            cursor: string!,
-            node: ObjectType!
-        }
-    }
-
-createEdgeType(\GraphQL\Type\Definition\ObjectType $nodeType): \GraphQL\Type\Definition\ObjectType
-
-Crea un tipo Edge
-
-    {
-        cursor: string!,
-        node: ObjectType!
-    }
-
-### ResolverFactory
-
-Clase que facilita la creación de resolvers para operaciones CRUD comunes con Doctrine ORM.
-
-#### Métodos principales
-
-**forConnection(string $entityClass, ?QueryModifierInterface $queryModifier = null): callable**
-
-Crea un resolver para consultas paginadas siguiendo el estándar Relay Connection.
+#### Crear `cli-config.php` (para comandos Doctrine CLI)
 
 ```php
-'Query::getUsers' => ResolverFactory::forConnection(User::class)
+<?php
+
+use GPDCore\Factory\EntityManagerFactory;
+use Doctrine\ORM\Tools\Console\ConsoleRunner;
+
+require_once __DIR__ . "/vendor/autoload.php";
+
+$options = require __DIR__ . "/config/doctrine.local.php";
+$cacheDir = __DIR__ . "/data/DoctrineORMModule";
+$entityManager = EntityManagerFactory::createInstance($options, $cacheDir, true);
+
+return ConsoleRunner::createHelperSet($entityManager);
 ```
 
-**forItem(string $entityClass): callable**
+## 💾 Trabajando con Entidades Doctrine
+
+### Ejemplo de Entidad User
+
+Crear `modules/AppModule/src/Entities/User.php`:
+
+```php
+<?php
+
+namespace AppModule\Entities;
+
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
+use GPDCore\Entities\AbstractEntityModelStringId;
+
+#[ORM\Entity()]
+#[ORM\Table(name: 'users')]
+class User extends AbstractEntityModelStringId
+{
+    #[ORM\Column(type: 'string', length: 255)]
+    private string $name;
+
+    #[ORM\Column(type: 'string', length: 255)]
+    private string $email;
+
+    #[ORM\JoinTable(name: 'users_accounts')]
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
+    #[ORM\InverseJoinColumn(name: 'account_code', referencedColumnName: 'code', nullable: false)]
+    #[ORM\ManyToMany(targetEntity: Account::class)]
+    private Collection $accounts;
+
+    #[ORM\OneToMany(targetEntity: Post::class, mappedBy: 'user')]
+    private Collection $posts;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->accounts = new ArrayCollection();
+        $this->posts = new ArrayCollection();
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): self
+    {
+        $this->name = $name;
+        return $this;
+    }
+
+    public function getEmail(): string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): self
+    {
+        $this->email = $email;
+        return $this;
+    }
+
+    public function getAccounts(): Collection
+    {
+        return $this->accounts;
+    }
+
+    public function getPosts(): Collection
+    {
+        return $this->posts;
+    }
+}
+```
+
+### Comandos Doctrine útiles
+
+```bash
+# Generar SQL para actualizar la base de datos
+./vendor/bin/doctrine orm:schema-tool:update --dump-sql
+
+# Actualizar la base de datos (⚠️  Solo en desarrollo)
+./vendor/bin/doctrine orm:schema-tool:update --force
+
+# Crear migración
+./vendor/bin/doctrine migrations:diff
+
+# Ejecutar migraciones
+./vendor/bin/doctrine migrations:migrate
+
+# Validar mapping
+./vendor/bin/doctrine orm:validate-schema
+```
+
+## 🚀 Ejecutar la aplicación
+
+### Desarrollo local
+
+```bash
+# Servidor de desarrollo PHP
+php -S localhost:8000 public/index.php
+
+```
+
+### Endpoints disponibles
+
+- **GraphQL API**: 
+  - `GET/POST http://localhost:8000/api` (desarrollo)
+  - `POST http://localhost:8000/api` (producción)
+
+## 📋 Schema GraphQL básico
+
+Crear `modules/AppModule/config/schema.graphql`:
+
+```graphql
+type Query {
+    # Consultas básicas
+    showDate: DateTime!
+    echo(msg: String!): String!
+    echoProxy(msg: String!): String!
+    echoProxies(msg: String!): String!
+    
+    # CRUD de usuarios
+    getUsers(
+        pagination: PaginationInput
+        filters: [FilterGroupInput!]
+        joins: [JoinInput!]
+        orderBy: [OrderByInput!]
+    ): UserConnection!
+    
+    getUser(id: ID!): User
+}
+
+type Mutation {
+    createUser(input: UserInput!): User!
+    updateUser(id: ID!, input: UserInput!): User!
+    deleteUser(id: ID!): Boolean!
+}
+
+type User {
+    id: ID!
+    name: String!
+    email: String!
+    accounts: [Account!]!
+    posts: [Post!]!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+}
+
+input UserInput {
+    name: String!
+    email: String!
+}
+
+# Tipos de conexión para paginación
+type UserConnection {
+    totalCount: Int!
+    pageInfo: PageInfo!
+    edges: [UserEdge!]!
+}
+
+type UserEdge {
+    cursor: String!
+    node: User!
+}
+
+type PageInfo {
+    hasNextPage: Boolean!
+    hasPreviousPage: Boolean!
+    startCursor: String
+    endCursor: String
+}
+
+# Tipos escalares personalizados (incluidos automáticamente)
+scalar DateTime
+scalar Date  
+scalar JSONData
+```
+
+# 📚 API Reference
+
+## 🔧 ResolverFactory
+
+La clase `ResolverFactory` simplifica la creación de resolvers CRUD automáticos con Doctrine ORM.
+
+### Métodos principales
+
+#### `forConnection(string $entityClass, ?QueryModifierInterface $queryModifier = null): callable`
+
+Crea un resolver para consultas paginadas estilo Relay Connection con soporte completo para filtros, ordenamiento y joins.
+
+```php
+// Resolver básico
+'Query::getUsers' => ResolverFactory::forConnection(User::class)
+
+// Con modificador de query personalizado
+'Query::getActiveUsers' => ResolverFactory::forConnection(
+    User::class, 
+    new class implements QueryModifierInterface {
+        public function modify(QueryBuilder $qb, array $args): QueryBuilder {
+            return $qb->andWhere('entity.status = :status')
+                     ->setParameter('status', 'active');
+        }
+    }
+)
+```
+
+**Ejemplo de uso en GraphQL:**
+
+```graphql
+query GetUsers {
+    getUsers(
+        pagination: { first: 10, after: "cursor123" }
+        filters: [{
+            conditions: [{
+                property: "name"
+                filterOperator: LIKE
+                value: { single: "%John%" }
+            }]
+        }]
+        orderBy: [{ property: "createdAt", direction: DESC }]
+    ) {
+        totalCount
+        pageInfo {
+            hasNextPage
+            hasPreviousPage
+            startCursor
+            endCursor
+        }
+        edges {
+            cursor
+            node {
+                id
+                name
+                email
+                createdAt
+            }
+        }
+    }
+}
+```
+
+#### `forItem(string $entityClass): callable`
 
 Crea un resolver para obtener un único elemento por ID.
 
@@ -492,15 +596,39 @@ Crea un resolver para obtener un único elemento por ID.
 'Query::getUser' => ResolverFactory::forItem(User::class)
 ```
 
-**forCreate(string $entityClass): callable**
+```graphql
+query GetUser {
+    getUser(id: "user-123") {
+        id
+        name
+        email
+    }
+}
+```
 
-Crea un resolver para operaciones de creación.
+#### `forCreate(string $entityClass): callable`
+
+Crea un resolver para operaciones de creación con validación automática.
 
 ```php
 'Mutation::createUser' => ResolverFactory::forCreate(User::class)
 ```
 
-**forUpdate(string $entityClass): callable**
+```graphql
+mutation CreateUser {
+    createUser(input: {
+        name: "John Doe"
+        email: "john@example.com"
+    }) {
+        id
+        name
+        email
+        createdAt
+    }
+}
+```
+
+#### `forUpdate(string $entityClass): callable`
 
 Crea un resolver para operaciones de actualización.
 
@@ -508,78 +636,514 @@ Crea un resolver para operaciones de actualización.
 'Mutation::updateUser' => ResolverFactory::forUpdate(User::class)
 ```
 
-**forDelete(string $entityClass): callable**
+```graphql
+mutation UpdateUser {
+    updateUser(
+        id: "user-123"
+        input: {
+            name: "Jane Doe"
+            email: "jane@example.com"
+        }
+    ) {
+        id
+        name
+        email
+        updatedAt
+    }
+}
+```
 
-Crea un resolver para operaciones de eliminación.
+#### `forDelete(string $entityClass): callable`
+
+Crea un resolver para operaciones de eliminación (soft delete si está configurado).
 
 ```php
 'Mutation::deleteUser' => ResolverFactory::forDelete(User::class)
 ```
 
-**forEntity(DataLoaderInterface $dataLoader, string $fieldName): callable**
-
-Crea un resolver para relaciones many-to-one usando DataLoader (prevención N+1).
-
-```php
-$buffer = new EntityDataLoader(User::class, $entityManager);
-'Post::author' => ResolverFactory::forEntity($buffer, 'author')
+```graphql
+mutation DeleteUser {
+    deleteUser(id: "user-123")
+}
 ```
 
-**forCollection(string $entityClass, string $fieldName, string $targetEntity, ?QueryModifierInterface $queryModifier = null): callable**
+### Resolvers para relaciones (prevención N+1)
+
+#### `forEntity(DataLoaderInterface $dataLoader, string $fieldName): callable`
+
+Crea un resolver para relaciones many-to-one usando DataLoader.
+
+```php
+use GPDCore\DataLoaders\EntityDataLoader;
+
+$userDataLoader = new EntityDataLoader(User::class, $entityManager);
+
+// En el módulo
+'Post::author' => ResolverFactory::forEntity($userDataLoader, 'author')
+```
+
+#### `forCollection(string $entityClass, string $fieldName, string $targetEntity, ?QueryModifierInterface $queryModifier = null): callable`
 
 Crea un resolver para relaciones one-to-many usando DataLoader.
 
 ```php
 'User::posts' => ResolverFactory::forCollection(User::class, 'posts', Post::class)
+'User::activePosts' => ResolverFactory::forCollection(
+    User::class, 
+    'posts', 
+    Post::class,
+    new class implements QueryModifierInterface {
+        public function modify(QueryBuilder $qb, array $args): QueryBuilder {
+            return $qb->andWhere('target.status = :status')
+                     ->setParameter('status', 'published');
+        }
+    }
+)
 ```
+<!-- TODO: Documentar forCollectionCount -->
 
-### ResolverMiddleware
+## 🔄 ResolverPipelineFactory
 
-Permite aplicar middleware a resolvers GraphQL para agregar lógica transversal (autenticación, logging, etc.).
+Sistema de middleware para resolvers GraphQL que permite aplicar lógica transversal.
 
-#### Métodos
+### Métodos principales
 
-**wrap(callable $resolver, ResolverPipelineHandlerInterface|callable|null $middleware): callable**
+#### `createPipeline(callable $resolver, array $middlewares): callable`
 
-Envuelve un resolver con un middleware.
+Crea un pipeline de middleware para un resolver.
 
 ```php
-$authMiddleware = fn($next) => fn($root, $args, $context, $info) => {
+// Middleware de ejemplo
+$authMiddleware = fn($resolver) => fn($root, $args, $context, $info) => {
     if (!$context->isAuthenticated()) {
-        throw new UnauthorizedException();
+        throw new UnauthorizedException('Authentication required');
     }
-    return $next($root, $args, $context, $info);
+    return $resolver($root, $args, $context, $info);
 };
 
-'Query::protected' => ResolverMiddleware::wrap($resolver, $authMiddleware)
-```
+$loggingMiddleware = fn($resolver) => fn($root, $args, $context, $info) => {
+    $startTime = microtime(true);
+    $result = $resolver($root, $args, $context, $info);
+    $duration = microtime(true) - $startTime;
+    error_log("Resolver {$info->fieldName} executed in {$duration}s");
+    return $result;
+};
 
-**chain(callable $resolver, array $middlewares): callable**
-
-Aplica múltiples middlewares en secuencia.
-
-```php
-'Query::echo' => ResolverMiddleware::chain($echoResolver, [
-    $authMiddleware,
-    $loggingMiddleware,
-    $cachingMiddleware
+// Aplicar middlewares (se ejecutan en orden inverso)
+'Query::protectedData' => ResolverPipelineFactory::createPipeline($baseResolver, [
+    ResolverPipelineFactory::createWrapper($loggingMiddleware),
+    ResolverPipelineFactory::createWrapper($authMiddleware),
 ])
 ```
 
-### MiddlewareCallable
+#### `createWrapper(callable $middleware): ResolverPipelineHandlerInterface`
 
-Clase para crear middlewares reutilizables que implementan `ResolverPipelineHandlerInterface`.
+Convierte una función middleware en un handler de pipeline.
 
 ```php
-use GPDCore\Graphql\MiddlewareCallable;
+$cacheMiddleware = fn($resolver) => fn($root, $args, $context, $info) => {
+    $cacheKey = "resolver_{$info->fieldName}_" . md5(serialize($args));
+    
+    if ($cached = $context->getCache()->get($cacheKey)) {
+        return $cached;
+    }
+    
+    $result = $resolver($root, $args, $context, $info);
+    $context->getCache()->set($cacheKey, $result, 300); // 5 min
+    
+    return $result;
+};
 
-$authMiddleware = MiddlewareCallable::create(function(callable $next) {
-    return function($root, $args, $context, $info) use ($next) {
-        // Lógica antes
-        $result = $next($root, $args, $context, $info);
-        // Lógica después
-        return $result;
-    };
-});
+$wrappedMiddleware = ResolverPipelineFactory::createWrapper($cacheMiddleware);
 ```
+
+
+## 🎯 Tipos GraphQL personalizados
+
+La librería incluye tipos escalares personalizados listos para usar:
+
+### DateTimeType
+- **Nombre**: `DateTime`
+- **Descripción**: Fecha y hora en formato ISO 8601
+- **Ejemplo**: `"2024-01-15T10:30:00Z"`
+
+### DateType  
+- **Nombre**: `Date`
+- **Descripción**: Fecha en formato ISO (solo fecha)
+- **Ejemplo**: `"2024-01-15"`
+
+### JSONData
+- **Nombre**: `JSONData` 
+- **Descripción**: Datos JSON arbitrarios
+- **Ejemplo**: `{"key": "value", "nested": {"data": 123}}`
+
+### Registro de tipos en módulos
+
+```php
+public function getTypes(): array
+{
+    return [
+        DateType::NAME => DateType::class,
+        DateTimeType::NAME => DateTimeType::class,
+        JSONData::NAME => JSONData::class,
+        // Tus tipos personalizados
+        'MyCustomType' => MyCustomType::class,
+    ];
+}
+```
+
+## 🔍 Sistema de filtros avanzado
+
+La librería incluye un sistema de filtros robusto que soporta operadores complejos, joins y lógica AND/OR.
+
+### Operadores disponibles
+
+```graphql
+enum FilterOperator {
+  EQUAL
+  NOT_EQUAL  
+  BETWEEN
+  GREATER_THAN
+  LESS_THAN
+  GREATER_EQUAL_THAN
+  LESS_EQUAL_THAN
+  LIKE
+  NOT_LIKE
+  IN
+  NOT_IN
+}
+```
+
+### Ejemplo de filtros complejos
+
+```graphql
+query GetFilteredUsers {
+  getUsers(
+    # Filtros con lógica AND/OR
+    filters: [{
+      groupLogic: AND
+      conditionsLogic: OR
+      conditions: [
+        {
+          property: "name"
+          filterOperator: LIKE
+          value: { single: "%John%" }
+        }
+        {
+          property: "email"
+          filterOperator: LIKE  
+          value: { single: "%gmail%" }
+        }
+      ]
+    }]
+    
+    # Joins para filtrar por propiedades relacionadas
+    joins: [{
+      property: "posts"
+      joinType: INNER
+      alias: "userPosts"
+    }]
+    
+    # Ordenamiento
+    orderBy: [{
+      property: "createdAt"
+      direction: DESC
+    }]
+    
+    # Paginación
+    pagination: {
+      first: 20
+      after: "cursor123"
+    }
+  ) {
+    totalCount
+    edges {
+      node {
+        id
+        name
+        email
+        posts {
+          id
+          title
+        }
+      }
+    }
+  }
+}
+```
+
+## 🚀 Ejemplos prácticos
+
+### 1. API completa de Blog
+
+```php
+// modules/AppModule/src/AppModule.php
+class AppModule extends AbstractModule
+{
+    public function getResolvers(): array
+    {
+        return [
+            // Consultas básicas
+            'Query::getPosts' => ResolverFactory::forConnection(Post::class),
+            'Query::getPost' => ResolverFactory::forItem(Post::class),
+            'Query::getUsers' => ResolverFactory::forConnection(User::class),
+            'Query::getUser' => ResolverFactory::forItem(User::class),
+            
+            // Mutaciones
+            'Mutation::createPost' => ResolverFactory::forCreate(Post::class),
+            'Mutation::updatePost' => ResolverFactory::forUpdate(Post::class),
+            'Mutation::deletePost' => ResolverFactory::forDelete(Post::class),
+            
+            // Relaciones (prevención N+1)
+            'Post::author' => ResolverFactory::forEntity(
+                new EntityDataLoader(User::class, $this->entityManager), 
+                'author'
+            ),
+            'User::posts' => ResolverFactory::forCollection(
+                User::class, 
+                'posts', 
+                Post::class
+            ),
+            
+            // Resolver personalizado con middleware
+            'Mutation::publishPost' => ResolverPipelineFactory::createPipeline(
+                function($root, $args, AppContextInterface $context, $info) {
+                    $post = $context->getEntityManager()
+                        ->getRepository(Post::class)
+                        ->find($args['id']);
+                    
+                    if (!$post) {
+                        throw new \Exception('Post not found');
+                    }
+                    
+                    $post->setStatus('published');
+                    $context->getEntityManager()->flush();
+                    
+                    return $post;
+                },
+                [
+                    ResolverPipelineFactory::createWrapper($this->getAuthMiddleware()),
+                    ResolverPipelineFactory::createWrapper($this->getOwnershipMiddleware()),
+                ]
+            ),
+        ];
+    }
+    
+    private function getAuthMiddleware(): callable
+    {
+        return fn($resolver) => fn($root, $args, $context, $info) => {
+            if (!$context->getCurrentUser()) {
+                throw new \Exception('Authentication required');
+            }
+            return $resolver($root, $args, $context, $info);
+        };
+    }
+    
+    private function getOwnershipMiddleware(): callable
+    {
+        return fn($resolver) => fn($root, $args, $context, $info) => {
+            $post = $context->getEntityManager()
+                ->getRepository(Post::class)
+                ->find($args['id']);
+                
+            if ($post && $post->getAuthor()->getId() !== $context->getCurrentUser()->getId()) {
+                throw new \Exception('Access denied');
+            }
+            
+            return $resolver($root, $args, $context, $info);
+        };
+    }
+}
+```
+
+### 2. GraphQL Schema completo
+
+```graphql
+# modules/AppModule/config/schema.graphql
+
+type Query {
+    # Posts
+    getPosts(
+        pagination: PaginationInput
+        filters: [FilterGroupInput!]
+        orderBy: [OrderByInput!]
+    ): PostConnection!
+    
+    getPost(id: ID!): Post
+    getPublishedPosts: PostConnection!
+    
+    # Users  
+    getUsers(
+        pagination: PaginationInput
+        filters: [FilterGroupInput!]
+    ): UserConnection!
+    
+    getUser(id: ID!): User
+    me: User
+}
+
+type Mutation {
+    # Authentication
+    login(email: String!, password: String!): AuthPayload!
+    register(input: RegisterInput!): AuthPayload!
+    
+    # Posts
+    createPost(input: PostInput!): Post!
+    updatePost(id: ID!, input: PostInput!): Post!
+    deletePost(id: ID!): Boolean!
+    publishPost(id: ID!): Post!
+    
+    # Users
+    updateProfile(input: UserUpdateInput!): User!
+}
+
+type User {
+    id: ID!
+    name: String!
+    email: String!
+    posts(status: PostStatus): [Post!]!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+}
+
+type Post {
+    id: ID!
+    title: String!
+    content: String!
+    status: PostStatus!
+    author: User!
+    comments: [Comment!]!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    publishedAt: DateTime
+}
+
+enum PostStatus {
+    DRAFT
+    PUBLISHED
+    ARCHIVED
+}
+
+type AuthPayload {
+    token: String!
+    user: User!
+}
+
+input PostInput {
+    title: String!
+    content: String!
+    status: PostStatus = DRAFT
+}
+
+input UserUpdateInput {
+    name: String
+    email: String
+}
+
+input RegisterInput {
+    name: String!
+    email: String!
+    password: String!
+}
+```
+
+## 📝 Mejores prácticas
+
+### 1. Organización del código
+
+```
+modules/AppModule/
+├── config/
+│   ├── module.config.php
+│   └── schema.graphql
+├── src/
+│   ├── AppModule.php
+│   ├── Entities/
+│   │   ├── User.php
+│   │   ├── Post.php
+│   │   └── Comment.php
+│   ├── Graphql/
+│   │   ├── Resolvers/
+│   │   │   ├── UserResolvers.php
+│   │   │   ├── PostResolvers.php
+│   │   │   └── CommentResolvers.php
+│   │   ├── Types/
+│   │   │   └── CustomScalar.php
+│   │   └── Middleware/
+│   │       ├── AuthMiddleware.php
+│   │       └── RateLimitMiddleware.php
+│   └── Services/
+│       ├── UserService.php
+│       └── PostService.php
+```
+
+### 2. Uso de DataLoaders
+
+```php
+// Evita el problema N+1
+class UserResolvers
+{
+    private EntityDataLoader $userDataLoader;
+    
+    public function __construct(EntityManager $em)
+    {
+        $this->userDataLoader = new EntityDataLoader(User::class, $em);
+    }
+    
+    public static function getPostsAuthorResolver(): callable 
+    {
+        return ResolverFactory::forEntity($this->userDataLoader, 'author');
+    }
+}
+```
+
+
+
+### 4. Manejo de errores
+
+```php
+use GPDCore\Exceptions\GQLException;
+
+'Query::sensitiveData' => function($root, $args, AppContextInterface $context, $info) {
+    try {
+        if (!$context->getCurrentUser()) {
+            throw new GQLException('Not authenticated', 'UNAUTHENTICATED');
+        }
+        
+        if (!$context->getCurrentUser()->hasRole('admin')) {
+            throw new GQLException('Insufficient permissions', 'FORBIDDEN');
+        }
+        
+        return $this->getSensitiveData();
+        
+    } catch (\Exception $e) {
+        throw new GQLException(
+            'Failed to fetch sensitive data: ' . $e->getMessage(),
+            'INTERNAL_ERROR'
+        );
+    }
+}
+```
+
+## 🤝 Contribuir
+
+1. Fork el proyecto
+2. Crea una rama para tu feature (`git checkout -b feature/amazing-feature`)
+3. Commit tus cambios (`git commit -m 'Add amazing feature'`)
+4. Push a la rama (`git push origin feature/amazing-feature`)
+5. Abre un Pull Request
+
+## 📄 Licencia
+
+Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
+
+## 🆘 Soporte
+
+- 📖 [Documentación completa](https://wappcode.github.io/gql-pdss-lib-docs)
+- 🐛 [Reportar issues](https://github.com/wappcode/gql-pdss-lib/issues)
+- 💬 [Discusiones](https://github.com/wappcode/gql-pdss-lib/discussions)
+
+---
+
+**¿Te ha sido útil esta librería?** ⭐ ¡Danos una estrella en GitHub!
 
