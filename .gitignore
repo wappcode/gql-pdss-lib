@@ -16,3 +16,5 @@ public/uploads/exit-interview-upload-dir/*
 public/test.php
 .vscode/
 composer.lock
+dev/data/DoctrineORMModule/*
+!dev/data/DoctrineORMModule/.gitkeep
