@@ -1,6 +1,6 @@
 <?php
 
-namespace AppModule\Services;
+namespace GPDCore\Routing;
 
 use GPDCore\Routing\AbstractRouter;
 
