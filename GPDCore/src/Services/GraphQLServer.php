@@ -7,8 +7,10 @@ namespace GPDCore\Services;
 use Exception;
 use GPDCore\Contracts\AppContextInterface;
 use GPDCore\Core\Application;
+use GPDCore\Exceptions\GQLException;
 use GPDCore\Exceptions\GQLFormattedError;
 use GPDCore\Graphql\ArrayFieldResolverFactory;
+use GQLBasicClient\GQLClientException;
 use GraphQL\Error\DebugFlag;
 use GraphQL\Error\FormattedError;
 use GraphQL\GraphQL;
@@ -21,6 +23,7 @@ use InvalidArgumentException;
 use Laminas\Diactoros\ResponseFactory;
 use Laminas\Diactoros\StreamFactory;
 use Psr\Http\Message\ResponseInterface;
+use Throwable;
 
 class GraphQLServer
 {
@@ -118,14 +121,23 @@ class GraphQLServer
 
             $responseData = $result->toArray($debug);
             $status = self::HTTP_OK;
-        } catch (Exception $e) {
+        } catch (GQLException $e) {
+            // Manejar excepciones específicas de GraphQL
+            $responseData = [
+                'errors' => [GQLFormattedError::createFromException($e)],
+            ];
+            $status = self::HTTP_OK;
+        } catch (Throwable $e) {
             if ($productionMode) {
                 $responseData = [
                     'errors' => [FormattedError::createFromException($e)],
                 ];
                 $status = self::HTTP_INTERNAL_SERVER_ERROR;
             } else {
-                throw $e;
+                $responseData = [
+                    'errors' => [$e->getMessage()],
+                ];
+                $status = self::HTTP_INTERNAL_SERVER_ERROR;
             }
         }
 
