@@ -4,7 +4,6 @@ namespace GPDCore\Contracts;
 
 use Doctrine\ORM\EntityManager;
 use Laminas\ServiceManager\ServiceManager;
-use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Contexto de aplicación inmutable que provee acceso a servicios y configuración.

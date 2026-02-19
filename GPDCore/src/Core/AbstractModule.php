@@ -12,7 +12,7 @@ use Laminas\ServiceManager\ServiceManager;
 
 abstract class AbstractModule implements ModuleProviderInterface
 {
-    protected AppContextInterface $context;
+    protected Application $application;
 
     /**
      * Array con la configuración del módulo.
@@ -35,10 +35,14 @@ abstract class AbstractModule implements ModuleProviderInterface
     /**
      * Array con los resolvers del módulo.
      *
-     * @return array array(string $key => callable $resolver)
+     * @return array array(string $key => callable | ResolverPipeline $resolver)
      */
     abstract public function getResolvers(): array;
 
+    /**
+     *
+     * @return array<\Psr\Http\Server\MiddlewareInterface>
+     */
     abstract public function getMiddlewares(): array;
 
     /**
@@ -106,23 +110,16 @@ abstract class AbstractModule implements ModuleProviderInterface
         }
     }
 
-    public function registerModule(
-        SchemaManager $schemaManager,
-        ResolverManagerInterface $resolverManager,
-        MiddlewareQueue $middlewareQueue,
-        TypesManager $typesManager,
-        AppConfigInterface $config,
-        AppContextInterface $context,
-        ?ServiceManager $serviceManager,
-    ): void {
-        $this->context = $context;
-        $this->registerMiddleware($middlewareQueue, $context);
-        $this->registerResolvers($resolverManager, $context);
-        $this->registerType($typesManager, $context);
-        $this->registerSchemaChunk($schemaManager, $context);
-        $this->registerConfig($config, $context);
-        if ($serviceManager) {
-            $this->registerServices($serviceManager, $context);
-        }
+    public function setApplication(Application $application): void
+    {
+        $this->application = $application;
+    }
+    public function getAppContext(): ?AppContextInterface
+    {
+        return $this->application->getContext();
+    }
+    public function getApplication(): Application
+    {
+        return $this->application;
     }
 }
