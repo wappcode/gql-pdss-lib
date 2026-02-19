@@ -43,8 +43,7 @@ class SchemaManager
 
             return $typeConfig;
         };
-        $schemaUtilities = file_get_contents(__DIR__ . '/../Assets/gql-pdss.graphqls');
-        $allSchemas = [$schemaUtilities, ...$this->schemaChunks];
+        $allSchemas = [...$this->schemaChunks];
         $schemasContent = GraphqlSchemaUtilities::combineSchemas($allSchemas);
         $queryField = preg_match("/type\sQuery/", $schemasContent) ? 'query: Query' : '';
         $mutationField = preg_match("/type\sMutation/", $schemasContent) ? 'mutation: Mutation' : '';

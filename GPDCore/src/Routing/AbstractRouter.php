@@ -13,7 +13,7 @@ use Psr\Http\Message\ServerRequestInterface;
 
 use function FastRoute\simpleDispatcher;
 
-abstract class AbstractRouter
+abstract class AbstractRouter implements RouterInterface
 {
     protected $routes = [];
 
@@ -29,9 +29,7 @@ abstract class AbstractRouter
         $this->streamFactory = new StreamFactory();
     }
 
-    abstract protected function addRoutes();
-
-    protected function addRoute(RouteModel $route)
+    public function add(RouteModel $route)
     {
         array_push($this->routes, $route);
     }
@@ -110,7 +108,6 @@ abstract class AbstractRouter
 
     protected function createDispatcher()
     {
-        $this->addRoutes();
         $dispatcher = simpleDispatcher(function (FastRoute\RouteCollector $router) {
             foreach ($this->routes as $route) {
                 $router->addRoute($route->getMethod(), $route->getRoute(), $route->getContoller());

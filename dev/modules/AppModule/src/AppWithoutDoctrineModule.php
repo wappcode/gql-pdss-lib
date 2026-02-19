@@ -15,7 +15,12 @@ class AppWithoutDoctrineModule extends AbstractModule
         return [];
     }
 
-    public function getServicesAndGQLTypes(): array
+    public function getSchema(): string
+    {
+        return '';
+    }
+
+    public function getServices(): array
     {
         return [
             'invokables' => [],
@@ -57,6 +62,20 @@ class AppWithoutDoctrineModule extends AbstractModule
      * Array con los graphql mutations del módulo.
      */
     public function getMutationFields(): array
+    {
+        return [];
+    }
+    public function getMiddlewares(): array
+    {
+        return [];
+    }
+
+    public function getRoutes(): array
+    {
+        return [];
+    }
+
+    public function getTypes(): array
     {
         return [];
     }

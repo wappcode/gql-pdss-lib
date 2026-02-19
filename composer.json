@@ -27,6 +27,11 @@
     ],
     "psr-4": {
       "GPDCore\\": "GPDCore/src/",
+      "GraphqlModule\\": "GraphqlModule/src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
       "AppModule\\": "dev/modules/AppModule/src/"
     }
   },

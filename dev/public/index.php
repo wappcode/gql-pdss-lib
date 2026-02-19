@@ -5,6 +5,7 @@ use GPDCore\Contracts\AppContextInterface;
 use GPDCore\Core\AppConfig;
 use GPDCore\Core\Application;
 use GPDCore\Factory\EntityManagerFactory;
+use GraphqlModule\GraphqlModule;
 use Laminas\Diactoros\ServerRequestFactory;
 use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
 use Laminas\ServiceManager\ServiceManager;
@@ -21,9 +22,9 @@ $isEntityManagerDevMode = $enviroment !== AppContextInterface::ENV_PRODUCTION;
 $entityManager = EntityManagerFactory::createInstance($options, $cacheDir, $isEntityManagerDevMode);
 $request = ServerRequestFactory::fromGlobals();
 $app = new Application($config, $entityManager, $enviroment);
-$app->addModule(
-    AppModule::class
-);
+$app
+    ->addModule(new GraphqlModule(route: '/api'))
+    ->addModule(AppModule::class);
 
 $response = $app->run($request);
 $emitter = new SapiEmitter();

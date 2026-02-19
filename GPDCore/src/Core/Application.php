@@ -10,10 +10,8 @@ use Exception;
 use GPDCore\Contracts\AppConfigInterface;
 use GPDCore\Contracts\AppContextInterface;
 use GPDCore\Contracts\ResolverManagerInterface;
-use GPDCore\Graphql\Types\DateTimeType;
-use GPDCore\Graphql\Types\DateType;
-use GPDCore\Graphql\Types\JSONData;
 use GPDCore\Routing\AbstractRouter;
+use GPDCore\Routing\RouterInterface;
 use Laminas\ServiceManager\ServiceManager;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -28,7 +26,7 @@ class Application
      */
     protected array $modules = [];
 
-    protected AbstractRouter $router;
+    protected RouterInterface $router;
 
     protected bool $started = false;
 
@@ -118,7 +116,7 @@ class Application
         $this->registerModulesConfig($this->context);
         $this->registerModulesServices($this->context);
         $this->registerModulesMiddleware($this->middlewareQueue, $this->context);
-        $this->registerModulesGraphQLConfig($this->context);
+        $this->registerModulesRoutesAndGraphQLConfig($this->context);
 
         // Ejecuta la cola de middlewares FrameworkHandler y ese a su vez ejecuta $app->dispatch() de la aplicación
         $this->request = $request;
@@ -234,12 +232,13 @@ class Application
             $module->registerMiddleware($middlewareQueue, $context);
         }
     }
-    private function registerModulesGraphQLConfig(AppContextInterface $context): void
+    private function registerModulesRoutesAndGraphQLConfig(AppContextInterface $context): void
     {
         foreach ($this->modules as $module) {
             $module->registerType($this->typesManager, $context);
             $module->registerSchemaChunk($this->schemaManager, $context);
             $module->registerResolvers($this->resolverManager, $context);
+            $module->registerRoutes($this->router, $context);
         }
     }
     /**
@@ -250,9 +249,7 @@ class Application
     private function createTypeManager(): TypesManager
     {
         $typesManager = new TypesManager();
-        $typesManager->add(DateType::NAME, DateType::class);
-        $typesManager->add(DateTimeType::NAME, DateTimeType::class);
-        $typesManager->add(JSONData::NAME, JSONData::class);
+
         return $typesManager;
     }
 }
