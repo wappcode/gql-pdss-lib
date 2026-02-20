@@ -23,12 +23,18 @@
   "autoload": {
     "files": [
       "GPDCore/src/Functions/PaginationUtilities.php",
-      "GPDCore/src/Functions/StringFunctions.php",
-      "GraphqlModule/config/gql-pdss.graphqls"
+      "GPDCore/src/Functions/StringFunctions.php"
     ],
     "psr-4": {
       "GPDCore\\": "GPDCore/src/",
       "GraphqlModule\\": "GraphqlModule/src/"
+    }
+  },
+  "extra": {
+    "archive": {
+      "include": [
+        "GraphqlModule/config/"
+      ]
     }
   },
   "autoload-dev": {
