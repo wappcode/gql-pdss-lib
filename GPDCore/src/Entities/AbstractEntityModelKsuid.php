@@ -6,19 +6,19 @@ namespace GPDCore\Entities;
 
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
-use PDSSUtilities\DoctrineUniqueIDStringGenerator;
+use PDSSUtilities\DoctrineKsuidGenerator;
 
 /**
- * Base class for all objects stored in database. ID type string.
+ * Base class for all objects stored in database. Uses KSUID (K-Sortable Unique Identifier) as ID.
  */
 #[ORM\MappedSuperclass]
 
-abstract class AbstractEntityModelStringId
+abstract class AbstractEntityModelKsuid
 {
     #[ORM\Id]
     #[ORM\Column(name: 'id', type: 'string', length: 255)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(class: DoctrineUniqueIDStringGenerator::class)]
+    #[ORM\CustomIdGenerator(class: DoctrineKsuidGenerator::class)]
     protected $id;
 
     #[ORM\Column(type: 'datetimetz_immutable')]

@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file.
 ## [2.0.0] - 2022-06-28
 
 ### Changed
-- Se agrego la dependencia wappcode/pdss-utilities y se reemplazaron las referencias a QueryFilter, QueryJoins, QuerySort y AbstractEntityModelStringId por las de esta librería.
+- Se agrego la dependencia wappcode/pdss-utilities y se reemplazaron las referencias a QueryFilter, QueryJoins, QuerySort y AbstractEntityModelUuidV4 por las de esta librería.
 
 ### Removed
 - GPDCore\Library\DoctrineUniqueIDStringGenerator
