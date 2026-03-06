@@ -2,13 +2,13 @@
 
 return [
     'driver' => [
-        'user'     =>   getenv('PDSSLIV_DBUSER', true) ? getenv('PDSSLIV_DBUSER', true) : 'root',
-        'password' =>   getenv('PDSSLIV_DBPASSWORD', true) ? getenv('PDSSLIV_DBPASSWORD', true) : 'dbpassword',
-        'dbname'   =>   getenv('PDSSLIV_DBNAME', true) ? getenv('PDSSLIV_DBNAME', true) : 'gqlpdsslib',
-        'driver'   =>   getenv('PDSSLIV_DRIVER', true) ? getenv('PDSSLIV_DRIVER', true) : 'pdo_mysql',
-        'host'   =>    getenv('PDSSLIV_DBHOST', true) ? getenv('PDSSLIV_DBHOST', true) : 'localhost',
+        'user'     =>   getenv('PDSSLIB_DBUSER', true) ? getenv('PDSSLIB_DBUSER', true) : 'root',
+        'password' =>   getenv('PDSSLIB_DBPASSWORD', true) ? getenv('PDSSLIB_DBPASSWORD', true) : 'dbpassword',
+        'dbname'   =>   getenv('PDSSLIB_DBNAME', true) ? getenv('PDSSLIB_DBNAME', true) : 'gqlpdsslib',
+        'driver'   =>   getenv('PDSSLIB_DRIVER', true) ? getenv('PDSSLIB_DRIVER', true) : 'pdo_mysql',
+        'host'   =>    getenv('PDSSLIB_DBHOST', true) ? getenv('PDSSLIB_DBHOST', true) : 'localhost',
         'charset' =>     'utf8mb4',
-        'port' => getenv('PDSSLIV_MYSQL_PORT', true) ? getenv('PDSSLIV_MYSQL_PORT', true) : '3306',
+        'port' => '3306', // Puerto interno de MySQL en Docker
     ],
     'entities' => require __DIR__ . '/doctrine.entities.php',
 ];

@@ -8,7 +8,7 @@ return [
         'driver'   =>   getenv('PDSSLIB_DRIVER', true) ? getenv('PDSSLIB_DRIVER', true) : 'pdo_mysql',
         'host'   =>    getenv('PDSSLIB_DBHOST', true) ? getenv('PDSSLIB_DBHOST', true) : 'localhost',
         'charset' =>     'utf8mb4',
-        'port' => getenv('PDSSLIB_MYSQL_PORT', true) ? getenv('PDSSLIB_MYSQL_PORT', true) : '3306',
+        'port' => '3306', // Puerto interno de MySQL en Docker, no usar PDSSLIB_MYSQL_PORT que es para el host
     ],
     'entities' => require __DIR__ . '/doctrine.entities.php',
 ];
