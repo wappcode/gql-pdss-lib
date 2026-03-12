@@ -2685,12 +2685,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/wappcode/pdss-utilities.git",
-                "reference": "01ddf33b531dbe9752e890c05d09e2926cf68cfd"
+                "reference": "6b4fca60afb32a53b3cd02f29ab6534f6f93bafc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wappcode/pdss-utilities/zipball/01ddf33b531dbe9752e890c05d09e2926cf68cfd",
-                "reference": "01ddf33b531dbe9752e890c05d09e2926cf68cfd",
+                "url": "https://api.github.com/repos/wappcode/pdss-utilities/zipball/6b4fca60afb32a53b3cd02f29ab6534f6f93bafc",
+                "reference": "6b4fca60afb32a53b3cd02f29ab6534f6f93bafc",
                 "shasum": ""
             },
             "require": {
@@ -2719,7 +2719,7 @@
                 "issues": "https://github.com/wappcode/pdss-utilities/issues",
                 "source": "https://github.com/wappcode/pdss-utilities/tree/master"
             },
-            "time": "2026-03-06T20:45:27+00:00"
+            "time": "2026-03-10T21:18:24+00:00"
         },
         {
             "name": "webonyx/graphql-php",
