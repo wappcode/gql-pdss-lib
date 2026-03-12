@@ -18,3 +18,4 @@ public/test.php
 composer.lock
 dev/data/DoctrineORMModule/*
 !dev/data/DoctrineORMModule/.gitkeep
+*.log
