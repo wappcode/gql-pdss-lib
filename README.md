@@ -758,6 +758,60 @@ $wrappedMiddleware = ResolverPipelineFactory::createWrapper($cacheMiddleware);
 ```
 
 
+## 🔒 ResolverTransactionMiddlewareFactory
+
+Fábrica que crea un middleware de transacción de base de datos listo para usar en pipelines de resolvers. Envuelve la ejecución del resolver dentro de una transacción Doctrine: hace `commit` si todo va bien y `rollback` automático si ocurre cualquier excepción.
+
+### Método principal
+
+#### `createMiddleware(): ResolverMiddlewareInterface`
+
+Crea una instancia de middleware que gestiona transacciones de base de datos automáticamente.
+
+```php
+use GPDCore\Graphql\ResolverFactory;
+use GPDCore\Graphql\ResolverPipelineFactory;
+use GPDCore\Graphql\ResolverTransactionMiddlewareFactory;
+
+'Mutation::createUser' => ResolverPipelineFactory::createPipeline(
+    ResolverFactory::forCreate(User::class),
+    [
+        ResolverTransactionMiddlewareFactory::createMiddleware(),
+    ]
+),
+```
+
+### Comportamiento interno
+
+```
+Request
+  └─► TransactionMiddleware::beginTransaction()
+        └─► resolver($root, $args, $context, $info)
+              ├─ Éxito → commit() → return $result
+              └─ Excepción → rollBack() → re-lanza la excepción
+```
+
+### Posición recomendada en el pipeline
+
+El middleware de transacción **debe colocarse al final del array de middlewares** (última posición). Dado que el pipeline se ejecuta en orden inverso, esto hace que el middleware de transacción sea el **primero en ejecutarse**, envolviendo así toda la cadena de lógica (validaciones, autorizaciones, etc.) dentro de una única transacción.
+
+```php
+'Mutation::createUser' => ResolverPipelineFactory::createPipeline(
+    ResolverFactory::forCreate(User::class),
+    [
+        // 3° en ejecutarse (más interno, justo antes del resolver): autorización
+        ResolverPipelineFactory::createWrapper($authMiddleware),
+        // 2° en ejecutarse: validación
+        ResolverPipelineFactory::createWrapper($validationMiddleware),
+        // 1° en ejecutarse (más externo): envuelve toda la operación dentro de la transacción
+        ResolverTransactionMiddlewareFactory::createMiddleware(),
+    ]
+),
+```
+
+> **⚠️ Nota:** Si `ResolverFactory::forCreate`, `forUpdate` o `forDelete` ya gestionan su propia transacción internamente, usar este middleware añadirá una transacción anidada. Esto es seguro en Doctrine siempre que ambas transacciones finalicen correctamente, pero conviene revisar si la gestión de transacciones debe delegarse completamente al middleware.
+
+
 ## 🎯 Tipos GraphQL personalizados
 
 La librería incluye tipos escalares personalizados listos para usar:

@@ -12,6 +12,7 @@ use GPDCore\Contracts\AppContextInterface;
 use GPDCore\Core\AbstractModule;
 use GPDCore\Graphql\ResolverFactory;
 use GPDCore\Graphql\ResolverPipelineFactory;
+use GPDCore\Graphql\ResolverTransactionMiddlewareFactory;
 
 class AppModule extends AbstractModule
 {
@@ -84,7 +85,16 @@ class AppModule extends AbstractModule
             ]),
             'Query::getUsers' => ResolverFactory::forConnection(User::class),
             'Query::getUser' => ResolverFactory::forItem(User::class),
-            'Mutation::createUser' => ResolverFactory::forCreate(User::class),
+            'Mutation::createUser' => ResolverPipelineFactory::createPipeline(
+                ResolverFactory::forCreate(User::class),
+                [
+                    // Middleware de transacción para asegurar que la operación de creación de usuario se ejecute dentro de una transacción de base de datos.
+                    // Se coloca al final del pipeline para que envuelva toda la lógica de creación, incluyendo validaciones y cualquier otro middleware que se pueda agregar en el futuro.
+                    ResolverTransactionMiddlewareFactory::createMiddleware(),
+                ]
+
+            ),
+
             'Mutation::updateUser' => ResolverFactory::forUpdate(User::class),
             'Mutation::deleteUser' => ResolverFactory::forDelete(User::class),
         ];
