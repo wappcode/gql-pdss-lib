@@ -33,12 +33,17 @@ class EntityHydrator
     {
         $reflectionClass = new ReflectionClass($entity);
         $collectionAssociations = EntityMetadataHelper::getCollectionAssociations($entityManager, get_class($entity));
-
+        $relations = EntityMetadataHelper::getJoinColumnAssociations($entityManager, get_class($entity));
         foreach ($data as $propertyName => $value) {
             $collectionAssociation = $collectionAssociations[$propertyName] ?? null;
+            $relation = $relations[$propertyName] ?? null;
 
             if ($collectionAssociation !== null) {
                 self::hydrateCollection($entityManager, $entity, $collectionAssociation, $value);
+                continue;
+            }
+            if ($relation !== null) {
+                $value = $entityManager->getReference($relation->getTargetEntity(), $value);
                 continue;
             }
 
