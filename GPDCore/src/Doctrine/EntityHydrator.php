@@ -44,7 +44,6 @@ class EntityHydrator
             }
             if ($relation !== null) {
                 $value = $entityManager->getReference($relation->getTargetEntity(), $value);
-                continue;
             }
 
             $methodName = 'set' . ucfirst($propertyName);
