@@ -2,6 +2,7 @@
 
 namespace AppModule;
 
+use AppModule\Controllers\IndexController;
 use AppModule\Entities\User;
 use AppModule\Graphql\ResolversAccount;
 use AppModule\Graphql\ResolversComment;
@@ -13,6 +14,7 @@ use GPDCore\Core\AbstractModule;
 use GPDCore\Graphql\ResolverFactory;
 use GPDCore\Graphql\ResolverPipelineFactory;
 use GPDCore\Graphql\ResolverTransactionMiddlewareFactory;
+use GPDCore\Routing\RouteModel;
 
 class AppModule extends AbstractModule
 {
@@ -52,7 +54,7 @@ class AppModule extends AbstractModule
 
     public function getRoutes(): array
     {
-        return [];
+        return [new RouteModel('GET', '/index/{id:.+}', IndexController::class)];
     }
 
     /**

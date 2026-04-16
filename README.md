@@ -456,7 +456,217 @@ php -S localhost:8000 public/index.php
   - `GET/POST http://localhost:8000/api` (desarrollo)
   - `POST http://localhost:8000/api` (producción)
 
-## 📋 Schema GraphQL básico
+## �️ Rutas REST (Opcional)
+
+Además de GraphQL, puedes definir rutas REST tradicionales en tus módulos.
+
+### Definir rutas en el módulo
+
+En el método `getRoutes()` de tu clase Module, retorna un array de objetos `RouteModel`:
+
+```php
+<?php
+
+namespace AppModule;
+
+use AppModule\Controllers\IndexController;
+use GPDCore\Core\AbstractModule;
+use GPDCore\Routing\RouteModel;
+
+class AppModule extends AbstractModule
+{
+    public function getRoutes(): array
+    {
+        return [
+            // Ruta simple
+            new RouteModel('GET', '/index/{id:.+}', IndexController::class),
+            
+            // Más rutas
+            new RouteModel('POST', '/users', UserController::class),
+            new RouteModel('GET', '/users/{id:\d+}', UserDetailController::class),
+            new RouteModel('PUT', '/users/{id:\d+}', UserUpdateController::class),
+            new RouteModel('DELETE', '/users/{id:\d+}', UserDeleteController::class),
+        ];
+    }
+}
+```
+
+**Parámetros de RouteModel:**
+- **Método HTTP**: `GET`, `POST`, `PUT`, `DELETE`, `PATCH`, etc.
+- **Patrón de ruta**: Soporta parámetros dinámicos con expresiones regulares
+  - `{id}` - Cualquier valor
+  - `{id:\d+}` - Solo números
+  - `{id:.+}` - Cualquier carácter (uno o más)
+  - `{slug:[a-z-]+}` - Slug con letras minúsculas y guiones
+- **Clase controlador**: Debe extender `AbstractAppController`
+
+### Crear un controlador
+
+Los controladores deben extender `GPDCore\Routing\AbstractAppController` e implementar el método `dispatch()`:
+
+```php
+<?php
+
+namespace AppModule\Controllers;
+
+use GPDCore\Routing\AbstractAppController;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\ResponseInterface;
+
+class IndexController extends AbstractAppController
+{
+    public function dispatch(ServerRequestInterface $request): ResponseInterface
+    {
+        // Obtener parámetros de ruta
+        $id = $this->getRouteParam("id");
+        
+        // Obtener query parameters (?key=value)
+        $queryParams = $request->getQueryParams();
+        $specificParam = $queryParams["queryParams"] ?? "";
+        
+        // Obtener el body del request (POST/PUT)
+        $body = $request->getParsedBody();
+        
+        // Obtener headers
+        $headers = $request->getHeaders();
+        $authHeader = $request->getHeaderLine('Authorization');
+        
+        // Crear respuesta JSON
+        return $this->jsonResponse([
+            'success' => true,
+            'data' => [
+                'id' => $id,
+                'queryParams' => $specificParam,
+                'message' => 'Procesado correctamente'
+            ]
+        ], 200);
+    }
+}
+```
+
+### Métodos útiles del AbstractAppController
+
+```php
+// Obtener parámetros de ruta
+$this->getRouteParam("id");
+$this->getRouteParam("slug");
+
+// Crear respuesta JSON
+$this->jsonResponse(['data' => $result], 200);
+
+// Crear respuesta de error
+$this->jsonResponse(['error' => 'Not found'], 404);
+
+// Acceder al EntityManager
+$entityManager = $this->getEntityManager();
+
+// Acceder al ServiceManager
+$serviceManager = $this->getServiceManager();
+
+// Acceder al contexto de la aplicación
+$context = $this->getAppContext();
+```
+
+### Ejemplo completo: CRUD de usuarios con rutas REST
+
+#### Definir las rutas
+
+```php
+public function getRoutes(): array
+{
+    return [
+        new RouteModel('GET', '/api/users', UserListController::class),
+        new RouteModel('GET', '/api/users/{id:\d+}', UserDetailController::class),
+        new RouteModel('POST', '/api/users', UserCreateController::class),
+        new RouteModel('PUT', '/api/users/{id:\d+}', UserUpdateController::class),
+        new RouteModel('DELETE', '/api/users/{id:\d+}', UserDeleteController::class),
+    ];
+}
+```
+
+#### Controlador de listado
+
+```php
+<?php
+
+namespace AppModule\Controllers;
+
+use AppModule\Entities\User;
+use GPDCore\Routing\AbstractAppController;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\ResponseInterface;
+
+class UserListController extends AbstractAppController
+{
+    public function dispatch(ServerRequestInterface $request): ResponseInterface
+    {
+        $queryParams = $request->getQueryParams();
+        $page = (int)($queryParams['page'] ?? 1);
+        $limit = (int)($queryParams['limit'] ?? 10);
+        
+        $em = $this->getEntityManager();
+        $repository = $em->getRepository(User::class);
+        
+        $users = $repository->findBy(
+            [],
+            ['createdAt' => 'DESC'],
+            $limit,
+            ($page - 1) * $limit
+        );
+        
+        return $this->jsonResponse([
+            'data' => array_map(fn($user) => [
+                'id' => $user->getId(),
+                'name' => $user->getName(),
+                'email' => $user->getEmail()
+            ], $users),
+            'page' => $page,
+            'limit' => $limit
+        ]);
+    }
+}
+```
+
+#### Controlador de detalle
+
+```php
+<?php
+
+namespace AppModule\Controllers;
+
+use AppModule\Entities\User;
+use GPDCore\Routing\AbstractAppController;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\ResponseInterface;
+
+class UserDetailController extends AbstractAppController
+{
+    public function dispatch(ServerRequestInterface $request): ResponseInterface
+    {
+        $id = $this->getRouteParam("id");
+        
+        $em = $this->getEntityManager();
+        $user = $em->find(User::class, $id);
+        
+        if (!$user) {
+            return $this->jsonResponse([
+                'error' => 'User not found'
+            ], 404);
+        }
+        
+        return $this->jsonResponse([
+            'data' => [
+                'id' => $user->getId(),
+                'name' => $user->getName(),
+                'email' => $user->getEmail(),
+                'createdAt' => $user->getCreatedAt()->format('Y-m-d H:i:s')
+            ]
+        ]);
+    }
+}
+```
+
+## �📋 Schema GraphQL básico
 
 Crear `modules/AppModule/config/schema.graphql`:
 

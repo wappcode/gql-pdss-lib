@@ -69,8 +69,8 @@ abstract class AbstractRouter implements RouterInterface
 
                 try {
                     if ($handler instanceof AppControllerInterface) {
-                        $response = $handler->dispatch($request);
                         $handler->setRouteParams($routeParams);
+                        $response = $handler->dispatch($request);
                     } elseif (is_callable($handler)) {
                         $response = $handler($request);
                     } elseif (is_string($handler) && class_exists($handler)) {
@@ -79,8 +79,8 @@ abstract class AbstractRouter implements RouterInterface
                         if (!$controller instanceof AppControllerInterface) {
                             throw new Exception('El controlador de la ruta debe implementar AppControllerInterface');
                         }
-                        $response = $controller->dispatch($request);
                         $controller->setRouteParams($routeParams);
+                        $response = $controller->dispatch($request);
                     } else {
                         throw new Exception('Controlador de ruta no válido');
                     }
