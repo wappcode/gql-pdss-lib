@@ -328,6 +328,28 @@ $emitter = new SapiEmitter();
 $emitter->emit($response);
 ```
 
+### Parámetro `baseHref`
+
+El parámetro `baseHref` del constructor de `Application` define el prefijo de ruta bajo el que está montada la aplicación dentro del servidor web. Es el equivalente a indicar en qué "subcarpeta" vive tu `index.php` dentro del dominio.
+
+**Solo es necesario cuando la raíz del sitio no coincide con la raíz del dominio.** Si tu aplicación responde directamente en `https://midominio.com/`, no hace falta configurarlo.
+
+**Cuándo usarlo:** cuando el `index.php` está publicado en una ruta distinta a `/`. Por ejemplo, si tu app está accesible en `https://midominio.com/mi-app/public`, el router necesita saber que debe ignorar el prefijo `/mi-app/public` al resolver las rutas internas.
+
+```php
+// Aplicación en la raíz del dominio → baseHref no es necesario
+// https://midominio.com/api  →  ruta interna: /api
+$app = new Application($config, $entityManager, $environment);
+
+// Aplicación en una subcarpeta → baseHref es obligatorio
+// https://midominio.com/mi-app/api  →  ruta interna: /api
+$app = new Application($config, $entityManager, $environment, '/mi-app/public');
+```
+
+> Sin `baseHref`, el router incluiría el prefijo `/mi-app` en la ruta que intenta resolver, por lo que ninguna ruta ni endpoint GraphQL coincidiría correctamente.
+
+---
+
 #### Crear `cli-config.php` (para comandos Doctrine CLI)
 
 ```php
