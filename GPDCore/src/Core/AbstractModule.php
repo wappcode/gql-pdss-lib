@@ -11,11 +11,9 @@ use GPDCore\Contracts\ResolverManagerInterface;
 use GPDCore\Core\MiddlewareQueue;
 use GPDCore\Core\SchemaManager;
 use GPDCore\Core\TypesManager;
-use GPDCore\Graphql\ResolverPipeline;
 use GPDCore\Routing\RouterInterface;
 use Laminas\ServiceManager\ServiceManager;
 use Psr\Http\Server\MiddlewareInterface;
-use Webonyx\GraphQL\Type\Definition\ScalarType;
 
 /**
  * Clase abstracta base para todos los módulos del sistema.
