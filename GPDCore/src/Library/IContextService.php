@@ -9,7 +9,7 @@ use Laminas\ServiceManager\ServiceManager;
 
 interface IContextService
 {
-    public function init(string $enviroment, bool $productionMode, bool $withoutDoctrine = false): void;
+    public function init(string $enviroment, bool $productionMode, bool $withoutDoctrine = false, bool $useAttributes = false): void;
     public function getEntityManager(): ?EntityManager;
     public function getConfig(): ConfigService;
     public function getServiceManager(): ServiceManager;

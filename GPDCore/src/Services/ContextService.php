@@ -66,6 +66,8 @@ class ContextService implements IContextService
     protected $hasBeenInitialized = false;
     protected $withoutDoctrine = false;
 
+    protected $useattributes = false;
+
     /**
      * @var ServiceManager
      */
@@ -75,13 +77,14 @@ class ContextService implements IContextService
     {
         $this->serviceManager = $serviceManager;
     }
-    public function init(string $enviroment, bool $productionMode, bool $withoutDoctrine = false): void
+    public function init(string $enviroment, bool $productionMode, bool $withoutDoctrine = false, bool $useAttributes = false): void
     {
         if ($this->hasBeenInitialized) {
             throw new Exception("Context can be initialized just once");
         }
         $this->enviroment = $enviroment;
         $this->productionMode = $productionMode;
+        $this->useattributes = $useAttributes;
         if (!$withoutDoctrine) {
             $this->setEntityManager();
             $this->setTypes();
@@ -116,7 +119,7 @@ class ContextService implements IContextService
             return [];
         }
         $isDevMode = !$this->productionMode;
-        $this->entityManager = EntityManagerFactory::createInstance($options, $this->doctrineCacheDir, $isDevMode);
+        $this->entityManager = EntityManagerFactory::createInstance($options, $this->doctrineCacheDir, $isDevMode,$this->useattributes);
     }
     protected function setTypes()
     {

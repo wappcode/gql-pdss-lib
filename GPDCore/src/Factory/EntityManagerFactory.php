@@ -12,12 +12,11 @@ use Symfony\Component\Cache\Adapter\PhpFilesAdapter;
 
 class EntityManagerFactory
 {
-    public static function createInstance(array $options, string $cacheDir = '', bool $isDevMode = false,  bool $writeLog = false): EntityManager
+    public static function createInstance(array $options, string $cacheDir = '', bool $isDevMode = false, bool $writeLog = false, bool $useAttributes = false): EntityManager
     {
 
         $paths = $options["entities"];
         $driver = $options["driver"];
-        $isDevMode = $isDevMode;
         $useSimpleAnnotationReader = false;
         $cache = null;
         $defaultCacheDir = __DIR__ . "/../../../../../../data/DoctrineORMModule/";
@@ -31,7 +30,11 @@ class EntityManagerFactory
         }
 
         $proxyDir = $cacheDir . "/Proxy";
-        $config = Setup::createAnnotationMetadataConfiguration($paths, $isDevMode, $proxyDir, $cache, $useSimpleAnnotationReader);
+        if ($useAttributes) {
+            $config = Setup::createAttributeMetadataConfiguration($paths, $isDevMode, $proxyDir, $cache);
+        } else {
+            $config = Setup::createAnnotationMetadataConfiguration($paths, $isDevMode, $proxyDir, $cache, $useSimpleAnnotationReader);
+        }
         if ($isDevMode && $writeLog) {
             $logger = new DoctrineSQLLogger();
             $config->setSQLLogger($logger);

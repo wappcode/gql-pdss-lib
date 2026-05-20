@@ -2,6 +2,7 @@
 
 namespace GPDCore\Library;
 
+use Exception;
 use GraphQL\Type\Definition\ObjectType;
 use GPDCore\Graphql\ConnectionTypeFactory;
 use GPDCore\Library\UndefinedTypesException;
@@ -23,7 +24,7 @@ class AbstractEdgeTypeServiceFactory
     public static function get(?IContextService $context = null, ?string $nodeClassName = null): ObjectType
     {
         if (empty($nodeClassName)) {
-            throw '$nodeClassName is required';
+            throw new Exception('$nodeClassName is required');
         }
         $name = static::NAME;
         $description = static::DESCRIPTION;
