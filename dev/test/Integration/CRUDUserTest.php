@@ -88,6 +88,7 @@ class CRUDUserTest extends \PHPUnit\Framework\TestCase
     ]];
     $result = $this->gqlClient->execute($query, $variables);
     $id = $result["data"]["user"]["id"] ?? null;
+    printf("ID: %s\n", $id);
     return $id;
   }
 
