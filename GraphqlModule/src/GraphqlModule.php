@@ -63,7 +63,7 @@ class GraphqlModule extends AbstractModule
     /**
      * Array con los tipos scalar graphql del módulo. El indice se utiliza como nombre del tipo.
      *
-     * @return array<string, ScalarType | class-string<ScalarType>>
+     * @return array<string, \GraphQL\Type\Definition\ScalarType | class-string<\GraphQL\Type\Definition\ScalarType>>
      */
     public function getTypes(): array
     {
@@ -79,7 +79,7 @@ class GraphqlModule extends AbstractModule
     /**
      * Array con las rutas REST del módulo. El indice se utiliza como path de la ruta.
      *
-     * @return array<GPDCore\Routing\RouteModel>
+     * @return array<RouteModel>
      */
     public function getRoutes(): array
     {
