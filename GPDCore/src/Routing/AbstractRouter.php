@@ -5,7 +5,7 @@ namespace GPDCore\Routing;
 use Exception;
 use FastRoute;
 use GPDCore\Contracts\AppControllerInterface;
-use GPDCore\Core\Application;
+use GPDCore\Application\Core\Application;
 use Laminas\Diactoros\ResponseFactory;
 use Laminas\Diactoros\StreamFactory;
 use Psr\Http\Message\ResponseInterface;

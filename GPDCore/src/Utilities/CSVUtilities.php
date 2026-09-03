@@ -4,28 +4,13 @@ declare(strict_types=1);
 
 namespace GPDCore\Utilities;
 
-class CSVUtilities
+use GPDCore\Shared\CSVUtilities as Impl;
+
+/**
+ * Compatibility shim: original class FQCN preserved.
+ * Remove the shim only in a major release after consumers migrate.
+ */
+class CSVUtilities extends Impl
 {
-    /**
-     * Da formato valido de csv al valor.
-     */
-    public static function formatValue(string $value): string
-    {
-        $scaped = str_replace('"', '""', $value);
-
-        return '"' . $scaped . '"';
-    }
-
-    /**
-     * Crea una linea o fila con los valores del array.
-     */
-    public static function createLine(array $row): string
-    {
-        $values = array_map(function ($value) {
-            return CSVUtilities::formatValue(($value));
-        }, $row);
-        $line = implode(',', $values) . "\n";
-
-        return $line;
-    }
+    // intentionally empty — keeps old FQCN and behaviour via inheritance
 }

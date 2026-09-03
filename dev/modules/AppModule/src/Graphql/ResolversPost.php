@@ -4,8 +4,8 @@ namespace AppModule\Graphql;
 
 use AppModule\Entities\Comment;
 use AppModule\Entities\Post;
-use GPDCore\Doctrine\QueryDecorator;
-use GPDCore\Graphql\ResolverFactory;
+use GPDCore\Doctrine\QueryModifier;
+use GPDCore\Application\Graphql\ResolverFactory;
 
 class ResolversPost
 {
@@ -18,7 +18,7 @@ class ResolversPost
         return is_callable($proxy) ? $proxy($resolver) : $resolver;
     }
 
-    public static function getCommentsResolver(?callable $proxy = null, ?QueryDecorator $queryDecorator = null): callable
+    public static function getCommentsResolver(?callable $proxy = null, ?QueryModifier $queryDecorator = null): callable
     {
         $resolver = ResolverFactory::forCollection(Post::class, 'comments', Comment::class, $queryDecorator);
 

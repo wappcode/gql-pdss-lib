@@ -120,8 +120,8 @@ use GPDCore\Library\GQLException;
 
 ### Ahora:
 ```php
-use GPDCore\Core\AppConfig;
-use GPDCore\Core\Application;
+use GPDCore\Application\Core\AppConfig;
+use GPDCore\Application\Core\Application;
 use GPDCore\Doctrine\EntityMetadataHelper;
 use GPDCore\Exceptions\GQLException;
 ```

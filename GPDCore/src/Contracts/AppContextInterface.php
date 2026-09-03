@@ -3,6 +3,7 @@
 namespace GPDCore\Contracts;
 
 use Doctrine\ORM\EntityManager;
+use GPDCore\Contracts\AppConfigInterface;
 use Laminas\ServiceManager\ServiceManager;
 
 /**

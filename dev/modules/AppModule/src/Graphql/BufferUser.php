@@ -3,7 +3,7 @@
 namespace AppModule\Graphql;
 
 use AppModule\Entities\User;
-use GPDCore\DataLoaders\EntityDataLoader;
+use GPDCore\Application\DataLoaders\EntityDataLoader;
 
 class BufferUser
 {

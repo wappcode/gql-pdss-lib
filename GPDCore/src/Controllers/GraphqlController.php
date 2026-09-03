@@ -2,20 +2,9 @@
 
 namespace GPDCore\Controllers;
 
-use GPDCore\Core\Application;
-use GPDCore\Routing\AbstractAppController;
-use GPDCore\Services\GraphQLServer;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
+use GPDCore\Application\Controllers\GraphqlController as Impl;
 
-class GraphqlController extends AbstractAppController
+class GraphqlController extends Impl
 {
-    public function dispatch(ServerRequestInterface $request): ResponseInterface
-    {
-        $app = $request->getAttribute(Application::class);
-        $content = $this->getJsonPayload($request) ?? [];
-        $server = new GraphQLServer($app);
-
-        return $server->start($content);
-    }
+    // compatibility shim
 }

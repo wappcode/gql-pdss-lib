@@ -2,8 +2,8 @@
 
 use AppModule\AppWithoutDoctrineModule;
 use AppModule\Services\AppRouter;
-use GPDCore\Core\AppConfig;
-use GPDCore\Core\Application;
+use GPDCore\Application\Core\AppConfig;
+use GPDCore\Application\Core\Application;
 use Laminas\Diactoros\ServerRequestFactory;
 use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
 use Laminas\ServiceManager\ServiceManager;

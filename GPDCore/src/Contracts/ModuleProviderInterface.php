@@ -2,7 +2,7 @@
 
 namespace GPDCore\Contracts;
 
-use GPDCore\Core\Application;
+use GPDCore\Application\Core\Application;
 
 interface ModuleProviderInterface extends ServiceProviderInterface, MiddlewareProviderInterface, ResolverProviderInterface, TypesProviderInterface, SchemaProviderInterface, ConfigProviderInterface
 {

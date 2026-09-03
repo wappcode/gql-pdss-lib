@@ -1,0 +1,51 @@
+<?php
+
+declare(strict_types=1);
+
+namespace GPDCore\Shared\Graphql\Types;
+
+use DateTime;
+use DateTimeInterface;
+use DateTimeZone;
+use GraphQL\Error\Error;
+use GraphQL\Language\AST\StringValueNode;
+use GraphQL\Type\Definition\ScalarType;
+use GraphQL\Utils\Utils;
+use UnexpectedValueException;
+
+final class DateTimeType extends ScalarType
+{
+    public const NAME = 'DateTime';
+    public function parseLiteral($valueNode, ?array $variables = null)
+    {
+        if (!($valueNode instanceof StringValueNode)) {
+            throw new Error('Query error: Can only parse strings got: ' . $valueNode->kind, $valueNode);
+        }
+
+        return $this->parseValue($valueNode->value);
+    }
+
+    public function parseValue($value, ?array $variables = null)
+    {
+        if (!is_string($value)) {
+            throw new UnexpectedValueException('Cannot represent value as DateTime date: ' . Utils::printSafe($value));
+        }
+        $date = new DateTime($value);
+        $dateZone = date_default_timezone_get();
+        if (!($dateZone instanceof DateTimeZone)) {
+            $dateZone = new DateTimeZone($dateZone);
+        }
+        $date->setTimezone($dateZone);
+
+        return $date;
+    }
+
+    public function serialize($value)
+    {
+        if ($value instanceof DateTimeInterface) {
+            return $value->format('c');
+        }
+
+        return $value;
+    }
+}

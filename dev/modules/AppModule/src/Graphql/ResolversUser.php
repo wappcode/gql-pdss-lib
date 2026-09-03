@@ -5,7 +5,7 @@ namespace AppModule\Graphql;
 use AppModule\Entities\Account;
 use AppModule\Entities\User;
 use GPDCore\Contracts\QueryModifierInterface;
-use GPDCore\Graphql\ResolverFactory;
+use GPDCore\Application\Graphql\ResolverFactory;
 
 class ResolversUser
 {

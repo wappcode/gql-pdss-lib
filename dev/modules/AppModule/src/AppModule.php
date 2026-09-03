@@ -10,9 +10,9 @@ use AppModule\Graphql\ResolversPost;
 use AppModule\Graphql\ResolversUser;
 use DateTime;
 use GPDCore\Contracts\AppContextInterface;
-use GPDCore\Core\AbstractModule;
-use GPDCore\Graphql\ResolverFactory;
-use GPDCore\Graphql\ResolverPipelineFactory;
+use GPDCore\Application\Core\AbstractModule;
+use GPDCore\Application\Graphql\ResolverFactory;
+use GPDCore\Application\Graphql\ResolverPipelineFactory;
 use GPDCore\Graphql\ResolverTransactionMiddlewareFactory;
 use GPDCore\Routing\RouteModel;
 

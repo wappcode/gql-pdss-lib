@@ -2,7 +2,7 @@
 
 use AppModule\Entities\Post;
 use AppModule\Entities\User;
-use GPDCore\Doctrine\EntityAssociation;
+use GPDCore\Infrastructure\Doctrine\EntityAssociation;
 use GPDCore\Doctrine\EntityMetadataHelper;
 
 class EntityUtilitiesTest extends PHPUnit\Framework\TestCase

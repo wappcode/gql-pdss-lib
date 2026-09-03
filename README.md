@@ -111,8 +111,8 @@ namespace AppModule;
 use AppModule\Entities\User;
 use DateTime;
 use GPDCore\Contracts\AppContextInterface;
-use GPDCore\Core\AbstractModule;
-use GPDCore\Graphql\ResolverFactory;
+use GPDCore\Application\Core\AbstractModule;
+use GPDCore\Application\Graphql\ResolverFactory;
 use GPDCore\Graphql\ResolverPipelineFactory;
 
 class AppModule extends AbstractModule
@@ -281,8 +281,8 @@ return [
 
 use AppModule\AppModule;
 use GPDCore\Contracts\AppContextInterface;
-use GPDCore\Core\AppConfig;
-use GPDCore\Core\Application;
+use GPDCore\Application\Core\AppConfig;
+use GPDCore\Application\Core\Application;
 use GPDCore\Factory\EntityManagerFactory;
 use GraphqlModule\GraphqlModule;
 use Laminas\Diactoros\ServerRequestFactory;
@@ -492,7 +492,7 @@ En el método `getRoutes()` de tu clase Module, retorna un array de objetos `Rou
 namespace AppModule;
 
 use AppModule\Controllers\IndexController;
-use GPDCore\Core\AbstractModule;
+use GPDCore\Application\Core\AbstractModule;
 use GPDCore\Routing\RouteModel;
 
 class AppModule extends AbstractModule
@@ -1001,7 +1001,7 @@ Fábrica que crea un middleware de transacción de base de datos listo para usar
 Crea una instancia de middleware que gestiona transacciones de base de datos automáticamente.
 
 ```php
-use GPDCore\Graphql\ResolverFactory;
+use GPDCore\Application\Graphql\ResolverFactory;
 use GPDCore\Graphql\ResolverPipelineFactory;
 use GPDCore\Graphql\ResolverTransactionMiddlewareFactory;
 

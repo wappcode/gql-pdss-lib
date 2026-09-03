@@ -31,7 +31,7 @@ services:
       - "${PDSSLIB_APP_PORT:-8080}:80"
     entrypoint: sh -c "/home/commands/run.sh"
     restart: "no"
-    platform: linux/x86_64
+    # platform: linux/amd64
     environment:
       - PDSSLIB_APP_PORT=${PDSSLIB_APP_PORT:-8080}
       - PDSSLIB_DBUSER=${PDSSLIB_DBUSER:-root}

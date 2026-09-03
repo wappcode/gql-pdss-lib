@@ -2,8 +2,8 @@
 
 use AppModule\AppModule;
 use GPDCore\Contracts\AppContextInterface;
-use GPDCore\Core\AppConfig;
-use GPDCore\Core\Application;
+use GPDCore\Application\Core\AppConfig;
+use GPDCore\Application\Core\Application;
 use GPDCore\Factory\EntityManagerFactory;
 use GraphqlModule\GraphqlModule;
 use Laminas\Diactoros\ServerRequestFactory;

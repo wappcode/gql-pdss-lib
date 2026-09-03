@@ -3,11 +3,11 @@
 namespace GraphqlModule;
 
 use GPDCore\Controllers\GraphqlController;
-use GPDCore\Core\AbstractModule;
-use GPDCore\Graphql\Types\DateTimeType;
-use GPDCore\Graphql\Types\DateType;
-use GPDCore\Graphql\Types\JSONData;
+use GPDCore\Application\Core\AbstractModule;
 use GPDCore\Routing\RouteModel;
+use GPDCore\Shared\Graphql\Types\DateTimeType;
+use GPDCore\Shared\Graphql\Types\DateType;
+use GPDCore\Shared\Graphql\Types\JSONData;
 
 class GraphqlModule extends AbstractModule
 {
