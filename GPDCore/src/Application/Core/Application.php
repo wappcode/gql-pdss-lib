@@ -6,11 +6,11 @@ namespace GPDCore\Application\Core;
 
 use Doctrine\ORM\EntityManager;
 use Exception;
-use GPDCore\Contracts\AppConfigInterface;
-use GPDCore\Contracts\AppContextInterface;
-use GPDCore\Contracts\ResolverManagerInterface;
-use GPDCore\Routing\AppRouter;
-use GPDCore\Routing\RouterInterface;
+use GPDCore\Application\Contracts\AppConfigInterface;
+use GPDCore\Application\Contracts\AppContextInterface;
+use GPDCore\Application\Contracts\ResolverManagerInterface;
+use GPDCore\Application\Internal\AppRouter;
+use GPDCore\Application\Internal\RouterInterface;
 use Laminas\ServiceManager\ServiceManager;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace GPDCore\Application\Core;
 
-use GPDCore\Contracts\AppConfigInterface;
-use GPDCore\Contracts\AppContextInterface;
-use GPDCore\Contracts\ModuleProviderInterface;
-use GPDCore\Contracts\ResolverManagerInterface;
+use GPDCore\Application\Contracts\AppConfigInterface;
+use GPDCore\Application\Contracts\AppContextInterface;
+use GPDCore\Application\Contracts\ModuleProviderInterface;
+use GPDCore\Application\Contracts\ResolverManagerInterface;
+use GPDCore\Application\Core\Application;
+use GPDCore\Application\Contracts\MiddlewareQueueInterface;
+use GPDCore\Application\Internal\RouterInterface;
 use GPDCore\Application\Internal\SchemaManager;
 use GPDCore\Application\Internal\TypesManager;
-use GPDCore\Application\Core\Application;
-use GPDCore\Contracts\MiddlewareQueueInterface;
-use GPDCore\Routing\RouterInterface;
 use Laminas\ServiceManager\ServiceManager;
 
 abstract class AbstractModule implements ModuleProviderInterface

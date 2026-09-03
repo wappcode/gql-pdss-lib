@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace GPDCore\Application\Graphql;
 
-use GPDCore\Contracts\ResolverMiddlewareInterface;
+use GPDCore\Application\Contracts\ResolverMiddlewareInterface;
 use GPDCore\Application\Graphql\ResolverPipeline;
 use GPDCore\Application\Graphql\ResolverWrapperMiddleware;
 

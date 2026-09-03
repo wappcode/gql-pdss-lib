@@ -110,7 +110,7 @@ namespace AppModule;
 
 use AppModule\Entities\User;
 use DateTime;
-use GPDCore\Contracts\AppContextInterface;
+use GPDCore\Application\Contracts\AppContextInterface;
 use GPDCore\Application\Core\AbstractModule;
 use GPDCore\Application\Graphql\ResolverFactory;
 use GPDCore\Graphql\ResolverPipelineFactory;
@@ -280,7 +280,7 @@ return [
 <?php
 
 use AppModule\AppModule;
-use GPDCore\Contracts\AppContextInterface;
+use GPDCore\Application\Contracts\AppContextInterface;
 use GPDCore\Application\Core\AppConfig;
 use GPDCore\Application\Core\Application;
 use GPDCore\Factory\EntityManagerFactory;
@@ -493,7 +493,7 @@ namespace AppModule;
 
 use AppModule\Controllers\IndexController;
 use GPDCore\Application\Core\AbstractModule;
-use GPDCore\Routing\RouteModel;
+use GPDCore\Application\Http\RouteModel;
 
 class AppModule extends AbstractModule
 {
@@ -524,14 +524,14 @@ class AppModule extends AbstractModule
 
 ### Crear un controlador
 
-Los controladores deben extender `GPDCore\Routing\AbstractAppController` e implementar el método `dispatch()`:
+Los controladores deben extender `GPDCore\Application\Http\AbstractAppController` e implementar el método `dispatch()`:
 
 ```php
 <?php
 
 namespace AppModule\Controllers;
 
-use GPDCore\Routing\AbstractAppController;
+use GPDCore\Application\Http\AbstractAppController;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -614,7 +614,7 @@ public function getRoutes(): array
 namespace AppModule\Controllers;
 
 use AppModule\Entities\User;
-use GPDCore\Routing\AbstractAppController;
+use GPDCore\Application\Http\AbstractAppController;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -657,7 +657,7 @@ class UserListController extends AbstractAppController
 namespace AppModule\Controllers;
 
 use AppModule\Entities\User;
-use GPDCore\Routing\AbstractAppController;
+use GPDCore\Application\Http\AbstractAppController;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 

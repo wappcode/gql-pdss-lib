@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace GPDCore\Application\Internal;
 
 use Doctrine\ORM\EntityManager;
-use GPDCore\Contracts\AppConfigInterface;
-use GPDCore\Contracts\AppContextInterface;
+use GPDCore\Application\Contracts\AppConfigInterface;
+use GPDCore\Application\Contracts\AppContextInterface;
 use Laminas\ServiceManager\ServiceManager;
 
 final class AppContext implements AppContextInterface

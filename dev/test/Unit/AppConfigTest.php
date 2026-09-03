@@ -1,6 +1,6 @@
 <?php
 
-use GPDCore\Contracts\AppConfigInterface;
+use GPDCore\Application\Contracts\AppConfigInterface;
 use GPDCore\Application\Core\AppConfig;
 use PHPUnit\Framework\TestCase;
 

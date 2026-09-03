@@ -1,10 +1,10 @@
 <?php
 
 use AppModule\AppModule;
-use GPDCore\Contracts\AppContextInterface;
+use GPDCore\Application\Contracts\AppContextInterface;
 use GPDCore\Application\Core\AppConfig;
 use GPDCore\Application\Core\Application;
-use GPDCore\Factory\EntityManagerFactory;
+use GPDCore\Infrastructure\Doctrine\EntityManagerFactory;
 use GraphqlModule\GraphqlModule;
 use Laminas\Diactoros\ServerRequestFactory;
 use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;

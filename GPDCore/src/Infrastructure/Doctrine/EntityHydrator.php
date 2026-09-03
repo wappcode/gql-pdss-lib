@@ -20,8 +20,8 @@ class EntityHydrator
     public static function hydrate(EntityManager $entityManager, object $entity, array $data): object
     {
         $reflectionClass = new ReflectionClass($entity);
-        $collectionAssociations = \GPDCore\Doctrine\EntityMetadataHelper::getCollectionAssociations($entityManager, get_class($entity));
-        $relations = \GPDCore\Doctrine\EntityMetadataHelper::getJoinColumnAssociations($entityManager, get_class($entity));
+        $collectionAssociations = EntityMetadataHelper::getCollectionAssociations($entityManager, get_class($entity));
+        $relations = EntityMetadataHelper::getJoinColumnAssociations($entityManager, get_class($entity));
         foreach ($data as $propertyName => $value) {
             $collectionAssociation = $collectionAssociations[$propertyName] ?? null;
             $relation = $relations[$propertyName] ?? null;

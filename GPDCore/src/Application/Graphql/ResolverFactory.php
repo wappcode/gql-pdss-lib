@@ -7,17 +7,17 @@ namespace GPDCore\Application\Graphql;
 use Doctrine\ORM\Query;
 use Exception;
 use GPDCore\Application\DataLoaders\EntityDataLoader;
-use GPDCore\Contracts\AppContextInterface;
-use GPDCore\Contracts\QueryModifierInterface;
-use GPDCore\DataLoaders\CollectionCountDataLoader;
-use GPDCore\DataLoaders\CollectionDataLoader;
-use GPDCore\Doctrine\EntityHydrator;
-use GPDCore\Doctrine\EntityMetadataHelper;
-use GPDCore\Doctrine\QueryBuilderHelper;
-use GPDCore\Exceptions\DuplicateKeyException;
-use GPDCore\Exceptions\EntityNotFoundException;
-use GPDCore\Exceptions\InvalidIdException;
-use GPDCore\Exceptions\RelatedEntitiesExistException;
+use GPDCore\Application\Contracts\AppContextInterface;
+use GPDCore\Application\Contracts\QueryModifierInterface;
+use GPDCore\Application\DataLoaders\CollectionCountDataLoader;
+use GPDCore\Application\DataLoaders\CollectionDataLoader;
+use GPDCore\Application\Exceptions\DuplicateKeyException;
+use GPDCore\Application\Exceptions\EntityNotFoundException;
+use GPDCore\Application\Exceptions\InvalidIdException;
+use GPDCore\Application\Exceptions\RelatedEntitiesExistException;
+use GPDCore\Infrastructure\Doctrine\EntityHydrator;
+use GPDCore\Infrastructure\Doctrine\EntityMetadataHelper;
+use GPDCore\Infrastructure\Doctrine\QueryBuilderHelper;
 use GraphQL\Deferred;
 use GraphQL\Type\Definition\ResolveInfo;
 use PDSSUtilities\QueryFilter;
@@ -46,7 +46,7 @@ class ResolverFactory
         };
     }
 
-    public static function forCollection(string $mainClass, string $property, ?string $joinClass = null, ?\GPDCore\Contracts\QueryModifierInterface $queryDecorator = null): callable
+    public static function forCollection(string $mainClass, string $property, ?string $joinClass = null, ?\GPDCore\Application\Contracts\QueryModifierInterface $queryDecorator = null): callable
     {
         $key = sprintf('%s::%s', $mainClass, $property);
         if (!isset(static::$buffers[$key])) {

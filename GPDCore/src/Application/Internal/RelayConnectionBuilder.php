@@ -7,12 +7,12 @@ namespace GPDCore\Application\Internal;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
-use GPDCore\Contracts\AppContextInterface;
-use GPDCore\Exceptions\InvalidPaginationException;
+use GPDCore\Application\Contracts\AppContextInterface;
+use GPDCore\Application\Exceptions\InvalidPaginationException;
 use GraphQL\Type\Definition\ResolveInfo;
 
-use function GPDCore\Functions\decodeCursor;
-use function GPDCore\Functions\encodeCursor;
+use function GPDCore\Application\Core\decodeCursor;
+use function GPDCore\Application\Core\encodeCursor;
 
 class RelayConnectionBuilder
 {

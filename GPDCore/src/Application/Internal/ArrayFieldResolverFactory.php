@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace GPDCore\Application\Graphql;
+namespace GPDCore\Application\Internal;
 
 use ArrayAccess;
-use GPDCore\Contracts\AppContextInterface;
-use GPDCore\Contracts\ResolverManagerInterface;
-use GPDCore\Contracts\ResolverPipelineInterface;
+use GPDCore\Application\Contracts\AppContextInterface;
+use GPDCore\Application\Contracts\ResolverManagerInterface;
+use GPDCore\Application\Contracts\ResolverPipelineInterface;
 use GraphQL\Type\Definition\ResolveInfo;
 
 final class ArrayFieldResolverFactory

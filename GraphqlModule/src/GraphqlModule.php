@@ -3,7 +3,7 @@
 namespace GraphqlModule;
 
 use GPDCore\Application\Core\AbstractModule;
-use GPDCore\Routing\RouteModel;
+use GPDCore\Application\Http\RouteModel;
 use GPDCore\Shared\Graphql\Types\DateTimeType;
 use GPDCore\Shared\Graphql\Types\DateType;
 use GPDCore\Shared\Graphql\Types\JSONData;

@@ -7,7 +7,7 @@ Este documento describe la organización del código en el directorio `GPDCore/s
 A partir de la versión actual, todos los archivos que anteriormente estaban en `Library/` han sido reorganizados en carpetas temáticas para mejorar la mantenibilidad y claridad del código.
 
 ### 📋 Contracts/ (15 archivos)
-**Namespace:** `GPDCore\Contracts`
+**Namespace:** `GPDCore\Application\Contracts`
 
 Contiene todas las interfaces del sistema que definen contratos entre componentes:
 
@@ -122,7 +122,7 @@ use GPDCore\Library\GQLException;
 ```php
 use GPDCore\Application\Core\AppConfig;
 use GPDCore\Application\Core\Application;
-use GPDCore\Doctrine\EntityMetadataHelper;
+use GPDCore\Infrastructure\Doctrine\EntityMetadataHelper;
 use GPDCore\Exceptions\GQLException;
 ```
 

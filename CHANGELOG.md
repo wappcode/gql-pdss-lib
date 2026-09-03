@@ -14,6 +14,6 @@ All notable changes to this project will be documented in this file.
 - GPDCore\Library\QueryJoins
 - GPDCore\Library\QuerySelect
 - GPDCore\Library\QuerySort
-- GPDCore\Functions\FileFunctions
+- GPDCore\Functions\Application\CoreFileFunctions
 - GPDCore\Services\UploadFileService
 - GPDCore\Library\UploadedFileModel

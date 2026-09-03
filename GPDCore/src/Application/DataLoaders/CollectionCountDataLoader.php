@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace GPDCore\Application\DataLoaders;
 
-use GPDCore\Contracts\AppContextInterface;
-use GPDCore\Contracts\QueryModifierInterface;
-use GPDCore\Doctrine\EntityMetadataHelper;
+use GPDCore\Application\Contracts\AppContextInterface;
+use GPDCore\Application\Contracts\QueryModifierInterface;
+use GPDCore\Infrastructure\Doctrine\EntityMetadataHelper;
 use GraphQL\Type\Definition\ResolveInfo;
 
 class CollectionCountDataLoader

@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace GPDCore\Application\Graphql;
 
 use Closure;
-use GPDCore\Contracts\ResolverMiddlewareInterface;
-use GPDCore\Contracts\ResolverPipelineInterface;
-use GPDCore\Contracts\ResolverPipelineHandlerInterface;
+use GPDCore\Application\Contracts\ResolverMiddlewareInterface;
+use GPDCore\Application\Contracts\ResolverPipelineInterface;
+use GPDCore\Application\Contracts\ResolverPipelineHandlerInterface;
 
 final class ResolverPipeline implements
     ResolverPipelineInterface,

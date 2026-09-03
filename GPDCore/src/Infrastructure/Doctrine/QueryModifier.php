@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace GPDCore\Infrastructure\Doctrine;
 
 use Doctrine\ORM\QueryBuilder;
-use GPDCore\Contracts\AppContextInterface;
-use GPDCore\Contracts\QueryModifierInterface;
+use GPDCore\Application\Contracts\AppContextInterface;
+use GPDCore\Application\Contracts\QueryModifierInterface;
 use GraphQL\Type\Definition\ResolveInfo;
 
 class QueryModifier implements QueryModifierInterface

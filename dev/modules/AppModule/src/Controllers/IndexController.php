@@ -2,7 +2,7 @@
 
 namespace AppModule\Controllers;
 
-use GPDCore\Routing\AbstractAppController;
+use GPDCore\Application\Http\AbstractAppController;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 

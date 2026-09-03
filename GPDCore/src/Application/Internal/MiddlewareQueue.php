@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace GPDCore\Application\Internal;
 
-use GPDCore\Contracts\MiddlewareQueueInterface;
+use GPDCore\Application\Contracts\MiddlewareQueueInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;

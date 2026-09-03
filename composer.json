@@ -22,8 +22,8 @@
   },
   "autoload": {
     "files": [
-      "GPDCore/src/Functions/PaginationUtilities.php",
-      "GPDCore/src/Functions/StringFunctions.php"
+      "GPDCore/src/Application/Core/PaginationUtilities.php",
+      "GPDCore/src/Application/Core/StringFunctions.php"
     ],
     "psr-4": {
       "GPDCore\\": "GPDCore/src/",

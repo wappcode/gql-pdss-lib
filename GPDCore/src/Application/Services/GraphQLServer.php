@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace GPDCore\Application\Services;
 
-use GPDCore\Contracts\AppContextInterface;
-use GPDCore\Exceptions\GQLException;
-use GPDCore\Exceptions\GQLFormattedError;
-use GPDCore\Application\Graphql\ArrayFieldResolverFactory;
+use GPDCore\Application\Contracts\AppContextInterface;
 use GPDCore\Application\Core\Application;
+use GPDCore\Application\Exceptions\GQLException;
+use GPDCore\Application\Exceptions\GQLFormattedError;
+use GPDCore\Application\Internal\ArrayFieldResolverFactory;
 use GraphQL\Error\DebugFlag;
 use GraphQL\Error\FormattedError;
 use GraphQL\GraphQL;

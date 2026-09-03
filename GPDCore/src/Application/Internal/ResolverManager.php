@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace GPDCore\Application\Internal;
 
-use GPDCore\Contracts\ResolverManagerInterface;
-use GPDCore\Contracts\ResolverPipelineInterface;
+use GPDCore\Application\Contracts\ResolverManagerInterface;
+use GPDCore\Application\Contracts\ResolverPipelineInterface;
 
 class ResolverManager implements ResolverManagerInterface
 {

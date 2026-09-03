@@ -1,6 +1,6 @@
 <?php
 
-use GPDCore\Factory\EntityManagerFactory;
+use GPDCore\Infrastructure\Doctrine\EntityManagerFactory;
 use GQLBasicClient\GQLClient;
 
 require_once __DIR__ . '/../../vendor/autoload.php';

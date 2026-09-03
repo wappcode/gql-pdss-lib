@@ -9,12 +9,12 @@ use AppModule\Graphql\ResolversComment;
 use AppModule\Graphql\ResolversPost;
 use AppModule\Graphql\ResolversUser;
 use DateTime;
-use GPDCore\Contracts\AppContextInterface;
+use GPDCore\Application\Contracts\AppContextInterface;
 use GPDCore\Application\Core\AbstractModule;
 use GPDCore\Application\Graphql\ResolverFactory;
 use GPDCore\Application\Graphql\ResolverPipelineFactory;
-use GPDCore\Graphql\ResolverTransactionMiddlewareFactory;
-use GPDCore\Routing\RouteModel;
+use GPDCore\Application\Graphql\ResolverTransactionMiddlewareFactory;
+use GPDCore\Application\Http\RouteModel;
 
 class AppModule extends AbstractModule
 {

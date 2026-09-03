@@ -7,6 +7,8 @@ namespace GPDCore\Infrastructure\Doctrine;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
+use GPDCore\Application\Exceptions\EntityNotFoundException;
+use GPDCore\Application\Exceptions\InvalidIdException;
 
 class QueryBuilderHelper
 {
@@ -14,12 +16,12 @@ class QueryBuilderHelper
     {
         $qbCopy = clone $qb;
         $rootAlias = $alias ?? $qbCopy->getRootAliases()[0];
-        $associations = \GPDCore\Doctrine\EntityMetadataHelper::getJoinColumnAssociations($entityManager, $className);
+        $associations = EntityMetadataHelper::getJoinColumnAssociations($entityManager, $className);
 
         $aliases = $qbCopy->getAllAliases();
 
         foreach ($associations as $relation) {
-            if ($relation instanceof \GPDCore\Infrastructure\Doctrine\EntityAssociation) {
+            if ($relation instanceof EntityAssociation) {
                 $fieldName = $relation->getFieldName();
                 $identifier = $relation->getIdentifier();
             } else {
@@ -40,10 +42,10 @@ class QueryBuilderHelper
     public static function fetchById(EntityManager $entityManager, string $class, $id): array
     {
         if (empty($id)) {
-            throw new \GPDCore\Exceptions\InvalidIdException();
+            throw new InvalidIdException();
         }
 
-        $idPropertyName = \GPDCore\Doctrine\EntityMetadataHelper::getIdFieldName($entityManager, $class);
+        $idPropertyName = EntityMetadataHelper::getIdFieldName($entityManager, $class);
         $qb = $entityManager->createQueryBuilder()->from($class, 'entity')
             ->andWhere("entity.{$idPropertyName} = :id")
             ->setParameter(':id', $id)
@@ -53,7 +55,7 @@ class QueryBuilderHelper
         $result = $qb->getQuery()->getOneOrNullResult(Query::HYDRATE_ARRAY);
 
         if ($result === null) {
-            throw new \GPDCore\Exceptions\EntityNotFoundException();
+            throw new EntityNotFoundException();
         }
 
         return $result;

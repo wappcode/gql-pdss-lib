@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace GPDCore\Application\Core;
 
-use GPDCore\Contracts\AppConfigInterface;
+use GPDCore\Application\Contracts\AppConfigInterface;
 
 final class AppConfig implements AppConfigInterface
 {
@@ -50,15 +50,9 @@ final class AppConfig implements AppConfigInterface
         return $this;
     }
 
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 
-    private function __clone(): void
-    {
-    }
+    private function __clone(): void {}
 
-    public function __wakeup(): void
-    {
-    }
+    public function __wakeup(): void {}
 }
