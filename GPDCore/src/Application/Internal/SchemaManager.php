@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace GPDCore\Application\Core;
+namespace GPDCore\Application\Internal;
 
-use GPDCore\Graphql\GraphqlSchemaUtilities;
+use GPDCore\Application\Internal\TypesManager;
 use GraphQL\Language\AST\TypeDefinitionNode;
 use GraphQL\Type\Definition\ScalarType;
 use GraphQL\Type\Schema;

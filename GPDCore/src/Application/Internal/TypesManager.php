@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GPDCore\Application\Core;
+namespace GPDCore\Application\Internal;
 
 class TypesManager
 {

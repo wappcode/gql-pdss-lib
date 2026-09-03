@@ -2,7 +2,7 @@
 
 namespace GPDCore\Core;
 
-use GPDCore\Application\Core\SchemaManager as Impl;
+use GPDCore\Application\Internal\SchemaManager as Impl;
 
 class SchemaManager extends Impl
 {

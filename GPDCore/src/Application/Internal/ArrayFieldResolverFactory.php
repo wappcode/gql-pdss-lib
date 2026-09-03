@@ -6,7 +6,6 @@ namespace GPDCore\Application\Graphql;
 
 use ArrayAccess;
 use GPDCore\Contracts\AppContextInterface;
-use GPDCore\Contracts\ResolverPipelineHandlerInterface;
 use GPDCore\Contracts\ResolverManagerInterface;
 use GPDCore\Contracts\ResolverPipelineInterface;
 use GraphQL\Type\Definition\ResolveInfo;

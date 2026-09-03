@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GPDCore\Application\Controllers;
+namespace GraphqlModule\Application\Controllers;
 
 use GPDCore\Application\Core\Application;
 use GPDCore\Routing\AbstractAppController;

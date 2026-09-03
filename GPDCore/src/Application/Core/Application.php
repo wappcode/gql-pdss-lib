@@ -15,10 +15,11 @@ use Laminas\ServiceManager\ServiceManager;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
-use GPDCore\Application\Core\TypesManager;
-use GPDCore\Application\Core\SchemaManager;
-use GPDCore\Application\Core\ResolverManager;
-use GPDCore\Application\Core\MiddlewareQueue;
+use GPDCore\Application\Internal\TypesManager;
+use GPDCore\Application\Internal\SchemaManager;
+use GPDCore\Application\Internal\ResolverManager;
+use GPDCore\Application\Internal\MiddlewareQueue;
+use GPDCore\Application\Internal\FrameworkHandler;
 
 class Application
 {
@@ -132,7 +133,7 @@ class Application
 
     protected function createMiddlewareQueue(): MiddlewareQueue
     {
-        $frameworkHandler = new \GPDCore\Application\Core\FrameworkHandler($this);
+        $frameworkHandler = new FrameworkHandler($this);
         $middlewareQueue = new MiddlewareQueue($frameworkHandler);
 
         return $middlewareQueue;
@@ -147,7 +148,7 @@ class Application
 
     protected function createContext(): AppContextInterface
     {
-        $context = \GPDCore\Application\Core\AppContext::create(
+        $context = \GPDCore\Application\Internal\AppContext::create(
             $this->config,
             $this->entityManager,
             $this->serviceManager,

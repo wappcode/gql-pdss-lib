@@ -8,17 +8,16 @@ use GPDCore\Contracts\AppConfigInterface;
 use GPDCore\Contracts\AppContextInterface;
 use GPDCore\Contracts\ModuleProviderInterface;
 use GPDCore\Contracts\ResolverManagerInterface;
-use GPDCore\Application\Core\MiddlewareQueue;
-use GPDCore\Application\Core\SchemaManager;
-use GPDCore\Application\Core\TypesManager;
+use GPDCore\Application\Internal\SchemaManager;
+use GPDCore\Application\Internal\TypesManager;
+use GPDCore\Application\Core\Application;
 use GPDCore\Contracts\MiddlewareQueueInterface;
 use GPDCore\Routing\RouterInterface;
 use Laminas\ServiceManager\ServiceManager;
-use Psr\Http\Server\MiddlewareInterface;
 
 abstract class AbstractModule implements ModuleProviderInterface
 {
-    protected \GPDCore\Application\Core\Application $application;
+    protected Application $application;
 
     abstract public function getConfig(): array;
     abstract public function getSchema(): string;
@@ -94,7 +93,7 @@ abstract class AbstractModule implements ModuleProviderInterface
         }
     }
 
-    public function setApplication(\GPDCore\Application\Core\Application $application): void
+    public function setApplication(Application $application): void
     {
         $this->application = $application;
     }
@@ -104,7 +103,7 @@ abstract class AbstractModule implements ModuleProviderInterface
         return $this->application->getContext();
     }
 
-    public function getApplication(): \GPDCore\Application\Core\Application
+    public function getApplication(): Application
     {
         return $this->application;
     }

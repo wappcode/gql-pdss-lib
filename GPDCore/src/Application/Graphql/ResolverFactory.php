@@ -113,7 +113,7 @@ class ResolverFactory
                     : $qb;
             }
 
-            return \GPDCore\Application\Graphql\RelayConnectionBuilder::build($qb, $root, $args, $context, $info);
+            return \GPDCore\Application\Internal\RelayConnectionBuilder::build($qb, $root, $args, $context, $info);
         };
     }
 

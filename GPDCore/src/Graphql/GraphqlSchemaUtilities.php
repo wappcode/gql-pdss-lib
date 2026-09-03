@@ -2,7 +2,7 @@
 
 namespace GPDCore\Graphql;
 
-use GPDCore\Application\Graphql\GraphqlSchemaUtilities as Impl;
+use GPDCore\Application\Internal\GraphqlSchemaUtilities as Impl;
 
 class GraphqlSchemaUtilities extends Impl
 {

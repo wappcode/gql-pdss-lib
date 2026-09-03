@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GPDCore\Application\Graphql;
+namespace GPDCore\Application\Internal;
 
 use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;

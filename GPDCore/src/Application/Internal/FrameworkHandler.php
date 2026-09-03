@@ -2,17 +2,18 @@
 
 declare(strict_types=1);
 
-namespace GPDCore\Application\Core;
+namespace GPDCore\Application\Internal;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use GPDCore\Application\Core\Application;
 
 final class FrameworkHandler implements RequestHandlerInterface
 {
-    private \GPDCore\Application\Core\Application $app;
+    private Application $app;
 
-    public function __construct(\GPDCore\Application\Core\Application $app)
+    public function __construct(Application $app)
     {
         $this->app = $app;
     }

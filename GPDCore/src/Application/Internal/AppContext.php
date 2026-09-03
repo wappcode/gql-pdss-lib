@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GPDCore\Application\Core;
+namespace GPDCore\Application\Internal;
 
 use Doctrine\ORM\EntityManager;
 use GPDCore\Contracts\AppConfigInterface;
@@ -17,8 +17,7 @@ final class AppContext implements AppContextInterface
         private readonly ?ServiceManager $serviceManager = null,
         private readonly string $enviroment = AppContextInterface::ENV_DEVELOPMENT,
         private array $contextAttributes = []
-    ) {
-    }
+    ) {}
 
     public static function create(
         AppConfigInterface $config,

@@ -2,7 +2,7 @@
 
 namespace GPDCore\Core;
 
-use GPDCore\Application\Core\TypesManager as Impl;
+use GPDCore\Application\Internal\TypesManager as Impl;
 
 class TypesManager extends Impl
 {
