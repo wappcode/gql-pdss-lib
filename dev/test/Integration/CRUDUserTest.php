@@ -39,7 +39,7 @@ class CRUDUserTest extends PHPUnit\Framework\TestCase
                     'conditions' => [
                         [
                             'filterOperator' => QueryFilter::CONDITION_LIKE,
-                            'value' => ['single' => '%juan%'],
+                            'value' => ['single' => "%{$updatedName}%"],
                             'property' => 'name',
                         ],
                     ],
@@ -54,7 +54,7 @@ class CRUDUserTest extends PHPUnit\Framework\TestCase
         $this->assertEquals($newName, $updatedName, 'Actualizar un usuario');
         $this->assertGreaterThan(0, $connection['totalCount'], 'Debe haber almenos un registro');
         $this->assertEquals(0, count($connection['edges']), 'No debe haber edges porque no se agrego información de paginación');
-        $this->assertEquals(1, $connectionFilter['totalCount'], 'Debe haber  un registro con nombre juan');
+        $this->assertEquals(1, $connectionFilter['totalCount'], "Debe haber  un registro con nombre {$updatedName}");
         $this->assertEquals($id, $userId, 'Consulta que se obtengan datos al consultar un elmento con id');
         $this->assertEquals($deletedUser, true, 'Eliminar un usuario');
     }

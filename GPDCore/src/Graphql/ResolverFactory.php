@@ -254,9 +254,6 @@ class ResolverFactory
             }
 
             EntityHydrator::hydrate($entityManager, $entity, $input); // carga los valores del array a la entidad
-            if (method_exists($entity, 'setUpdated')) {
-                $entity->setUpdated();
-            }
             $entityManager->beginTransaction();
 
             try {
