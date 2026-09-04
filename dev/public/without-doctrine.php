@@ -1,9 +1,9 @@
 <?php
 
 use AppModule\AppWithoutDoctrineModule;
-use AppModule\Services\AppRouter;
 use GPDCore\Application\Core\AppConfig;
 use GPDCore\Application\Core\Application;
+use GPDCore\Application\Internal\AppRouter;
 use Laminas\Diactoros\ServerRequestFactory;
 use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
 use Laminas\ServiceManager\ServiceManager;
