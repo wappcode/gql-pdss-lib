@@ -41,7 +41,7 @@ class EntityManagerFactory
      */
     public static function createFromAttributes(array $options, string $cacheDir = '', bool $isDevMode = false, bool $writeLog = false): EntityManager
     {
-        $paths = $options['entities'];
+        $paths = $options['entities'] ?? [];
         $driver = $options['driver'];
         $cache = null; // Se define posteriormente al cerar la instancia base
         $proxyDir = null; // Se define posteriormente al cerar la instancia base
@@ -63,7 +63,7 @@ class EntityManagerFactory
      */
     public static function createFromXml(array $options, string $cacheDir = '', bool $isDevMode = false, bool $isXsdValidationEnabled = true, bool $writeLog = false): EntityManager
     {
-        $paths = $options['xml'];
+        $paths = $options['xml'] ?? [];
         $driver = $options['driver'];
         $cache = null; // Se define posteriormente al cerar la instancia base
         $proxyDir = null; // Se define posteriormente al cerar la instancia base
@@ -87,9 +87,9 @@ class EntityManagerFactory
      */
     public static function createFromAttributesAndXml(array $options, string $cacheDir = '', bool $isDevMode = false, bool $isXsdValidationEnabled = true, bool $writeLog = false): EntityManager
     {
-        $entities = $options['entities'];
+        $entities = $options['entities'] ?? [];
         $driver = $options['driver'];
-        $xml = $options['xml'];
+        $xml = $options['xml'] ?? [];
         $cache = null; // Se define posteriormente al cerar la instancia base
         $proxyDir = null; // Se define posteriormente al cerar la instancia base
         $proxyDir = $cacheDir . '/Proxy';
