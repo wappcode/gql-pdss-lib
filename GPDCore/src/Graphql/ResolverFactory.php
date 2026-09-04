@@ -7,12 +7,13 @@ namespace GPDCore\Graphql;
 use Doctrine\ORM\Query;
 use Exception;
 use GPDCore\Contracts\AppContextInterface;
+use GPDCore\Contracts\EntityDataMapperInterface;
 use GPDCore\Contracts\QueryModifierInterface;
 use GPDCore\DataLoaders\CollectionCountDataLoader;
 use GPDCore\DataLoaders\CollectionDataLoader;
 use GPDCore\DataLoaders\EntityDataLoader;
-use GPDCore\Doctrine\EntityHydrator;
 use GPDCore\Doctrine\EntityMetadataHelper;
+use GPDCore\Doctrine\GenericEntityDataMapper;
 use GPDCore\Doctrine\QueryBuilderHelper;
 use GPDCore\Exceptions\DuplicateKeyException;
 use GPDCore\Exceptions\EntityNotFoundException;
@@ -213,13 +214,15 @@ class ResolverFactory
     /**
      * Crea un resolver tipo mutation create.
      */
-    public static function forCreate(string $class): callable
+    public static function forCreate(string $class, ?EntityDataMapperInterface $dataMapper = null): callable
     {
-        return function ($root, array $args, AppContextInterface $context, ResolveInfo $info) use ($class) {
+        return function ($root, array $args, AppContextInterface $context, ResolveInfo $info) use ($class, $dataMapper) {
             $entityManager = $context->getEntityManager();
-            $entity = new $class();
             $input = $args['input'];
-            EntityHydrator::hydrate($entityManager, $entity, $input); // carga los valores del array a la entidad
+            if ($dataMapper == null) {
+                $dataMapper = new GenericEntityDataMapper($entityManager);
+            }
+            $entity = $dataMapper->createEntity($class, $input); // carga los valores del array a la entidad
 
             $entityManager->beginTransaction();
 
@@ -241,9 +244,9 @@ class ResolverFactory
     /**
      * Crea un resolver tipo mutation update.
      */
-    public static function forUpdate(string $class): callable
+    public static function forUpdate(string $class, ?EntityDataMapperInterface $dataMapper = null): callable
     {
-        return function ($root, array $args, AppContextInterface $context, ResolveInfo $info) use ($class) {
+        return function ($root, array $args, AppContextInterface $context, ResolveInfo $info) use ($class, $dataMapper) {
             $entityManager = $context->getEntityManager();
             $id = $args['id'];
             $input = $args['input'];
@@ -252,8 +255,11 @@ class ResolverFactory
             if (empty($entity) || !($entity instanceof $class)) {
                 throw new EntityNotFoundException();
             }
+            if ($dataMapper == null) {
+                $dataMapper = new GenericEntityDataMapper($entityManager);
+            }
 
-            EntityHydrator::hydrate($entityManager, $entity, $input); // carga los valores del array a la entidad
+            $entity = $dataMapper->updateEntity($entity, $input); // carga los valores del array a la entidad
             $entityManager->beginTransaction();
 
             try {
