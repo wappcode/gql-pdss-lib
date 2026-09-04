@@ -19,7 +19,7 @@ $masterConfig = require __DIR__ . '/../config/master.config.php';
 $config = AppConfig::getInstance()->setMasterConfig($masterConfig);
 $entityManagerOptions = $options = file_exists($configFile) ? require $configFile : [];
 $isEntityManagerDevMode = $enviroment !== AppContextInterface::ENV_PRODUCTION;
-$entityManager = EntityManagerFactory::createInstance($options, $cacheDir, $isEntityManagerDevMode);
+$entityManager = EntityManagerFactory::createFromAttributesAndXml($options, $cacheDir, $isEntityManagerDevMode);
 $request = ServerRequestFactory::fromGlobals();
 $app = new Application($config, $entityManager, $enviroment);
 $app
