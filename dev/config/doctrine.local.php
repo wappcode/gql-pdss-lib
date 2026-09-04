@@ -11,4 +11,5 @@ return [
         'port' => '3306', // Puerto interno de MySQL en Docker, no usar PDSSLIB_MYSQL_PORT que es para el host
     ],
     'entities' => require __DIR__ . '/doctrine.entities.php',
+    'xml' => require __DIR__ . '/doctrine.xml.php',
 ];

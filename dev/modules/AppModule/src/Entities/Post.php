@@ -4,24 +4,16 @@ namespace AppModule\Entities;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
 use PDSSUtilities\AbstractEntityModel;
 
-#[ORM\Entity()]
-#[ORM\Table(name: 'post')]
 class Post extends AbstractEntityModel
 {
-    #[ORM\Column(type: 'string', length: 255, nullable: false)]
     private string $title;
 
-    #[ORM\Column(type: 'text', nullable: false)]
     private string $body;
 
-    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'user')]
-    #[ORM\JoinColumn(name: 'author_id', referencedColumnName: 'id', columnDefinition: 'VARCHAR(255) NOT NULL')]
     private User $author;
 
-    #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'post')]
     private Collection $comments;
 
     public function __construct()

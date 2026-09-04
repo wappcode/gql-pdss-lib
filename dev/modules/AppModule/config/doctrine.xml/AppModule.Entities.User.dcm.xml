@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping https://raw.githubusercontent.com/doctrine/orm/2.11.x/doctrine-mapping.xsd">
+    <entity name="AppModule\Entities\User" table="users">
+        <!-- inherits id and timestamp fields from AbstractEntityModelUlid -->
+
+        <field name="name" type="string" length="255" />
+        <field name="email" type="string" length="255" />
+
+        <many-to-many field="accounts" target-entity="AppModule\Entities\Account">
+            <join-table name="users_accounts">
+                <join-columns>
+                    <join-column name="user_id" referenced-column-name="id" nullable="false" />
+                </join-columns>
+                <inverse-join-columns>
+                    <join-column name="account_code" referenced-column-name="code" nullable="false" />
+                </inverse-join-columns>
+            </join-table>
+        </many-to-many>
+
+        <one-to-many field="posts" target-entity="AppModule\Entities\Post" mapped-by="author" />
+    </entity>
+</doctrine-mapping>

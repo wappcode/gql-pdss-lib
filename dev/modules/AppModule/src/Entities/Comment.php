@@ -2,18 +2,12 @@
 
 namespace AppModule\Entities;
 
-use Doctrine\ORM\Mapping as ORM;
 use PDSSUtilities\AbstractEntityModel;
 
-#[ORM\Entity()]
-#[ORM\Table(name: 'comments')]
 class Comment extends AbstractEntityModel
 {
-    #[ORM\Column(type: 'text', nullable: false)]
     private string $text;
 
-    #[ORM\ManyToOne(targetEntity: Post::class, inversedBy: 'comments')]
-    #[ORM\JoinColumn(name: 'post_id', referencedColumnName: 'id')]
     private Post $post;
 
     /**

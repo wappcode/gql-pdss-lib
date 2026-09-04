@@ -6,7 +6,10 @@ namespace GPDCore\Infrastructure\Doctrine;
 
 use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Mapping\Driver\AttributeDriver;
+use Doctrine\ORM\Mapping\Driver\XmlDriver;
 use Doctrine\ORM\ORMSetup;
+use Doctrine\Persistence\Mapping\Driver\MappingDriverChain;
 use Exception;
 use Symfony\Component\Cache\Adapter\PhpFilesAdapter;
 
@@ -14,11 +17,24 @@ class EntityManagerFactory
 {
     public static function createInstance(array $options, string $cacheDir = '', bool $isDevMode = false, bool $writeLog = false): EntityManager
     {
-        $paths = $options['entities'];
+        $paths = $options['entities']  ?? [];
+        $xml = $options['xml'] ?? [];
         $driver = $options['driver'];
         $isDevMode = $isDevMode;
         $cache = null;
         $defaultCacheDir = __DIR__ . '/../../../../../../data/DoctrineORMModule/';
+        $attributePaths = array_values($paths);
+        $xmlPaths = array_values($xml);
+        $xmlDriver = new XmlDriver($xmlPaths);
+        $attributeDriver = new AttributeDriver($attributePaths);
+        $driverChain = new MappingDriverChain();
+
+        foreach ($xml as $namespace => $path) {
+            $driverChain->addDriver($xmlDriver, $namespace);
+        }
+        foreach ($paths as $namespace => $path) {
+            $driverChain->addDriver($attributeDriver, $namespace);
+        }
 
         if (empty($cacheDir)) {
             $cacheDir = $defaultCacheDir;
@@ -29,13 +45,10 @@ class EntityManagerFactory
         }
 
         $proxyDir = $cacheDir . '/Proxy';
-        $config = ORMSetup::createAttributeMetadataConfiguration($paths, $isDevMode, $proxyDir, $cache);
+        $config = ORMSetup::createConfiguration($isDevMode);
+        $config->setMetadataDriverImpl($driverChain);
 
-        // TODO: buscar nueva forma para guardar el log
-        // if ($isDevMode && $writeLog) {
-        //     $logger = new DoctrineSQLLogger();
-        //     $config->setSQLLogger($logger);
-        // }
+
         if (!$isDevMode && !empty($cacheDir)) {
             $cacheQueryDir = $cacheDir . '/Query';
             $cacheMetadataDir = $cacheDir . '/Metadata';

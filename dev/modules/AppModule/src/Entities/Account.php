@@ -3,29 +3,18 @@
 namespace AppModule\Entities;
 
 use DateTimeImmutable;
-use Doctrine\ORM\Mapping as ORM;
 use PDSSUtilities\DoctrineUlidGenerator;
 
-#[ORM\Entity]
-#[ORM\Table(name: 'account')]
 class Account
 {
-    #[ORM\Id]
-    #[ORM\Column(name: 'code', type: 'string', length: 255)]
-    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(class: DoctrineUlidGenerator::class)]
     protected $code;
 
-    #[ORM\Column(type: 'string', nullable: false)]
     protected $title;
 
-    #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'accounts')]
     protected $users;
 
-    #[ORM\Column(type: 'datetimetz_immutable')]
     protected $created;
 
-    #[ORM\Column(type: 'datetimetz_immutable')]
     protected $updated;
 
     public function __construct()

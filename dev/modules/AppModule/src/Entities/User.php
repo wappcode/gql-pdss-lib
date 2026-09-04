@@ -4,26 +4,16 @@ namespace AppModule\Entities;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
 use PDSSUtilities\AbstractEntityModelUlid;
 
-#[ORM\Entity()]
-#[ORM\Table(name: 'users')]
 class User extends AbstractEntityModelUlid
 {
-    #[ORM\Column(type: 'string', length: 255)]
     private string $name;
 
-    #[ORM\Column(type: 'string', length: 255)]
     private string $email;
 
-    #[ORM\JoinTable(name: 'users_accounts')]
-    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
-    #[ORM\InverseJoinColumn(name: 'account_code', referencedColumnName: 'code', nullable: false)]
-    #[ORM\ManyToMany(targetEntity: Account::class)]
     private Collection $accounts;
 
-    #[ORM\OneToMany(targetEntity: Post::class, mappedBy: 'user')]
     private $posts;
 
     public function __construct()

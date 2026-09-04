@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping https://raw.githubusercontent.com/doctrine/orm/2.11.x/doctrine-mapping.xsd">
+    <entity name="AppModule\Entities\Post" table="post">
+        <!-- inherits id and timestamp fields from AbstractEntityModel -->
+
+        <field name="title" type="string" length="255" />
+        <field name="body" type="text" />
+
+        <many-to-one field="author" target-entity="AppModule\Entities\User">
+            <join-column name="author_id" referenced-column-name="id" column-definition="VARCHAR(255) NOT NULL" />
+        </many-to-one>
+
+        <one-to-many field="comments" target-entity="AppModule\Entities\Comment" mapped-by="post" />
+    </entity>
+</doctrine-mapping>

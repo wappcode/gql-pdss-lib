@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping https://raw.githubusercontent.com/doctrine/orm/2.11.x/doctrine-mapping.xsd">
+    <entity name="AppModule\Entities\Account" table="account">
+        <id name="code" column="code" type="string" length="255">
+            <custom-id-generator class="PDSSUtilities\DoctrineUlidGenerator" />
+        </id>
+
+        <field name="title" type="string" nullable="false" />
+
+        <many-to-many field="users" target-entity="AppModule\Entities\User" mapped-by="accounts" />
+
+        <field name="created" type="datetimetz_immutable" />
+        <field name="updated" type="datetimetz_immutable" />
+    </entity>
+</doctrine-mapping>
