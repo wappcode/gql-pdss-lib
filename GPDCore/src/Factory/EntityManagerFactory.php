@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GPDCore\Factory;
 
+use Doctrine\DBAL\Driver\Middleware;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
@@ -22,12 +23,12 @@ class EntityManagerFactory
      * @param array $options
      * @param string $cacheDir
      * @param boolean $isDevMode
-     * @param boolean $writeLog
+     * @param Middleware[] $middlewares
      * @return EntityManager
      */
-    public static function createInstance(array $options, string $cacheDir = '', bool $isDevMode = false, bool $writeLog = false): EntityManager
+    public static function createInstance(array $options, string $cacheDir = '', bool $isDevMode = false, array $middlewares = []): EntityManager
     {
-        return static::createFromAttributes($options, $cacheDir, $isDevMode, $writeLog);
+        return static::createFromAttributes($options, $cacheDir, $isDevMode, $middlewares);
     }
 
     /**
@@ -36,17 +37,17 @@ class EntityManagerFactory
      * @param array $options
      * @param string $cacheDir
      * @param boolean $isDevMode
-     * @param boolean $writeLog
+     * @param Middleware[] $middlewares 
      * @return EntityManager
      */
-    public static function createFromAttributes(array $options, string $cacheDir = '', bool $isDevMode = false, bool $writeLog = false): EntityManager
+    public static function createFromAttributes(array $options, string $cacheDir = '', bool $isDevMode = false, array $middlewares = []): EntityManager
     {
         $paths = $options['entities'] ?? [];
         $driver = $options['driver'];
         $cache = null; // Se define posteriormente al cerar la instancia base
         $proxyDir = null; // Se define posteriormente al cerar la instancia base
         $config = ORMSetup::createAttributeMetadataConfiguration($paths, $isDevMode, $proxyDir, $cache);
-        $entityManager = static::buildEntityManager($config, $driver, $cacheDir, $isDevMode, $writeLog);
+        $entityManager = static::buildEntityManager($config, $driver, $cacheDir, $isDevMode, $middlewares);
 
         return $entityManager;
     }
@@ -58,17 +59,26 @@ class EntityManagerFactory
      * @param string $cacheDir
      * @param boolean $isDevMode
      * @param boolean $isXsdValidationEnabled
-     * @param boolean $writeLog
+     * @param Middleware[] $middlewares 
      * @return EntityManager
      */
-    public static function createFromXml(array $options, string $cacheDir = '', bool $isDevMode = false, bool $isXsdValidationEnabled = true, bool $writeLog = false): EntityManager
+    public static function createFromXml(array $options, string $cacheDir = '', bool $isDevMode = false, bool $isXsdValidationEnabled = true, ?string $xmlFileExtension = null, array $middlewares = []): EntityManager
     {
         $paths = $options['xml'] ?? [];
         $driver = $options['driver'];
         $cache = null; // Se define posteriormente al cerar la instancia base
         $proxyDir = null; // Se define posteriormente al cerar la instancia base
-        $config = ORMSetup::createXMLMetadataConfiguration($paths, $isDevMode, $proxyDir, $cache, $isXsdValidationEnabled);
-        $entityManager = static::buildEntityManager($config, $driver, $cacheDir, $isDevMode, $writeLog);
+        $xmlPaths = array_values($paths);
+        $xmlFileExtension = $xmlFileExtension ?? XmlDriver::DEFAULT_FILE_EXTENSION;
+        $xmlDriver = new XmlDriver($xmlPaths, $xmlFileExtension, $isXsdValidationEnabled);
+        $driverChain = new MappingDriverChain();
+        foreach ($paths as $namespace => $path) {
+            $driverChain->addDriver($xmlDriver, $namespace);
+        }
+
+        $config = ORMSetup::createConfiguration($isDevMode, $proxyDir, $cache);
+        $config->setMetadataDriverImpl($driverChain);
+        $entityManager = static::buildEntityManager($config, $driver, $cacheDir, $isDevMode, $middlewares);
 
         return $entityManager;
     }
@@ -82,10 +92,11 @@ class EntityManagerFactory
      * @param string $cacheDir
      * @param boolean $isDevMode
      * @param boolean $isXsdValidationEnabled
-     * @param boolean $writeLog
+     * @param string $xmlFileExtension
+     * @param array $middlewares
      * @return EntityManager
      */
-    public static function createFromAttributesAndXml(array $options, string $cacheDir = '', bool $isDevMode = false, bool $isXsdValidationEnabled = true, bool $writeLog = false): EntityManager
+    public static function createFromAttributesAndXml(array $options, string $cacheDir = '', bool $isDevMode = false, bool $isXsdValidationEnabled = true, ?string $xmlFileExtension = null, array $middlewares = []): EntityManager
     {
         $entities = $options['entities'] ?? [];
         $driver = $options['driver'];
@@ -95,7 +106,8 @@ class EntityManagerFactory
         $proxyDir = $cacheDir . '/Proxy';
         $attributePaths = array_values($entities);
         $xmlPaths = array_values($xml);
-        $xmlDriver = new XmlDriver($xmlPaths);
+        $xmlFileExtension = $xmlFileExtension ?? XmlDriver::DEFAULT_FILE_EXTENSION;
+        $xmlDriver = new XmlDriver($xmlPaths, $xmlFileExtension, $isXsdValidationEnabled);
         $attributeDriver = new AttributeDriver($attributePaths);
         $driverChain = new MappingDriverChain();
 
@@ -106,9 +118,11 @@ class EntityManagerFactory
             $driverChain->addDriver($attributeDriver, $namespace);
         }
 
+
         $config = ORMSetup::createConfiguration($isDevMode, $proxyDir, $cache);
         $config->setMetadataDriverImpl($driverChain);
-        $entityManager = static::buildEntityManager($config, $driver, $cacheDir, $isDevMode, $writeLog);
+
+        $entityManager = static::buildEntityManager($config, $driver, $cacheDir, $isDevMode, $middlewares);
 
         return $entityManager;
     }
@@ -125,7 +139,7 @@ class EntityManagerFactory
      * @param boolean $writeLog
      * @return EntityManager
      */
-    private static function buildEntityManager(Configuration $config, array $driver, string $cacheDir = '', bool $isDevMode = false, bool $writeLog = false): EntityManager
+    private static function buildEntityManager(Configuration $config, array $driver, string $cacheDir = '', bool $isDevMode = false, array $middlewares = []): EntityManager
     {
         $isDevMode = $isDevMode;
         $cache = null;
@@ -149,6 +163,9 @@ class EntityManagerFactory
             $config->setMetadataCache($cacheMetadataDriver);
         }
         $connection = DriverManager::getConnection($driver, $config);
+        if (!empty($middlewares)) {
+            $config->setMiddlewares($middlewares);
+        }
         $entityManager = new EntityManager($connection, $config);
 
         return $entityManager;
